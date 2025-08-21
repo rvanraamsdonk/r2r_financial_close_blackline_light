@@ -1,0 +1,84 @@
+{
+  "emails": [
+    {
+      "id": "EMAIL-2025-07-001",
+      "accrual_id": "ACC-2025-07-001",
+      "from": "payroll@techcorp.com",
+      "to": "accounting@techcorp.com",
+      "subject": "URGENT: July Payroll Accrual Reversal Failed",
+      "date": "2025-08-01T09:15:00Z",
+      "body": "The automated reversal for July payroll accrual ($28,000) failed due to system error in the ERP integration. Manual journal entry required immediately to avoid month-end reporting delays. Error code: PAY_REV_FAIL_001. Please process DR Payroll Expense $28,000, CR Accrued Payroll $28,000.",
+      "sentiment": "urgent",
+      "priority": "high",
+      "ai_summary": "Payroll accrual reversal failure requiring immediate manual intervention",
+      "attachments": ["error_log_july_payroll.pdf"]
+    },
+    {
+      "id": "EMAIL-2025-08-001",
+      "accrual_id": "ACC-2025-08-002",
+      "from": "vendor.relations@consultingpartners.com",
+      "to": "ap@techcorp.com",
+      "subject": "Professional Services Delivered - Invoice Pending",
+      "date": "2025-08-30T16:45:00Z",
+      "body": "This confirms completion of the Q3 strategic consulting engagement as per SOW #2025-CS-001. Total billable amount: $15,000. Invoice will be submitted within 5 business days. Please accrue accordingly for August close. Project deliverables attached for your records.",
+      "sentiment": "neutral",
+      "priority": "medium",
+      "ai_summary": "Vendor confirmation of completed services requiring accrual",
+      "attachments": ["SOW_2025-CS-001.pdf", "deliverables_summary.pdf"]
+    },
+    {
+      "id": "EMAIL-2025-08-002",
+      "accrual_id": "ACC-2025-08-102",
+      "from": "marketing@adagency.eu",
+      "to": "marketing@techcorp.com",
+      "cc": ["finance@techcorp.com"],
+      "subject": "Q3 Marketing Campaign - Final Costs Confirmation",
+      "date": "2025-08-29T14:20:00Z",
+      "body": "Q3 digital marketing campaign has concluded successfully. Final costs breakdown: Media spend €12,500, Creative development €2,800, Analytics €1,200. Total: €16,500. Invoice processing next week. Campaign delivered 2.3M impressions with 4.2% CTR. ROI analysis attached.",
+      "sentiment": "positive",
+      "priority": "medium",
+      "ai_summary": "Marketing campaign completion with cost breakdown for accrual",
+      "attachments": ["Q3_campaign_ROI_analysis.xlsx", "media_spend_breakdown.pdf"]
+    },
+    {
+      "id": "EMAIL-2025-08-003",
+      "accrual_id": "ACC-2025-08-202",
+      "from": "property.management@londonoffices.co.uk",
+      "to": "facilities@techcorp.com",
+      "cc": ["accounting@techcorp.com"],
+      "subject": "September Rent Notice - London Office",
+      "date": "2025-08-25T11:30:00Z",
+      "body": "This serves as formal notice that September rent for TechCorp London office (Unit 42B, Canary Wharf) is due September 5th, 2025. Amount: £6,630 including service charges. Payment should be made to account details previously provided. Please confirm receipt and expected payment date.",
+      "sentiment": "neutral",
+      "priority": "medium",
+      "ai_summary": "Landlord rent notice requiring September accrual",
+      "attachments": ["rent_invoice_september_2025.pdf"]
+    },
+    {
+      "id": "EMAIL-2025-08-004",
+      "accrual_id": "TXN-25-08-089",
+      "from": "ap@techcorp.com",
+      "to": "vendor.payments@salesforce.com",
+      "subject": "Duplicate Payment Investigation - Invoice SF-2025-0812",
+      "date": "2025-08-16T13:45:00Z",
+      "body": "We have identified a duplicate payment for invoice SF-2025-0812 ($12,500). Payment was processed on both August 15th and 16th due to system error during our ERP upgrade. Please confirm receipt of duplicate payment and advise on refund process. Our AP team will initiate recovery procedures.",
+      "sentiment": "concerned",
+      "priority": "high",
+      "ai_summary": "Duplicate payment identification requiring vendor coordination for recovery",
+      "attachments": ["payment_confirmation_aug15.pdf", "payment_confirmation_aug16.pdf"]
+    },
+    {
+      "id": "EMAIL-2025-08-005",
+      "accrual_id": "FOR-25-08-001",
+      "from": "treasury@google.com",
+      "to": "ar@techcorp.com",
+      "subject": "Payment Confirmation - Invoice TC-2025-0831",
+      "date": "2025-08-31T23:58:00Z",
+      "body": "Payment of $45,000 for invoice TC-2025-0831 has been processed via wire transfer. Due to end-of-month processing delays, payment was initiated at 23:58 UTC on August 31st but will settle in your account on September 1st. Please adjust your cutoff procedures accordingly.",
+      "sentiment": "neutral",
+      "priority": "medium",
+      "ai_summary": "Customer payment timing issue requiring cutoff adjustment",
+      "attachments": ["wire_transfer_confirmation.pdf"]
+    }
+  ]
+}

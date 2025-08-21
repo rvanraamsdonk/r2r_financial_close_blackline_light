@@ -6,6 +6,7 @@ from r2r.policies import POLICY
 from r2r.graph import build_graph
 from r2r.agents.reporting import generate_executive_dashboard, generate_forensic_report, generate_matching_analysis
 from r2r import console
+from r2r.hitl import HITLWorkflow
 
 @click.command()
 @click.option("--period", default="2025-08", help="Period to close (YYYY-MM)", show_default=True)
@@ -13,7 +14,8 @@ from r2r import console
 @click.option("--entities", default=3, type=int, help="Number of entities (3=static dataset)", show_default=True)
 @click.option("--seed", default=42, type=int, help="Random seed", show_default=True)
 @click.option("--rich", is_flag=True, help="Enable rich visual displays", show_default=True)
-def main(period, prior, entities, seed, rich):
+@click.option("--hitl", is_flag=True, help="Enable interactive HITL review", show_default=True)
+def main(period, prior, entities, seed, rich, hitl):
     repo = DataRepo(period=period, prior_period=prior, n_entities=entities, seed=seed)
     app, console_obj, init = build_graph(data_repo=repo, policy=POLICY)
     
@@ -28,6 +30,9 @@ def main(period, prior, entities, seed, rich):
 
 def display_big4_output(console, state, rich_mode):
     """Display Big 4 audit-ready output with record IDs and audit trail."""
+    
+    # Initialize HITL workflow
+    hitl = HITLWorkflow()
     
     # DATA INGESTION
     console.section("DATA INGESTION")
@@ -59,20 +64,38 @@ def display_big4_output(console, state, rich_mode):
 
     # ACCRUALS PROCESSING
     console.section("ACCRUALS PROCESSING")
-    console.summary_line("7 accruals processed | 1 reversal failure detected | Supporting documentation reviewed", ai=True)
-    console.detail_line("ENT100: July payroll accrual $28,000 | Expected reversal: Aug 1 | Status: Failed | Notes: 'Failed automated reversal - needs manual entry' | ID: ACC-2025-07-001", ai=True)
+    console.summary_line("7 accruals processed | 1 reversal failure detected | Email evidence analyzed", ai=True)
+    
+    # Flag HITL item for payroll accrual
+    hitl.flag_item(
+        "ACC-2025-07-001", "accrual", 28000.0,
+        "July payroll accrual reversal failed",
+        "Create manual reversal entry: DR Payroll Expense $28,000, CR Accrued Payroll $28,000",
+        0.95, ["ACC-2025-07-001"]
+    )
+    
+    console.detail_line("ENT100: July payroll accrual $28,000 | Expected reversal: Aug 1 | Status: Failed | 🔴 HITL REQUIRED | Email: 'System error - manual entry required' | ID: ACC-2025-07-001", ai=True)
     console.detail_line("ENT100: August payroll accrual $32,000 | Status: Active | Auto-reversal scheduled Sep 1 | ID: ACC-2025-08-001", det=True)
-    console.detail_line("ENT100: Professional services accrual $15,000 | Status: Active | Notes: 'Consulting services received, invoice pending' | ID: ACC-2025-08-002", det=True)
+    console.detail_line("ENT100: Professional services accrual $15,000 | Status: Active | Email: 'Invoice will be submitted within 5 business days' | ID: ACC-2025-08-002", det=True)
     console.detail_line("ENT101: August payroll accrual €22,900 | Status: Active | Auto-reversal scheduled Sep 1 | ID: ACC-2025-08-101", det=True)
-    console.detail_line("ENT101: Marketing campaign accrual €16,500 | Status: Active | Notes: 'Q3 marketing campaign costs' | ID: ACC-2025-08-102", ai=True)
+    console.detail_line("ENT101: Marketing campaign accrual €16,500 | Status: Active | Email: 'Campaign delivered 2.3M impressions with 4.2% CTR' | ID: ACC-2025-08-102", ai=True)
     console.detail_line("ENT102: August payroll accrual £17,200 | Status: Active | Auto-reversal scheduled Sep 1 | ID: ACC-2025-08-201", det=True)
-    console.detail_line("ENT102: Office lease accrual £6,630 | Status: Active | Notes: 'September rent accrual' | ID: ACC-2025-08-202", ai=True)
+    console.detail_line("ENT102: Office lease accrual £6,630 | Status: Active | Email: 'September rent due September 5th' | ID: ACC-2025-08-202", ai=True)
     
     # TRANSACTION MATCHING
     console.section("TRANSACTION MATCHING")
     console.summary_line("38 matches identified | Avg confidence: 87% | 2 exceptions flagged")
     console.detail_line("Google Inc: Invoice $45,000 | Payment $45,000 | Date diff: 1 day | Conf: 95% | ID: TXN-25-08-156", ai=True)
-    console.detail_line("Salesforce: Invoice $12,500 | Payment $25,000 | Duplicate detected | Conf: 98% | ID: TXN-25-08-089", ai=True)
+    
+    # Flag HITL item for duplicate payment
+    hitl.flag_item(
+        "TXN-25-08-089", "duplicate", 12500.0,
+        "Salesforce duplicate payment detected",
+        "Initiate vendor refund process for duplicate $12,500 payment",
+        0.98, ["TXN-25-08-089"]
+    )
+    
+    console.detail_line("Salesforce: Invoice $12,500 | Payment $25,000 | Duplicate detected | 🔴 HITL REQUIRED | Conf: 98% | ID: TXN-25-08-089", ai=True)
     
     # VARIANCE ANALYSIS
     console.section("VARIANCE ANALYSIS")
@@ -110,12 +133,68 @@ def display_big4_output(console, state, rich_mode):
     console.detail_line("J-003: Bank Reconciliation $45,000 | Google timing difference | ID: JE-25-08-003", det=True)
     console.detail_line("J-004: Duplicate Payment Recovery $12,500 | Salesforce AP correction | ID: JE-25-08-004", ai=True)
     
-    # GOVERNANCE & CONTROLS
-    console.section("GOVERNANCE & CONTROLS")
-    console.summary_line("10 HITL approvals processed | All SOX controls validated | Audit trail complete", det=True)
+    # HITL REVIEW SESSION
+    if hitl.hitl_items:
+        console.section("HUMAN-IN-THE-LOOP REVIEW")
+        session = hitl.start_review_session("Financial Controller")
+        print(f"  🔴 {len(hitl.hitl_items)} items require human review")
+        print(f"  📋 Review session started | Reviewer: {session['session']['reviewer']}")
+        print()
+        
+        # Interactive review process
+        for i, item in enumerate(hitl.hitl_items, 1):
+            print(f"  ITEM {i}/{len(hitl.hitl_items)}: {item.type.upper()} REVIEW")
+            print(f"    • ID: {item.id}")
+            print(f"    • Amount: ${abs(item.amount):,.0f}")
+            print(f"    • Issue: {item.description}")
+            print(f"    • AI Recommendation: {item.ai_recommendation}")
+            print(f"    • Confidence: {item.confidence:.0%}")
+            
+            if item.supporting_evidence:
+                print(f"    • Email Evidence: {item.supporting_evidence[0]['subject']}")
+                print(f"      From: {item.supporting_evidence[0]['from']}")
+                print(f"      Summary: {item.supporting_evidence[0]['summary']}")
+            
+            print()
+            # Interactive user input
+            while True:
+                decision = input("    Decision [A]pprove/[R]eject/[M]odify/[V]iew Email: ").strip().lower()
+                
+                if decision.startswith('v') and item.supporting_evidence:
+                    # Show full email content
+                    email = item.supporting_evidence[0]
+                    print(f"\n    FULL EMAIL CONTENT:")
+                    print(f"    Subject: {email['subject']}")
+                    print(f"    From: {email['from']}")
+                    print(f"    Body: {email['body']}")
+                    print()
+                    continue
+                elif decision.startswith('a'):
+                    decision = "approve"
+                    notes = input("    Approval notes: ").strip()
+                    break
+                elif decision.startswith('r'):
+                    decision = "reject"
+                    notes = input("    Rejection reason: ").strip()
+                    break
+                elif decision.startswith('m'):
+                    decision = "modify"
+                    notes = input("    Modification details: ").strip()
+                    break
+                else:
+                    print("    Invalid input. Please enter A, R, M, or V.")
+            
+            result = hitl.review_item(decision, notes)
+            print(f"    ✅ DECISION: {decision.upper()}D | Notes: {notes}")
+            print()
+    
+    # FINAL PROCESSING
+    console.section("FINAL PROCESSING")
+    summary = hitl.get_review_summary()
+    console.summary_line(f"HITL review complete | {summary['approved']} approved, {summary['rejected']} rejected | Total impact: ${summary['total_impact']:,.0f}", det=True)
     
     # Update exception count for metrics
-    console.processing_stats['exceptions'] = 2
+    console.processing_stats['exceptions'] = summary['approved']
     
     # PROCESSING METRICS
     console.processing_metrics()

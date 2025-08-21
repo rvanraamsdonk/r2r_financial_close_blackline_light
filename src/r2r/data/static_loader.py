@@ -116,6 +116,14 @@ class StaticDataRepo:
             self.journal_entries = pd.read_csv(supporting_path / "journal_entries.csv")
         else:
             self.journal_entries = pd.DataFrame()
+            
+        # Load email evidence
+        import json
+        if (supporting_path / "emails.json").exists():
+            with open(supporting_path / "emails.json", 'r') as f:
+                self.emails = json.load(f)
+        else:
+            self.emails = {"emails": []}
     
     def snapshot(self) -> dict[str, pd.DataFrame]:
         """Return snapshot compatible with existing system."""
