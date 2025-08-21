@@ -25,7 +25,7 @@ class Console:
         print(f"{'='*len(title)}")
 
     def forensic_findings_display(self, findings: List[Dict], title: str = "FORENSIC ANALYSIS RESULTS") -> None:
-        """Display forensic findings in a compelling format."""
+        """Display forensic findings in professional audit format."""
         self.banner(title)
         
         if not findings:
@@ -43,32 +43,41 @@ class Console:
             by_type[finding_type].append(finding)
             total_impact += abs(finding.get("amount", 0))
         
-        print(f"🔍 FORENSIC SUMMARY: {len(findings)} findings identified")
-        print(f"💰 TOTAL FINANCIAL IMPACT: ${total_impact:,.0f}")
+        print(f"FORENSIC SUMMARY: {len(findings)} findings identified")
+        print(f"TOTAL FINANCIAL IMPACT: ${total_impact:,.0f}")
         print()
         
+        finding_counter = 1
         for finding_type, type_findings in by_type.items():
-            print(f"📊 {finding_type.upper()} ({len(type_findings)} items)")
-            print("-" * 60)
+            print(f"{finding_type.upper()} ANALYSIS ({len(type_findings)} items)")
+            print("-" * 70)
             
             for finding in type_findings:
                 entity = finding.get("entity", "Unknown")
+                account = finding.get("account_id", "N/A")
                 amount = finding.get("amount", 0)
                 confidence = finding.get("confidence", 0)
                 root_cause = finding.get("root_cause", "Unknown").replace("_", " ").title()
                 
-                confidence_icon = "🔴" if confidence > 0.8 else "🟡" if confidence > 0.6 else "⚪"
+                status_icon = "❌" if confidence > 0.7 else "✅"
                 
-                print(f"  {confidence_icon} {entity}: ${amount:,.0f} - {root_cause}")
-                print(f"     Confidence: {confidence:.0%} | Action: {finding.get('recommended_action', 'Investigate')}")
+                print(f"FORENSIC FINDING #{finding_counter}")
+                print(f"  Entity: {entity} | Account: {account} | Amount: ${amount:,.0f}")
+                print(f"  Root Cause: {root_cause}")
+                print(f"  Confidence: {confidence:.0%} | Risk Level: {'High' if confidence > 0.8 else 'Medium' if confidence > 0.6 else 'Low'}")
+                print(f"  Status: {status_icon} {'Exception Identified' if confidence > 0.7 else 'Review Required'}")
                 
                 if finding.get("ai_analysis"):
-                    analysis = finding["ai_analysis"][:100] + "..." if len(finding["ai_analysis"]) > 100 else finding["ai_analysis"]
-                    print(f"     AI Analysis: {analysis}")
+                    print(f"  AI Analysis: {finding['ai_analysis']}")
+                
+                if finding.get("recommended_action"):
+                    print(f"  Recommendation: {finding['recommended_action']}")
+                
                 print()
+                finding_counter += 1
 
     def executive_dashboard_display(self, dashboard: Dict) -> None:
-        """Display executive dashboard with rich visual indicators."""
+        """Display executive dashboard with professional audit formatting."""
         self.banner("EXECUTIVE DASHBOARD")
         
         if not isinstance(dashboard, dict):
@@ -78,7 +87,7 @@ class Console:
         summary = dashboard.get("summary", {})
         
         # Close Status Overview
-        print("📈 CLOSE STATUS OVERVIEW")
+        print("CLOSE STATUS OVERVIEW")
         close_date = summary.get("close_date", "2025-08-21")
         risk_level = summary.get("risk_level", "UNKNOWN")
         risk_score = summary.get("risk_score", 0)
@@ -90,33 +99,45 @@ class Console:
             except (ValueError, TypeError):
                 balance_rate = 0.0
         
-        # Risk level with visual indicators
-        risk_icon = "🟢" if risk_level == "LOW" else "🟡" if risk_level == "MEDIUM" else "🔴"
+        # Risk level with simple indicators
+        risk_icon = "✅" if risk_level == "LOW" else "❌" if risk_level == "HIGH" else "❌"
         print(f"   Close Date: {close_date}")
-        print(f"   Risk Level: {risk_icon} {risk_level} (Score: {risk_score}/100)")
-        print(f"   Balance Rate: {balance_rate:.1%} ({summary.get('balanced_accounts', 0)}/{summary.get('total_accounts', 0)} accounts)")
+        print(f"   Risk Assessment: {risk_icon} {risk_level} (Score: {risk_score}/100)")
+        print(f"   Balance Achievement: {balance_rate:.1%} ({summary.get('balanced_accounts', 0)}/{summary.get('total_accounts', 0)} accounts)")
         print()
         
         # Reconciliation Performance
-        print("🎯 RECONCILIATION PERFORMANCE")
-        print(f"   ✅ Balanced Accounts: {summary.get('balanced_accounts', 0)}")
-        print(f"   ⚠️  Material Differences: {summary.get('material_differences', 0)}")
-        print(f"   📊 Balance Achievement: {balance_rate:.1%}")
+        print("RECONCILIATION PERFORMANCE")
+        balanced = summary.get('balanced_accounts', 0)
+        material_diffs = summary.get('material_differences', 0)
+        bal_icon = "✅" if balanced > 0 else "❌"
+        diff_icon = "❌" if material_diffs > 0 else "✅"
+        print(f"   {bal_icon} Balanced Accounts: {balanced}")
+        print(f"   {diff_icon} Material Differences: {material_diffs}")
+        print(f"   Balance Achievement: {balance_rate:.1%}")
         print()
         
         # AI Matching Performance
-        matching = dashboard.get("matching_performance", {})
-        print("🤖 AI MATCHING PERFORMANCE")
-        print(f"   🔗 Total Matches: {matching.get('total_matches', 0)}")
-        print(f"   ⭐ High Confidence: {matching.get('high_confidence', 0)}")
-        print(f"   📈 Confidence Rate: {matching.get('avg_confidence', 0):.1%}")
+        print("AI MATCHING PERFORMANCE")
+        total_matches = summary.get('total_matches', 0)
+        high_conf = summary.get('high_confidence_matches', 0)
+        conf_rate = summary.get('confidence_rate', 0)
+        match_icon = "✅" if total_matches > 0 else "❌"
+        conf_icon = "✅" if conf_rate > 0.8 else "❌"
+        print(f"   {match_icon} Total Matches: {total_matches}")
+        print(f"   {conf_icon} High Confidence: {high_conf}")
+        print(f"   Confidence Rate: {conf_rate:.1%}")
         print()
         
         # Forensic Insights
-        forensics = dashboard.get("forensic_summary", {})
-        print("🔍 FORENSIC INSIGHTS")
-        print(f"   🚨 Total Findings: {forensics.get('total_findings', 0)}")
-        print(f"   🔴 Critical Issues: {forensics.get('critical_issues', 0)}")
+        forensics = summary.get("forensics", {})
+        print("FORENSIC ANALYSIS SUMMARY")
+        total_findings = forensics.get('total_findings', 0)
+        critical_issues = forensics.get('critical_issues', 0)
+        findings_icon = "❌" if total_findings > 0 else "✅"
+        critical_icon = "❌" if critical_issues > 0 else "✅"
+        print(f"   {findings_icon} Total Findings: {total_findings}")
+        print(f"   {critical_icon} Critical Issues: {critical_issues}")
         print()
 
     def audit_package_display(self, package: Dict) -> None:
@@ -165,11 +186,18 @@ class Console:
             return
         
         summary = analysis.get("summary", {})
-        print("🔗 MATCHING PERFORMANCE OVERVIEW")
+        print("MATCHING PERFORMANCE OVERVIEW")
         if isinstance(summary, dict):
-            print(f"   Total Matches: {summary.get('total_matches', 0)}")
-            print(f"   Average Confidence: {summary.get('avg_confidence', 0):.1%}")
-            print(f"   High Confidence Rate: {summary.get('high_confidence_rate', 0):.1%}")
+            total_matches = summary.get('total_matches', 0)
+            avg_conf = summary.get('avg_confidence', 0)
+            high_conf_rate = summary.get('high_confidence_rate', 0)
+            
+            match_icon = "✅" if total_matches > 0 else "❌"
+            conf_icon = "✅" if avg_conf > 0.8 else "❌"
+            
+            print(f"   {match_icon} Total Matches: {total_matches}")
+            print(f"   {conf_icon} Average Confidence: {avg_conf:.1%}")
+            print(f"   High Confidence Rate: {high_conf_rate:.1%}")
         else:
             print(f"   Summary: {summary}")
         print()

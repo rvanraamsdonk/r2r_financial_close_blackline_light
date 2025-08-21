@@ -78,8 +78,9 @@ def analyze_reconciliation_discrepancy(rec, data: Dict, console: Console) -> Dic
         "confidence": calculate_confidence(rec, data)
     }
     
+    # Enhanced forensic output for Big 4 presentation
     console.line("forensics", "Analysis", "complete", ai=True, 
-                details=f"{rec.entity} {rec.account_id} root_cause={root_cause}")
+                details=f"FORENSIC FINDING | Entity: {rec.entity} | Account: {rec.account_id} | Amount: ${abs(rec.diff):,.0f} | Root Cause: {root_cause.replace('_', ' ').title()} | Confidence: {finding['confidence']:.0%}")
     
     return finding
 
@@ -121,7 +122,7 @@ def analyze_transaction_patterns(ar_data: pd.DataFrame, bank_data: pd.DataFrame,
                     findings.append(finding)
                     
                     console.line("forensics", "Pattern", "detected", ai=True,
-                               details=f"Timing issue {payment['entity']} ${payment['amount']:,.0f}")
+                               details=f"TIMING DIFFERENCE | Entity: {payment['entity']} | Amount: ${payment['amount']:,.0f} | Issue: Payment received {payment['date']} recorded next period | Risk: Medium | Action Required: Adjust cutoff procedures")
     
     return findings
 
@@ -164,7 +165,7 @@ def analyze_duplicate_transactions(ap_data: pd.DataFrame, console: Console) -> L
             findings.append(finding)
             
             console.line("forensics", "Duplicate", "detected", ai=True,
-                        details=f"{vendor} ${amount:,.0f} x{count}")
+                        details=f"DUPLICATE PAYMENT | Vendor: {vendor} | Amount: ${amount:,.0f} | Count: {count} transactions | Risk: High | Action Required: Investigate payment controls and reverse duplicates")
     
     return findings
 
