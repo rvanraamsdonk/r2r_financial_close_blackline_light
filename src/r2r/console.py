@@ -47,11 +47,13 @@ class Console:
             self.processing_stats['deterministic_records'] += 1
         print(f"    • {text}{indicator}")
     
-    def line(self, stage: str, agent: str, action: str, *, ai=False, hitl=False, auto=False, details: Optional[str] = None):
+    def line(self, stage: str, agent: str, action: str, *, ai=False, det=False, hitl=False, auto=False, details: Optional[str] = None):
         """Legacy method for backward compatibility - now silent."""
         # Track stats but don't print
         if ai:
             self.processing_stats['ai_records'] += 1
+        elif det:
+            self.processing_stats['deterministic_records'] += 1
         else:
             self.processing_stats['deterministic_records'] += 1
     
@@ -60,7 +62,7 @@ class Console:
         elapsed_seconds = time.time() - self.start_time
         
         # Smart time estimation based on activity categories
-        accounts = 127
+        accounts = 24  # Actual chart of accounts count
         matches = 38
         variances = 9
         hitl_items = self.processing_stats['exceptions']

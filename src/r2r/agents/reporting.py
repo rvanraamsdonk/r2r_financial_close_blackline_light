@@ -48,7 +48,7 @@ def node_generate_reports(state: CloseState, *, console: Console) -> CloseState:
         matches, console
     )
     
-    console.line("reporting", "Complete", "success", auto=True,
+    console.line("reporting", "Complete", "success", det=True,
                 details=f"Generated {len(reports)} report types")
     
     return {"reports": reports}
@@ -93,7 +93,7 @@ def generate_executive_dashboard(recs: List, matches: List, forensic_findings: L
         "recommendations": generate_executive_recommendations(recs, forensic_findings)
     }
     
-    console.line("reporting", "Executive", "generated", auto=True,
+    console.line("reporting", "Executive", "generated", det=True,
                 details=f"Risk={risk_level} Balance={dashboard['summary']['balance_rate']}")
     
     return dashboard
@@ -162,7 +162,7 @@ def generate_reconciliation_report(recs: List, data: Dict, console: Console) -> 
             }
         }
     
-    console.line("reporting", "Reconciliation", "generated", auto=True,
+    console.line("reporting", "Reconciliation", "generated", det=True,
                 details=f"{len(recs)} accounts analyzed")
     
     return report
@@ -231,7 +231,7 @@ def generate_forensic_report(forensic_findings: List, scenarios_applied: List, c
     # Generate recommended actions
     report["recommended_actions"] = generate_forensic_recommendations(forensic_findings)
     
-    console.line("reporting", "Forensic", "generated", auto=True,
+    console.line("reporting", "Forensic", "generated", det=True,
                 details=f"{len(forensic_findings)} findings analyzed")
     
     return report
@@ -281,7 +281,7 @@ def generate_audit_package(recs: List, matches: List, forensic_findings: List, d
             }
             package["management_letter_points"].append(mlp)
     
-    console.line("reporting", "Audit Package", "generated", auto=True,
+    console.line("reporting", "Audit Package", "generated", det=True,
                 details=f"{len(package['exception_details'])} exceptions documented")
     
     return package
@@ -338,7 +338,7 @@ def generate_matching_analysis(matches: List, console: Console) -> Dict[str, Any
         "average_date_difference": sum([m.date_diff for m in matches]) / len(matches)
     }
     
-    console.line("reporting", "Matching Analysis", "generated", auto=True,
+    console.line("reporting", "Matching Analysis", "generated", det=True,
                 details=f"Avg confidence: {analysis['summary']['average_confidence']:.2f}")
     
     return analysis

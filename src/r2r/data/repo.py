@@ -22,6 +22,7 @@ class DataRepo:
             self.bank = snapshot["bank"]
             self.ic = snapshot["ic"]
             self.gl_prev = snapshot["gl_prev"]
+            self.accruals = static_repo.accruals
             self.forensic_scenarios = static_repo.get_forensic_scenarios()
         else:
             # Use synthetic data (legacy)
@@ -35,6 +36,16 @@ class DataRepo:
             self.ic = make_ic_docs(self.entities, period, seed)
             self.gl_prev = make_gl(self.entities, self.coa, prior_period, seed+1) if prior_period else None
             self.forensic_scenarios = {}
+
+    def get_accruals(self) -> pd.DataFrame:
+        """Get accruals data with proper date parsing."""
+        if hasattr(self, 'accruals') and not self.accruals.empty:
+            accruals = self.accruals.copy()
+            # Parse dates properly
+            accruals['accrual_date'] = pd.to_datetime(accruals['accrual_date'])
+            accruals['reversal_date'] = pd.to_datetime(accruals['reversal_date'])
+            return accruals
+        return pd.DataFrame()
 
     def snapshot(self) -> dict[str, pd.DataFrame]:
         return {

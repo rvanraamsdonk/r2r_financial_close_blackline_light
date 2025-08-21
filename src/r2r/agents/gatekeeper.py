@@ -42,7 +42,7 @@ def node_gatekeeper(state: CloseState, *, console: Console) -> CloseState:
                         gl_new.loc[mask,"balance"] = gl_new.loc[mask,"balance"] + amt
                 j2 = j.model_copy(update={"status":"posted"})
                 journals_new.append(j2)
-                console.line("governance","Gatekeeper","post", auto=True, details=f"{j2.id} posted")
+                console.line("governance","Gatekeeper","post", det=True, details=f"{j2.id} posted")
             else:
                 journals_new.append(j)
     if gl_new is not None and data is not None:
@@ -65,7 +65,7 @@ def node_gatekeeper(state: CloseState, *, console: Console) -> CloseState:
                 if abs(cur - r.gl_balance_at_cert) > 0.01:
                     r2 = r.model_copy(update={"status":"decertified"})
                     new_recs.append(r2)
-                    console.line("governance","Gatekeeper","decertify", auto=True, details=f"{r.entity} acct {acct} balance changed {r.gl_balance_at_cert}->{cur}")
+                    console.line("governance","Gatekeeper","decertify", det=True, details=f"{r.entity} acct {acct} balance changed {r.gl_balance_at_cert}->{cur}")
                 else:
                     new_recs.append(r)
             else:

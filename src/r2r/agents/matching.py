@@ -22,7 +22,7 @@ def node_match(state: CloseState, *, console: Console) -> CloseState:
     residual = ar[ar["invoice_id"].isin(residual_ids)].copy()
 
     matches.append(MatchResult(rule_hit="AR_to_Bank_amount", cleared=len(cleared_1to1), residual=int(len(residual))))
-    console.line("matching","Matching","rule", auto=True, details=f"AR_to_Bank_amount cleared={len(cleared_1to1)} residual={len(residual)}")
+    console.line("matching","Matching","rule", det=True, details=f"AR_to_Bank_amount cleared={len(cleared_1to1)} residual={len(residual)}")
 
     # 2) 1:N sum within date tolerance ±5 days, up to N=3
     DATE_TOL = 5
@@ -81,5 +81,5 @@ def node_match(state: CloseState, *, console: Console) -> CloseState:
             tags.append("aged_30_plus")
 
     matches.append(MatchResult(rule_hit="AR_1toN_date_tolerance", cleared=int(cleared_1N), residual=int(residual_after), repeat_exception_tags=tags))
-    console.line("matching","Matching","rule", auto=True, details=f"AR_1toN_date_tolerance cleared={cleared_1N} residual={residual_after}")
+    console.line("matching","Matching","rule", det=True, details=f"AR_1toN_date_tolerance cleared={cleared_1N} residual={residual_after}")
     return {"matches": matches}

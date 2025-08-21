@@ -55,7 +55,7 @@ def node_generate_scenarios(state: CloseState, *, console: Console) -> CloseStat
     data = state.get("data", {})
     
     if not data:
-        console.line("scenario_gen", "No Data", "warning", auto=True)
+        console.line("scenario_gen", "No Data", "warning", det=True)
         return {"scenarios_applied": []}
     
     scenarios_applied = []
@@ -66,7 +66,7 @@ def node_generate_scenarios(state: CloseState, *, console: Console) -> CloseStat
             applied = apply_scenario(scenario_type, scenario_config, data, console)
             scenarios_applied.extend(applied)
     
-    console.line("scenario_gen", "Complete", "success", auto=True,
+    console.line("scenario_gen", "Complete", "success", det=True,
                 details=f"Applied {len(scenarios_applied)} scenarios")
     
     return {"scenarios_applied": scenarios_applied, "modified_data": data}
@@ -139,7 +139,7 @@ def apply_timing_differences(config: Dict, data: Dict, console: Console) -> List
             }
             applied.append(scenario)
             
-            console.line("scenario_gen", "Timing", "applied", auto=True,
+            console.line("scenario_gen", "Timing", "applied", det=True,
                         details=f"{ar_row['entity']} ${ar_row['amount']:,.0f} +{shift_days}d")
     
     return applied
@@ -195,7 +195,7 @@ def apply_duplicate_payments(config: Dict, data: Dict, console: Console) -> List
         applied.append(scenario)
         
         amount_display = ap_row.get('amount_usd', ap_row.get('amount_local', 0))
-        console.line("scenario_gen", "Duplicate", "applied", auto=True,
+        console.line("scenario_gen", "Duplicate", "applied", det=True,
                     details=f"{ap_row['vendor_name']} ${amount_display:,.0f} x{duplicate_count}")
     
     return applied
@@ -249,7 +249,7 @@ def apply_fx_revaluation(config: Dict, data: Dict, console: Console) -> List[Dic
             }
             applied.append(scenario)
             
-            console.line("scenario_gen", "FX Reval", "applied", auto=True,
+            console.line("scenario_gen", "FX Reval", "applied", det=True,
                         details=f"{currency} ${fx_impact:,.0f} ({rate_change*100:+.1f}%)")
     
     return applied
@@ -298,7 +298,7 @@ def apply_unrecorded_transactions(config: Dict, data: Dict, console: Console) ->
         }
         applied.append(scenario)
         
-        console.line("scenario_gen", "Unrecorded", "applied", auto=True,
+        console.line("scenario_gen", "Unrecorded", "applied", det=True,
                     details=f"{bank_row['entity']} {txn_type} ${amount:,.0f}")
     
     return applied
@@ -334,7 +334,7 @@ def apply_accrual_reversals(config: Dict, data: Dict, console: Console) -> List[
         }
         applied.append(scenario)
         
-        console.line("scenario_gen", "Accrual", "applied", auto=True,
+        console.line("scenario_gen", "Accrual", "applied", det=True,
                     details=f"{accrual_row['entity']} ${accrual_row['amount']:,.0f} +{reversal_delay}d")
     
     return applied

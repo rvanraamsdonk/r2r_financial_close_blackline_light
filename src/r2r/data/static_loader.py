@@ -82,7 +82,7 @@ class StaticDataRepo:
             bank_data['method'] = 'WIRE'  # Default method
             bank_data['currency'] = self.entities[self.entities['entity'] == entity_id]['home_currency'].iloc[0]
             
-            bank_files.append(bank_data[['period', 'entity', 'bank_txn_id', 'date', 'amount', 'currency', 'method']])
+            bank_files.append(bank_data[['period', 'entity', 'bank_txn_id', 'date', 'amount', 'currency', 'method', 'counterparty']])
         
         self.bank = pd.concat(bank_files, ignore_index=True) if bank_files else pd.DataFrame()
         
