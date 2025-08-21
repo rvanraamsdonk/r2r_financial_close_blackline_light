@@ -1,0 +1,14 @@
+transaction_date,transaction_id,description,amount,balance,reference,counterparty
+2025-08-01,BNK-2025-08-001,Opening Balance,0.00,245000.00,BAL-FORWARD,
+2025-08-03,BNK-2025-08-015,Wire Transfer - Microsoft Corp,125000.00,370000.00,INV-2025-001,Microsoft Corp
+2025-08-05,BNK-2025-08-028,ACH Payment - AWS Infrastructure,-25000.00,345000.00,BILL-2025-001,Amazon Web Services
+2025-08-08,BNK-2025-08-042,Wire Transfer - Amazon Web Services,85000.00,430000.00,INV-2025-002,Amazon Web Services
+2025-08-12,BNK-2025-08-067,ACH Payment - Microsoft Azure,-35000.00,395000.00,BILL-2025-002,Microsoft Azure
+2025-08-15,BNK-2025-08-089,Wire Transfer - Tesla Inc,95000.00,490000.00,INV-2025-005,Tesla Inc
+2025-08-18,BNK-2025-08-112,ACH Payment - Oracle Corp,-45000.00,445000.00,BILL-2025-004,Oracle Corp
+2025-08-20,BNK-2025-08-125,Wire Transfer - Netflix Inc,125000.00,570000.00,INV-2025-006,Netflix Inc
+2025-08-22,BNK-2025-08-134,ACH Payment - GitHub Inc,-15000.00,555000.00,BILL-2025-008,GitHub Inc
+2025-08-25,BNK-2025-08-142,ACH Payment - Salesforce Inc,-12500.00,542500.00,PAY-2025-08-001,Salesforce Inc
+2025-08-26,BNK-2025-08-147,ACH Payment - Salesforce Inc,-12500.00,530000.00,PAY-2025-08-047,Salesforce Inc
+2025-08-28,BNK-2025-08-151,Wire Transfer - Oracle Corp,167000.00,697000.00,INV-2025-008,Oracle Corp
+2025-08-31,BNK-2025-08-155,Wire Transfer - Google LLC,45000.00,742000.00,INV-2025-003,Google LLC

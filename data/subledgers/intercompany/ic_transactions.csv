@@ -1,0 +1,6 @@
+transaction_date,doc_id,entity_src,entity_dst,description,amount_src,currency_src,amount_dst,currency_dst,amount_usd,status,booking_date_src,booking_date_dst,notes
+2025-08-05,IC-001,ENT100,ENT101,Software License Transfer,850000.00,USD,782750.00,EUR,850000.00,Open,2025-08-05,2025-08-06,"Timing difference - 1 day booking delay"
+2025-08-10,IC-002,ENT101,ENT102,Professional Services,125000.00,EUR,97656.25,GBP,136500.00,Balanced,2025-08-10,2025-08-10,"Balanced transaction"
+2025-08-15,IC-003,ENT102,ENT100,Consulting Fees,85000.00,GBP,108970.00,USD,108970.00,Balanced,2025-08-15,2025-08-15,"Balanced transaction"
+2025-08-20,IC-004,ENT100,ENT102,Management Fee,95000.00,USD,74218.75,GBP,95000.00,Open,2025-08-20,2025-08-22,"Timing difference - 2 day booking delay"
+2025-08-25,IC-005,ENT101,ENT100,Shared Services,65000.00,EUR,70980.00,USD,70980.00,Balanced,2025-08-25,2025-08-25,"Balanced transaction"

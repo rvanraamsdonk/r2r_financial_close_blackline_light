@@ -7,4 +7,4 @@ def node_compliance(state: CloseState, *, console: Console) -> CloseState:
     events = state.get("events", [])
     events.append(AuditEvent(ts="now", actor="agent:Compliance", action="attestation", details={"period": state["period"]}))
     console.line("governance","Compliance","attest", auto=True, details=f"period {state['period']}")
-    return {**state, "events": events}
+    return {"events": events}

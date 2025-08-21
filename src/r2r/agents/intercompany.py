@@ -18,4 +18,4 @@ def node_intercompany(state: CloseState, *, console: Console) -> CloseState:
             for x in lst: x.status = "net_ready"
     ready = sum(1 for x in items if x.status=="net_ready")
     console.line("intercompany","IC","evaluate", auto=True, details=f"net_ready={ready} docs={len(items)}")
-    return {**state, "ic": items}
+    return {"ic": items}

@@ -1,0 +1,8 @@
+entity,accrual_id,account,description,amount_usd,amount_local,currency,accrual_date,reversal_date,status,notes
+ENT100,ACC-2025-07-001,2100,July Payroll Accrual,28000.00,28000.00,USD,2025-07-31,2025-08-01,Should Reverse,"Failed automated reversal - needs manual entry"
+ENT100,ACC-2025-08-001,2100,August Payroll Accrual,32000.00,32000.00,USD,2025-08-31,2025-09-01,Active,"Standard month-end payroll accrual"
+ENT100,ACC-2025-08-002,2100,Professional Services Accrual,15000.00,15000.00,USD,2025-08-31,2025-09-15,Active,"Consulting services received, invoice pending"
+ENT101,ACC-2025-08-101,2100,August Payroll Accrual,25000.00,22900.00,EUR,2025-08-31,2025-09-01,Active,"Standard month-end payroll accrual"
+ENT101,ACC-2025-08-102,2100,Marketing Campaign Accrual,18000.00,16500.00,EUR,2025-08-31,2025-09-30,Active,"Q3 marketing campaign costs"
+ENT102,ACC-2025-08-201,2100,August Payroll Accrual,22000.00,17200.00,GBP,2025-08-31,2025-09-01,Active,"Standard month-end payroll accrual"
+ENT102,ACC-2025-08-202,2100,Office Lease Accrual,8500.00,6630.00,GBP,2025-08-31,2025-09-05,Active,"September rent accrual"

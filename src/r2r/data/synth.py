@@ -60,17 +60,24 @@ def make_gl(entities, coa, period:str, seed:int=42):
 
 def make_subledgers(entities, period:str, seed:int=42):
     np.random.seed(seed); rows_ap=[]; rows_ar=[]
+    base_date = datetime.strptime(period+"-01","%Y-%m-%d")
+    counterparties = [f"CUST{i:03d}" for i in range(1,60)]
+    vendors = [f"VEND{i:03d}" for i in range(1,60)]
     for _,e in entities.iterrows():
         for i in range(np.random.randint(120,200)):
             amt = round(float(np.random.gamma(2, 1500)),2)
+            inv_day = int(np.random.uniform(0,27))
+            inv_date = (base_date + timedelta(days=inv_day)).date().isoformat()
             days = int(np.random.normal(15,10))
-            rows_ar.append((period, e.entity, f"INV{period}-{i:04d}", amt, "USD", days))
+            rows_ar.append((period, e.entity, f"INV{period}-{i:04d}", amt, "USD", days, inv_date, np.random.choice(counterparties)))
         for i in range(np.random.randint(100,180)):
             amt = round(float(np.random.gamma(2.2, 1300)),2)
+            inv_day = int(np.random.uniform(0,27))
+            bill_date = (base_date + timedelta(days=inv_day)).date().isoformat()
             days = int(np.random.normal(20,12))
-            rows_ap.append((period, e.entity, f"BILL{period}-{i:04d}", amt, "USD", days))
-    ar = pd.DataFrame(rows_ar, columns=["period","entity","invoice_id","amount","currency","age_days"])
-    ap = pd.DataFrame(rows_ap, columns=["period","entity","bill_id","amount","currency","age_days"])
+            rows_ap.append((period, e.entity, f"BILL{period}-{i:04d}", amt, "USD", days, bill_date, np.random.choice(vendors)))
+    ar = pd.DataFrame(rows_ar, columns=["period","entity","invoice_id","amount","currency","age_days","invoice_date","counterparty"])
+    ap = pd.DataFrame(rows_ap, columns=["period","entity","bill_id","amount","currency","age_days","bill_date","counterparty"])
     return ar, ap
 
 def make_bank(entities, period:str, seed:int=42):

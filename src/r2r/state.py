@@ -37,6 +37,7 @@ class ReconResult(BaseModel):
     diff: float
     rule_hits: list[str] = []
     evidence_refs: list[str] = []
+    gl_balance_at_cert: float | None = None
 
 class MatchResult(BaseModel):
     rule_hit: str

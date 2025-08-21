@@ -8,4 +8,4 @@ def node_ingest(state: CloseState, *, data_repo, console: Console) -> CloseState
     events = state.get("events", [])
     events.append(AuditEvent(ts="now", actor="agent:Ingestion", action="ingest.completed", details={"tables": list(snap.keys())}))
     console.line("ingestion","DataIngestion","load", auto=True, details=f"tables={len(snap)}")
-    return {**state, "events": events, "entities": list(snap["entities"]["entity"]), "data": snap}
+    return {"events": events, "entities": list(snap["entities"]["entity"]), "data": snap}

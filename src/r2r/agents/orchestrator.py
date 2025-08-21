@@ -16,4 +16,4 @@ def node_orchestrate(state: CloseState, *, console: Console) -> CloseState:
         Task(id="T-COMP", stage="GOVERNANCE", owner="fin.controller", sla=today+timedelta(days=4), predecessors=["T-JE","T-FLUX","T-IC"]),
     ]
     console.line("orchestration","Orchestrator","plan", auto=True, details=f"{len(tasks)} tasks created")
-    return {**state, "tasks": tasks}
+    return {"tasks": tasks}

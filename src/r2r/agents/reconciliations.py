@@ -25,7 +25,7 @@ def node_reconcile(state: CloseState, *, console: Console) -> CloseState:
         diff = round(float(gl_cash - bank_total),2)
         ok,hits = _auto_cert("Cash", diff, policy["auto_cert_rules"])
         status = "certified" if ok else "open"
-        recs.append(ReconResult(account_id="1000", entity=ent, risk="low", status=status, diff=diff, rule_hits=hits))
+        recs.append(ReconResult(account_id="1000", entity=ent, risk="low", status=status, diff=diff, rule_hits=hits, gl_balance_at_cert=float(gl_cash) if status=="certified" else None))
         console.line("reconciliations","Recs","evaluate", auto=True, details=f"{ent} Cash diff {diff}")
     for acct,name,df in [("1200","AR", ar), ("2000","AP", ap)]:
         for ent in state["entities"]:
@@ -35,6 +35,6 @@ def node_reconcile(state: CloseState, *, console: Console) -> CloseState:
             ok,hits = _auto_cert(name, diff, policy["auto_cert_rules"])
             risk = "medium"
             status = "certified" if ok else "open"
-            recs.append(ReconResult(account_id=acct, entity=ent, risk=risk, status=status, diff=diff, rule_hits=hits))
+            recs.append(ReconResult(account_id=acct, entity=ent, risk=risk, status=status, diff=diff, rule_hits=hits, gl_balance_at_cert=float(gl_bal) if status=="certified" else None))
             console.line("reconciliations","Recs","evaluate", auto=True, details=f"{ent} {name} diff {diff}")
-    return {**state, "recs": recs}
+    return {"recs": recs}

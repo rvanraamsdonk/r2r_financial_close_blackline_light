@@ -6,10 +6,10 @@ from r2r.policies import POLICY
 from r2r.graph import build_graph
 
 @click.command()
-@click.option("--period", default="2025-08", show_default=True)
-@click.option("--prior", default="2025-07", show_default=True)
-@click.option("--entities", default=6, show_default=True, type=int)
-@click.option("--seed", default=42, show_default=True, type=int)
+@click.option("--period", default="2025-08", help="Period to close (YYYY-MM)", show_default=True)
+@click.option("--prior", default="2025-07", help="Prior period for comparison", show_default=True)
+@click.option("--entities", default=3, type=int, help="Number of entities (3=static dataset)", show_default=True)
+@click.option("--seed", default=42, type=int, help="Random seed", show_default=True)
 def main(period, prior, entities, seed):
     repo = DataRepo(period=period, prior_period=prior, n_entities=entities, seed=seed)
     app, console, init = build_graph(data_repo=repo, policy=POLICY)

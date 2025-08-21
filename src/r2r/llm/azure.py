@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from typing import List
 from dotenv import load_dotenv
 
-# Load .env at workspace root
 load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"), override=False)
 
 try:
