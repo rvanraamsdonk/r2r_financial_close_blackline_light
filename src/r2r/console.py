@@ -32,7 +32,9 @@ class Console:
         elif det:
             indicator = " [DET]"
             self.processing_stats['deterministic_records'] += 1
-        print(f"  ✓ {text}{indicator}")
+        
+        # Use cyan color for all summary lines - eye-friendly and stands out
+        print(f"\033[96m  ✓ {text}{indicator}\033[0m")
     
     def detail_line(self, text: str, ai: bool = False, det: bool = False) -> None:
         """Print a detail line with optional AI/DET indicator."""

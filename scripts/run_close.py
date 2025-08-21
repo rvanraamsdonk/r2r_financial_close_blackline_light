@@ -37,7 +37,7 @@ def display_big4_output(console, state, rich_mode):
     # DATA INGESTION
     console.section("DATA INGESTION")
     console.summary_line("Multi-entity GL loaded (73 accounts, 3 currencies)", det=True)
-    console.summary_line("Subledgers integrated (AR: 17, AP: 23, Bank: 9, IC: 5)", det=True)
+    console.summary_line("Subledgers integrated (AR: 17, AP: 23, Bank: 34, IC: 5)", det=True)
     
     # RECONCILIATIONS
     console.section("RECONCILIATIONS")
@@ -74,7 +74,7 @@ def display_big4_output(console, state, rich_mode):
         0.95, ["ACC-2025-07-001"]
     )
     
-    console.detail_line("ENT100: July payroll accrual $28,000 | Expected reversal: Aug 1 | Status: Failed | 🔴 HITL REQUIRED | Email: 'System error - manual entry required' | ID: ACC-2025-07-001", ai=True)
+    console.detail_line("ENT100: July payroll accrual $28,000 | Expected reversal: Aug 1 | Status: Failed | ⛔ HITL REQUIRED | Email: 'System error - manual entry required' | ID: ACC-2025-07-001", ai=True)
     console.detail_line("ENT100: August payroll accrual $32,000 | Status: Active | Auto-reversal scheduled Sep 1 | ID: ACC-2025-08-001", det=True)
     console.detail_line("ENT100: Professional services accrual $15,000 | Status: Active | Email: 'Invoice will be submitted within 5 business days' | ID: ACC-2025-08-002", det=True)
     console.detail_line("ENT101: August payroll accrual €22,900 | Status: Active | Auto-reversal scheduled Sep 1 | ID: ACC-2025-08-101", det=True)
@@ -95,7 +95,7 @@ def display_big4_output(console, state, rich_mode):
         0.98, ["TXN-25-08-089"]
     )
     
-    console.detail_line("Salesforce: Invoice $12,500 | Payment $25,000 | Duplicate detected | 🔴 HITL REQUIRED | Conf: 98% | ID: TXN-25-08-089", ai=True)
+    console.detail_line("Salesforce: Invoice $12,500 | Payment $25,000 | Duplicate detected | ⛔ HITL REQUIRED | Conf: 98% | ID: TXN-25-08-089", ai=True)
     
     # VARIANCE ANALYSIS
     console.section("VARIANCE ANALYSIS")
@@ -137,8 +137,8 @@ def display_big4_output(console, state, rich_mode):
     if hitl.hitl_items:
         console.section("HUMAN-IN-THE-LOOP REVIEW")
         session = hitl.start_review_session("Financial Controller")
-        print(f"  🔴 {len(hitl.hitl_items)} items require human review")
-        print(f"  📋 Review session started | Reviewer: {session['session']['reviewer']}")
+        print(f"\033[96m  ✓ {len(hitl.hitl_items)} items require human review\033[0m")
+        print(f"  Review session started | Reviewer: {session['session']['reviewer']}")
         print()
         
         # Interactive review process
@@ -160,14 +160,17 @@ def display_big4_output(console, state, rich_mode):
             while True:
                 decision = input("    Decision [A]pprove/[R]eject/[M]odify/[V]iew Email: ").strip().lower()
                 
-                if decision.startswith('v') and item.supporting_evidence:
-                    # Show full email content
-                    email = item.supporting_evidence[0]
-                    print(f"\n    FULL EMAIL CONTENT:")
-                    print(f"    Subject: {email['subject']}")
-                    print(f"    From: {email['from']}")
-                    print(f"    Body: {email['body']}")
-                    print()
+                if decision.startswith('v'):
+                    if item.supporting_evidence:
+                        # Show full email content
+                        email = item.supporting_evidence[0]
+                        print(f"\n    FULL EMAIL CONTENT:")
+                        print(f"    Subject: {email['subject']}")
+                        print(f"    From: {email['from']}")
+                        print(f"    Body: {email['body']}")
+                        print()
+                    else:
+                        print("\n    No email evidence available for this item.\n")
                     continue
                 elif decision.startswith('a'):
                     decision = "approve"

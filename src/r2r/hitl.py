@@ -30,7 +30,8 @@ class HITLWorkflow:
     
     def __init__(self, data_path: str = None):
         if data_path is None:
-            project_root = Path(__file__).parent.parent.parent.parent
+            # Navigate from src/r2r/hitl.py to project root
+            project_root = Path(__file__).parent.parent.parent
             self.data_path = project_root / "data"
         else:
             self.data_path = Path(data_path)
