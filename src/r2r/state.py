@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import TypedDict, Literal, Any, Optional, Dict
+from typing import TypedDict, Literal, Any, Optional, Dict, Annotated
 from pydantic import BaseModel
 from datetime import date
+from operator import add
 
 Risk = Literal["low","medium","high"]
 
@@ -85,7 +86,7 @@ class CloseState(TypedDict, total=False):
     period: str
     entities: list[str]
     tasks: list[Task]
-    events: list[AuditEvent]
+    events: Annotated[list[AuditEvent], add]
     recs: list[ReconResult]
     matches: list[MatchResult]
     journals: list[Journal]

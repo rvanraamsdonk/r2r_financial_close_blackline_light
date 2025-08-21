@@ -83,6 +83,12 @@ class Console:
         risk_level = summary.get("risk_level", "UNKNOWN")
         risk_score = summary.get("risk_score", 0)
         balance_rate = summary.get("balance_rate", 0)
+        # Convert balance_rate to float if it's a string
+        if isinstance(balance_rate, str):
+            try:
+                balance_rate = float(balance_rate.rstrip('%')) / 100 if '%' in balance_rate else float(balance_rate)
+            except (ValueError, TypeError):
+                balance_rate = 0.0
         
         # Risk level with visual indicators
         risk_icon = "🟢" if risk_level == "LOW" else "🟡" if risk_level == "MEDIUM" else "🔴"
