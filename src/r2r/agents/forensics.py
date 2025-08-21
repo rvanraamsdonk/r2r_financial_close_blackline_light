@@ -37,7 +37,11 @@ def node_forensics(state: CloseState, *, console: Console) -> CloseState:
         duplicate_findings = analyze_duplicate_transactions(data["ap"], console)
         forensic_findings.extend(duplicate_findings)
     
-    return {"forensic_findings": forensic_findings}
+    # Update state with findings
+    updated_state = dict(state)
+    updated_state["forensic_findings"] = forensic_findings
+    
+    return updated_state
 
 def analyze_reconciliation_discrepancy(rec, data: Dict, console: Console) -> Dict[str, Any] | None:
     """Analyze a specific reconciliation discrepancy for root causes."""

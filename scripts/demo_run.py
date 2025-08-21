@@ -99,7 +99,8 @@ def main():
     
     # Step 5: AI Forensic Analysis
     print("🔍 STEP 5: AI-Powered Forensic Root Cause Analysis")
-    state = node_forensics(state, console=console)
+    updated_state = node_forensics(state, console=console)
+    state.update(updated_state)
     
     forensic_findings = state.get("forensic_findings", [])
     console.forensic_findings_display(forensic_findings)
