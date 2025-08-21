@@ -72,6 +72,15 @@ class ICItem(BaseModel):
     status: Literal["open","balanced","net_ready","settled"] = "open"
     exceptions: list[str] = []
 
+class Match(BaseModel):
+    id: str
+    ar_id: str
+    bank_id: str
+    amount: float
+    match_type: str
+    confidence: float
+    date_diff: int
+
 class CloseState(TypedDict, total=False):
     period: str
     entities: list[str]

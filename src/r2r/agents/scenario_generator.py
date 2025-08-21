@@ -172,8 +172,12 @@ def apply_duplicate_payments(config: Dict, data: Dict, console: Console) -> List
             
             # Slightly vary the payment date
             original_date = pd.to_datetime(duplicate_row['payment_date'])
-            new_date = original_date + timedelta(days=random.randint(1, 7))
-            duplicate_row['payment_date'] = new_date.strftime('%Y-%m-%d')
+            if pd.notna(original_date):
+                new_date = original_date + timedelta(days=random.randint(1, 7))
+                duplicate_row['payment_date'] = new_date.strftime('%Y-%m-%d')
+            else:
+                # Use a default date if original is NaT
+                duplicate_row['payment_date'] = '2025-08-15'
             
             # Add to dataframe
             data["ap"] = pd.concat([data["ap"], duplicate_row.to_frame().T], ignore_index=True)
@@ -183,15 +187,16 @@ def apply_duplicate_payments(config: Dict, data: Dict, console: Console) -> List
             "entity": ap_row['entity'],
             "vendor": ap_row['vendor_name'],
             "original_bill": ap_row['bill_id'],
-            "amount": ap_row['amount_usd'],
+            "amount": ap_row.get('amount_usd', ap_row.get('amount_local', 0)),
             "duplicate_count": duplicate_count,
-            "total_overpayment": ap_row['amount_usd'] * (duplicate_count - 1),
+            "total_overpayment": ap_row.get('amount_usd', ap_row.get('amount_local', 0)) * (duplicate_count - 1),
             "description": f"Invoice paid {duplicate_count} times"
         }
         applied.append(scenario)
         
+        amount_display = ap_row.get('amount_usd', ap_row.get('amount_local', 0))
         console.line("scenario_gen", "Duplicate", "applied", auto=True,
-                    details=f"{ap_row['vendor_name']} ${ap_row['amount_usd']:,.0f} x{duplicate_count}")
+                    details=f"{ap_row['vendor_name']} ${amount_display:,.0f} x{duplicate_count}")
     
     return applied
 

@@ -58,8 +58,8 @@ def generate_executive_dashboard(recs: List, matches: List, forensic_findings: L
     
     # Calculate key metrics
     total_accounts = len(recs) if recs else 0
-    balanced_accounts = len([r for r in recs if abs(r.difference) < 100]) if recs else 0
-    material_differences = len([r for r in recs if abs(r.difference) >= 10000]) if recs else 0
+    balanced_accounts = len([r for r in recs if abs(r.diff) < 100]) if recs else 0
+    material_differences = len([r for r in recs if abs(r.diff) >= 10000]) if recs else 0
     
     total_matches = len(matches) if matches else 0
     high_confidence_matches = len([m for m in matches if m.confidence > 0.8]) if matches else 0
@@ -103,10 +103,10 @@ def generate_reconciliation_report(recs: List, data: Dict, console: Console) -> 
     
     report = {
         "reconciliation_summary": {
-            "total_accounts": len(recs),
+            "total_accounts": 0,
+            "total_differences": 0,
             "by_entity": {},
-            "by_risk_level": {"LOW": 0, "MEDIUM": 0, "HIGH": 0},
-            "total_differences": 0
+            "by_risk_level": {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "high": 0, "medium": 0, "low": 0}
         },
         "account_details": [],
         "variance_analysis": {}
@@ -124,33 +124,32 @@ def generate_reconciliation_report(recs: List, data: Dict, console: Console) -> 
             }
         
         report["reconciliation_summary"]["by_entity"][entity]["accounts"] += 1
-        report["reconciliation_summary"]["by_entity"][entity]["total_difference"] += abs(rec.difference)
+        report["reconciliation_summary"]["by_entity"][entity]["total_difference"] += abs(rec.diff)
         
-        if abs(rec.difference) < 100:
+        if abs(rec.diff) < 100:
             report["reconciliation_summary"]["by_entity"][entity]["balanced"] += 1
         
         # Risk level summary
         report["reconciliation_summary"]["by_risk_level"][rec.risk] += 1
-        report["reconciliation_summary"]["total_differences"] += abs(rec.difference)
+        report["reconciliation_summary"]["total_differences"] += abs(rec.diff)
         
         # Account detail
         account_detail = {
             "entity": rec.entity,
             "account_id": rec.account_id,
             "account_name": get_account_name(rec.account_id),
-            "book_balance": rec.book_balance,
-            "bank_balance": rec.bank_balance,
-            "difference": rec.difference,
-            "difference_pct": (rec.difference / rec.book_balance * 100) if rec.book_balance != 0 else 0,
+            "gl_balance": rec.gl_balance_at_cert or 0,
+            "difference": rec.diff,
+            "difference_pct": (rec.diff / rec.gl_balance_at_cert * 100) if rec.gl_balance_at_cert and rec.gl_balance_at_cert != 0 else 0,
             "status": rec.status,
             "risk_level": rec.risk,
-            "last_reconciled": rec.date
+            "rule_hits": rec.rule_hits
         }
         report["account_details"].append(account_detail)
     
     # Variance analysis
     if recs:
-        differences = [abs(r.difference) for r in recs]
+        differences = [abs(r.diff) for r in recs]
         report["variance_analysis"] = {
             "total_variance": sum(differences),
             "average_variance": sum(differences) / len(differences),
@@ -354,7 +353,7 @@ def calculate_risk_score(recs: List, forensic_findings: List) -> int:
         return 0
     
     # Risk from reconciliation differences
-    material_diffs = len([r for r in recs if abs(r.difference) >= 10000])
+    material_diffs = len([r for r in recs if abs(r.diff) >= 10000])
     score += min(material_diffs * 15, 40)  # Cap at 40 points
     
     # Risk from high-risk reconciliations
@@ -392,14 +391,14 @@ def generate_executive_recommendations(recs: List, forensic_findings: List) -> L
         return recommendations
     
     # Balance rate recommendation
-    balanced = len([r for r in recs if abs(r.difference) < 100])
+    balanced = len([r for r in recs if abs(r.diff) < 100])
     balance_rate = balanced / len(recs)
     
     if balance_rate < 0.9:
         recommendations.append("Improve reconciliation processes to achieve >90% balance rate")
     
     # Material differences
-    material_diffs = len([r for r in recs if abs(r.difference) >= 10000])
+    material_diffs = len([r for r in recs if abs(r.diff) >= 10000])
     if material_diffs > 0:
         recommendations.append(f"Investigate and resolve {material_diffs} material differences")
     
@@ -437,8 +436,8 @@ def generate_control_testing_results(recs: List, matches: List) -> Dict[str, Any
     return {
         "reconciliation_controls": {
             "tested": len(recs),
-            "passed": len([r for r in recs if abs(r.difference) < 1000]),
-            "effectiveness": "Satisfactory" if len(recs) > 0 and len([r for r in recs if abs(r.difference) < 1000]) / len(recs) > 0.85 else "Needs Improvement"
+            "passed": len([r for r in recs if abs(r.diff) < 1000]),
+            "effectiveness": "Satisfactory" if len(recs) > 0 and len([r for r in recs if abs(r.diff) < 1000]) / len(recs) > 0.85 else "Needs Improvement"
         },
         "matching_controls": {
             "tested": len(matches),
@@ -485,9 +484,8 @@ def generate_supporting_schedules(recs: List, data: Dict) -> Dict[str, Any]:
             {
                 "entity": rec.entity,
                 "account": rec.account_id,
-                "book_balance": rec.book_balance,
-                "adjusted_balance": rec.bank_balance,
-                "difference": rec.difference
+                "gl_balance": rec.gl_balance_at_cert or 0,
+                "difference": rec.diff
             }
             for rec in recs
         ]

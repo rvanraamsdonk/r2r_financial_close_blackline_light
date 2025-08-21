@@ -22,7 +22,7 @@ def node_forensics(state: CloseState, *, console: Console) -> CloseState:
     
     # Analyze reconciliation discrepancies
     for rec in recs:
-        if abs(rec.difference) > 1000:  # Material differences
+        if abs(rec.diff) > 1000:  # Material differences
             finding = analyze_reconciliation_discrepancy(rec, data, console)
             if finding:
                 forensic_findings.append(finding)
@@ -47,7 +47,7 @@ def analyze_reconciliation_discrepancy(rec, data: Dict, console: Console) -> Dic
     Reconciliation Analysis:
     - Entity: {rec.entity}
     - Account: {rec.account_id}
-    - Difference: ${rec.difference:,.2f}
+    - Difference: ${rec.diff:,.2f}
     - Status: {rec.status}
     - Risk Level: {rec.risk}
     """
@@ -67,7 +67,7 @@ def analyze_reconciliation_discrepancy(rec, data: Dict, console: Console) -> Dic
         "type": "reconciliation_discrepancy",
         "entity": rec.entity,
         "account": rec.account_id,
-        "amount": rec.difference,
+        "amount": rec.diff,
         "root_cause": root_cause,
         "ai_analysis": ai_analysis or "Analysis unavailable",
         "recommended_action": get_recommended_action(root_cause),
@@ -129,13 +129,14 @@ def analyze_duplicate_transactions(ap_data: pd.DataFrame, console: Console) -> L
         return findings
     
     # Group by vendor and amount to find potential duplicates
-    duplicates = ap_data.groupby(['vendor_name', 'amount_usd']).size()
+    amount_col = 'amount_usd' if 'amount_usd' in ap_data.columns else 'amount_local'
+    duplicates = ap_data.groupby(['vendor_name', amount_col]).size()
     duplicate_groups = duplicates[duplicates > 1]
     
     for (vendor, amount), count in duplicate_groups.items():
         duplicate_records = ap_data[
             (ap_data['vendor_name'] == vendor) & 
-            (ap_data['amount_usd'] == amount)
+            (ap_data[amount_col] == amount)
         ]
         
         # Check if they have different payment references (indicating true duplicates)
@@ -168,21 +169,21 @@ def determine_root_cause(rec, data: Dict) -> str:
     
     # Cash account discrepancies often indicate timing or unrecorded items
     if rec.account_id == "1000":  # Cash
-        if abs(rec.difference) > 10000:
+        if abs(rec.diff) > 10000:
             return "unrecorded_transactions"
         else:
             return "timing_differences"
     
     # AR discrepancies often indicate collection or cut-off issues
     elif rec.account_id == "1100":  # AR
-        if rec.difference < 0:  # AR lower than expected
+        if rec.diff < 0:  # AR lower than expected
             return "early_collections_or_cutoff"
         else:
             return "uncollected_receivables"
     
     # AP discrepancies often indicate accrual or duplicate issues
     elif rec.account_id == "2000":  # AP
-        if rec.difference > 0:  # AP higher than expected
+        if rec.diff > 0:  # AP higher than expected
             return "unrecorded_liabilities"
         else:
             return "duplicate_payments_or_early_payment"
@@ -216,9 +217,9 @@ def calculate_confidence(rec, data: Dict) -> float:
     confidence = 0.5  # Base confidence
     
     # Higher confidence for larger, material amounts
-    if abs(rec.difference) > 50000:
+    if abs(rec.diff) > 50000:
         confidence += 0.2
-    elif abs(rec.difference) > 10000:
+    elif abs(rec.diff) > 10000:
         confidence += 0.1
     
     # Higher confidence for accounts with clear patterns
