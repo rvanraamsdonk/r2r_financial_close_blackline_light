@@ -1,0 +1,11 @@
+python-dateutil
+pandas
+numpy
+pydantic>=2
+faker
+click
+pytest
+langchain-core
+langgraph
+openai>=1.30.0
+python-dotenv>=1.0.1
