@@ -5,14 +5,17 @@
 - **Method**: [DET] deterministic, reproducible
 
 ## Purpose
+
 Identify entities whose trial balance (TB) does not sum to zero and provide a drill-through of top contributing accounts with COA details.
 
 ## Inputs
+
 - `data/lite/trial_balance_<period>.csv` (via `load_tb()`)
 - `data/lite/chart_of_accounts.csv` (via `load_coa()`)
 - CLI scope: `--period`, optional `--entity`
 
 ## Logic (deterministic)
+
 - Group TB by `entity` and sum `balance_usd`.
 - Any entity with non-zero sum (rounded to 2 decimals) is flagged as imbalanced.
 - For each imbalanced entity:
@@ -22,6 +25,7 @@ Identify entities whose trial balance (TB) does not sum to zero and provide a dr
   - Return top 10 rows as `top_accounts`.
 
 ## Artifact
+
 - Path: `out/tb_diagnostics_<run_id>.json`
 - Keys:
   - `generated_at`, `period`, `entity_scope`
@@ -29,10 +33,13 @@ Identify entities whose trial balance (TB) does not sum to zero and provide a dr
   - `top_accounts[]`: `{ account, balance_usd, account_name?, account_type? }`
 
 ## CLI Summary
+
 `src/r2r/app.py` prints a concise summary by reading the artifact:
+
 - `Entity <ID> imbalance=<amount> USD | Top3: <acct>: <amt>, ...`
 
 ## Metrics & Audit
+
 - Messages include export path and entities.
 - Evidence: TB CSV is recorded in audit as `EvidenceRef`.
 - DeterministicRun captures function params and a hash of the input dataframe.

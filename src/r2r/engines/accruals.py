@@ -130,6 +130,18 @@ def accruals_check(state: R2RState, audit: AuditLogger) -> R2RState:
     det.output_hash = _hash_df(df_p)
     state.det_runs.append(det)
 
+    # Persist evidence with row-level provenance into audit log
+    audit.append(
+        {
+            "type": "evidence",
+            "id": ev.id,
+            "evidence_type": ev.type,
+            "uri": ev.uri,
+            "input_row_ids": ev.input_row_ids,
+            "timestamp": ev.timestamp.isoformat() + "Z",
+        }
+    )
+
     audit.append(
         {
             "type": "deterministic",
