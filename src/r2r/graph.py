@@ -5,7 +5,14 @@ from langgraph.graph import StateGraph, END
 
 from .state import R2RState
 from .audit import AuditLogger
-from .engines import validate_ingestion, compute_fx_coverage, tb_checks, tb_diagnostics, accruals_check
+from .engines import (
+    validate_ingestion,
+    compute_fx_coverage,
+    tb_checks,
+    tb_diagnostics,
+    accruals_check,
+    email_evidence_analysis,
+)
 from .metrics import compute_metrics
 from .ai import ai_narrative_for_fx
 
@@ -56,6 +63,11 @@ def _node_accruals(state: GraphState) -> GraphState:
     return {**state, "obj": s}
 
 
+def _node_email_evidence(state: GraphState) -> GraphState:
+    s = email_evidence_analysis(state["obj"], state["audit"])
+    return {**state, "obj": s}
+
+
 def _node_metrics(state: GraphState) -> GraphState:
     s = compute_metrics(state["obj"])
     return {**state, "obj": s}
@@ -69,6 +81,7 @@ def build_graph() -> StateGraph:
     g.add_node("tb", _node_tb)
     g.add_node("tb_diag", _node_tb_diag)
     g.add_node("accruals", _node_accruals)
+    g.add_node("email_evidence", _node_email_evidence)
     g.add_node("metrics", _node_metrics)
 
     g.set_entry_point("validate")
@@ -77,6 +90,7 @@ def build_graph() -> StateGraph:
     g.add_edge("ai_fx", "tb")
     g.add_edge("tb", "tb_diag")
     g.add_edge("tb_diag", "accruals")
-    g.add_edge("accruals", "metrics")
+    g.add_edge("accruals", "email_evidence")
+    g.add_edge("email_evidence", "metrics")
     g.add_edge("metrics", END)
     return g
