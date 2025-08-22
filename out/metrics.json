@@ -1,4 +1,14 @@
 {
+  "period_locked": true,
+  "materiality_thresholds_usd": {
+    "ENT100": 376961.47,
+    "ENT101": 484792.73,
+    "ENT102": 520972.17
+  },
+  "period_init_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/period_init_20250822T185151Z.json",
+  "fx_translation_diff_count": 99,
+  "fx_translation_total_abs_diff_usd": 38529394.26,
+  "fx_translation_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/fx_translation_20250822T185151Z.json",
   "accruals_exception_count": 1,
   "accruals_exception_total_usd": 29408.57,
   "accruals_exception_by_entity": {
