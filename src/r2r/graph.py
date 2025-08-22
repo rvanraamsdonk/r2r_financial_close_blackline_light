@@ -13,6 +13,7 @@ from .engines import (
     tb_checks,
     tb_diagnostics,
     accruals_check,
+    flux_analysis,
     email_evidence_analysis,
     bank_reconciliation,
     intercompany_reconciliation,
@@ -87,6 +88,11 @@ def _node_accruals(state: GraphState) -> GraphState:
     return {**state, "obj": s}
 
 
+def _node_flux_analysis(state: GraphState) -> GraphState:
+    s = flux_analysis(state["obj"], state["audit"])
+    return {**state, "obj": s}
+
+
 def _node_email_evidence(state: GraphState) -> GraphState:
     s = email_evidence_analysis(state["obj"], state["audit"])
     return {**state, "obj": s}
@@ -109,6 +115,7 @@ def build_graph() -> StateGraph:
     g.add_node("bank_recon", _node_bank_recon)
     g.add_node("ic_recon", _node_ic_recon)
     g.add_node("accruals", _node_accruals)
+    g.add_node("flux_analysis", _node_flux_analysis)
     g.add_node("email_evidence", _node_email_evidence)
     g.add_node("metrics", _node_metrics)
 
@@ -122,7 +129,8 @@ def build_graph() -> StateGraph:
     g.add_edge("tb_diag", "bank_recon")
     g.add_edge("bank_recon", "ic_recon")
     g.add_edge("ic_recon", "accruals")
-    g.add_edge("accruals", "email_evidence")
+    g.add_edge("accruals", "flux_analysis")
+    g.add_edge("flux_analysis", "email_evidence")
     g.add_edge("email_evidence", "metrics")
     g.add_edge("metrics", END)
     return g

@@ -199,3 +199,24 @@ def load_fx(data_path: Path, period: str) -> pd.DataFrame:
     df = pd.read_csv(fp, dtype={"period": str, "currency": str})
     df = df[df["period"] == period]
     return df
+
+
+def load_budget(data_path: Path, period: str, entity: Optional[str] = None) -> pd.DataFrame:
+    """
+    Load budget for a given period (and optional entity) from budget.csv
+    Expected schema: period, entity, account, budget_amount
+    """
+    fp = Path(data_path) / "budget.csv"
+    df = pd.read_csv(
+        fp,
+        dtype={
+            "period": str,
+            "entity": str,
+            "account": str,
+            "budget_amount": float,
+        },
+    )
+    df = df[df["period"] == period]
+    if entity and entity != "ALL":
+        df = df[df["entity"] == entity]
+    return df
