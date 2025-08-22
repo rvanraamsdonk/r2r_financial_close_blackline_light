@@ -7,6 +7,8 @@ from .tb_diagnostics import tb_diagnostics
 from .accruals import accruals_check
 from .email_evidence import email_evidence_analysis
 from .period import period_init
+from .bank_recon import bank_reconciliation
+from .intercompany_recon import intercompany_reconciliation
 
 __all__ = [
     "period_init",
@@ -17,4 +19,6 @@ __all__ = [
     "tb_diagnostics",
     "accruals_check",
     "email_evidence_analysis",
+    "bank_reconciliation",
+    "intercompany_reconciliation",
 ]

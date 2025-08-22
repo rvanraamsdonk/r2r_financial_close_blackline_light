@@ -5,19 +5,32 @@
 - Python 3.11+ (use project venv)
 - Data available in `./data/lite/`
 
+### Setup venv (recommended)
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+.venv/bin/pip install -r requirements.txt
+```
+
 ## Single-Command Run (planned)
 
 ```bash
 python -m r2r.app --period 2025-08 --entity ALL --ai-mode assist --data ./data/lite --out ./out
 ```
 
-### Flags (minimal)
+### Flags
 
 - `--period`: YYYY-MM
+- `--prior`: prior period YYYY-MM (optional)
 - `--entity`: entity code or ALL
 - `--ai-mode`: off | assist | strict
+- `--data`: path to input data directory (default `data/lite`)
+- `--out`: path to output directory (default `out`)
 - `--show-prompts`: include prompts in evidence pack
 - `--save-evidence`: export provenance JSON and artifacts
+
+Defaults are loaded from `.env` via `src/r2r/config.py` (env vars `R2R_*`).
 
 ## Outputs
 

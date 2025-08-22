@@ -56,7 +56,7 @@ def verify(audit_path: Path) -> int:
 
     failures: List[str] = []
 
-    def check_fn(fn_name: str) -> None:
+    def check_fn(fn_name: str, *, allow_empty_or_none: bool = False) -> None:
         evid = det_to_ev.get(fn_name)
         if not evid:
             failures.append(f"Missing deterministic record for {fn_name}")
@@ -66,12 +66,24 @@ def verify(audit_path: Path) -> int:
             failures.append(f"Missing evidence record for {fn_name} (evidence_id={evid})")
             return
         rows = ev.get("input_row_ids")
-        if not isinstance(rows, list) or not rows or not all(isinstance(x, str) for x in rows):
-            failures.append(f"Invalid or empty input_row_ids for {fn_name}")
+        if allow_empty_or_none:
+            # For steps that may legitimately produce zero exceptions, accept None or a (possibly empty) list
+            if rows is None:
+                return
+            if isinstance(rows, list) and all(isinstance(x, str) for x in rows):
+                return
+            failures.append(f"Invalid input_row_ids for {fn_name}: expected None or list[str]")
+        else:
+            # Strict: must be a non-empty list[str]
+            if not isinstance(rows, list) or not rows or not all(isinstance(x, str) for x in rows):
+                failures.append(f"Invalid or empty input_row_ids for {fn_name}")
 
     check_fn("tb_diagnostics")
     check_fn("accruals_check")
     check_fn("email_evidence")
+    # New deterministic engines: allow None/empty as there may be zero exceptions
+    check_fn("bank_reconciliation", allow_empty_or_none=True)
+    check_fn("intercompany_reconciliation", allow_empty_or_none=True)
 
     if failures:
         print("[DET] Provenance verification FAILED:")
@@ -79,7 +91,10 @@ def verify(audit_path: Path) -> int:
             print(f"[DET] - {m}")
         return 1
 
-    print("[DET] Provenance verification PASSED: input_row_ids present for tb_diagnostics, accruals_check, and email_evidence", flush=True)
+    print(
+        "[DET] Provenance verification PASSED: input_row_ids present/valid for tb_diagnostics, accruals_check, email_evidence, bank_reconciliation, intercompany_reconciliation",
+        flush=True,
+    )
     return 0
 
 

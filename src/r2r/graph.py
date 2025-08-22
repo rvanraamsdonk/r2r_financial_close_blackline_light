@@ -14,6 +14,8 @@ from .engines import (
     tb_diagnostics,
     accruals_check,
     email_evidence_analysis,
+    bank_reconciliation,
+    intercompany_reconciliation,
 )
 from .metrics import compute_metrics
 from .ai import ai_narrative_for_fx
@@ -70,6 +72,16 @@ def _node_tb_diag(state: GraphState) -> GraphState:
     return {**state, "obj": s}
 
 
+def _node_bank_recon(state: GraphState) -> GraphState:
+    s = bank_reconciliation(state["obj"], state["audit"])
+    return {**state, "obj": s}
+
+
+def _node_ic_recon(state: GraphState) -> GraphState:
+    s = intercompany_reconciliation(state["obj"], state["audit"])
+    return {**state, "obj": s}
+
+
 def _node_accruals(state: GraphState) -> GraphState:
     s = accruals_check(state["obj"], state["audit"])
     return {**state, "obj": s}
@@ -94,6 +106,8 @@ def build_graph() -> StateGraph:
     g.add_node("fx_translation", _node_fx_translation)
     g.add_node("tb", _node_tb)
     g.add_node("tb_diag", _node_tb_diag)
+    g.add_node("bank_recon", _node_bank_recon)
+    g.add_node("ic_recon", _node_ic_recon)
     g.add_node("accruals", _node_accruals)
     g.add_node("email_evidence", _node_email_evidence)
     g.add_node("metrics", _node_metrics)
@@ -105,7 +119,9 @@ def build_graph() -> StateGraph:
     g.add_edge("ai_fx", "fx_translation")
     g.add_edge("fx_translation", "tb")
     g.add_edge("tb", "tb_diag")
-    g.add_edge("tb_diag", "accruals")
+    g.add_edge("tb_diag", "bank_recon")
+    g.add_edge("bank_recon", "ic_recon")
+    g.add_edge("ic_recon", "accruals")
     g.add_edge("accruals", "email_evidence")
     g.add_edge("email_evidence", "metrics")
     g.add_edge("metrics", END)
