@@ -18,6 +18,8 @@ def parse_args() -> argparse.Namespace:
         help="Function to drill through",
     )
     p.add_argument("--audit", dest="audit_path", default=None, help="Path to audit_*.jsonl; if omitted, pick latest in out/")
+    p.add_argument("--limit", type=int, default=None, help="Limit number of matched rows printed")
+    p.add_argument("--format", dest="fmt", choices=["csv", "json"], default="csv", help="Output format")
     return p.parse_args()
 
 
@@ -116,8 +118,15 @@ def main() -> int:
     if out_df.empty:
         print("[DET] No matching rows found in source file")
         return 1
-    # Print as CSV to stdout
-    print(out_df.to_csv(index=False).strip())
+    # Apply limit before printing
+    if args.limit is not None and args.limit >= 0:
+        out_df = out_df.head(args.limit)
+    # Print in requested format
+    if args.fmt == "json":
+        print(out_df.to_json(orient="records", force_ascii=False, indent=2))
+    else:
+        # CSV to stdout
+        print(out_df.to_csv(index=False).strip())
     return 0
 
 
