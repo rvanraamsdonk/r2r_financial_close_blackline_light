@@ -1,0 +1,6 @@
+period,entity,je_id,description,debit_account,credit_account,amount,currency,source_system,approval_status,approver,supporting_doc,manual_flag,reversal_flag,linked_transaction
+2025-08,ENT100,JE-2025-08-001,Professional Fees Accrual Reversal,7000,2100,29408.57,USD,Manual,Pending,Controller,EMAIL-001,True,True,ACR-2025-08-ENT100-001
+2025-08,ENT100,JE-2025-08-002,Duplicate Payment Recovery,1200,2000,12500.00,USD,Manual,Approved,CFO,EMAIL-002,True,False,BILL-2025-08-ENT100-0847
+2025-08,ENT100,JE-2025-08-003,Google Payment Cutoff Adjustment,1000,4000,45000.00,USD,Manual,Approved,Controller,EMAIL-003,True,False,BANK-ENT100-0923
+2025-08,ENT101,JE-2025-08-FX-001,EUR/USD Revaluation Gain,1200,6100,850000.00,EUR,Automated,Approved,Treasury,FX-RATE-001,False,False,FX-REVAL-001
+2025-08,ENT101,JE-2025-08-004,Intercompany Elimination Adjustment,2200,1200,15000.00,USD,Manual,Pending,IC Controller,EMAIL-005,True,False,IC-ENT100-ENT101-001

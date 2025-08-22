@@ -1,0 +1,25 @@
+transaction_id,entity,vendor_name,pattern_type,baseline_frequency,current_frequency,variance_pct,timing_flag,round_amount_flag,weekend_flag,approval_bypass_flag,velocity_change_pct
+BILL-2025-08-ENT100-0001,ENT100,Accenture PLC,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT100-0002,ENT100,KPMG,Normal,Quarterly,Monthly,200,False,False,False,False,200
+BILL-2025-08-ENT100-0003,ENT100,Accenture PLC,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT100-0004,ENT100,IBM Corporation,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT100-0005,ENT100,Microsoft Corporation,Velocity,Monthly,Weekly,300,False,True,False,False,300
+BILL-2025-08-ENT100-0006,ENT100,Oracle Corporation,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT100-0007,ENT100,SAP SE,Normal,Quarterly,Quarterly,0,False,False,False,False,0
+BILL-2025-08-ENT100-0008,ENT100,Salesforce Inc,Duplicate,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT100-0009,ENT100,Adobe Inc,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT100-0010,ENT100,Workday Inc,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT100-0847,ENT100,Salesforce Inc,Duplicate,Monthly,Bi-weekly,100,False,True,False,True,100
+BILL-2025-08-ENT100-0923,ENT100,Google LLC,Timing,Monthly,Monthly,0,True,False,False,False,0
+BANK-ENT100-0851,ENT100,Salesforce Inc,Duplicate,Monthly,Bi-weekly,100,False,True,False,True,100
+BANK-ENT100-0923,ENT100,Google LLC,Timing,Monthly,Monthly,0,True,False,True,False,0
+BILL-2025-08-ENT101-0001,ENT101,BMW Group,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT101-0002,ENT101,Siemens AG,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT101-0003,ENT101,ASML Holding,Normal,Quarterly,Quarterly,0,False,False,False,False,0
+BILL-2025-08-ENT101-0004,ENT101,Adidas AG,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT101-0005,ENT101,Volkswagen AG,Weekend,Monthly,Monthly,0,False,False,True,False,0
+BILL-2025-08-ENT102-0001,ENT102,Rolls-Royce Holdings,Normal,Quarterly,Quarterly,0,False,False,False,False,0
+BILL-2025-08-ENT102-0002,ENT102,BP PLC,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT102-0003,ENT102,Vodafone Group,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT102-0004,ENT102,Unilever PLC,Normal,Monthly,Monthly,0,False,False,False,False,0
+BILL-2025-08-ENT102-0005,ENT102,AstraZeneca PLC,Round_Amount,Monthly,Monthly,0,False,True,False,False,0

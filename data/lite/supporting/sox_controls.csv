@@ -1,0 +1,16 @@
+control_id,entity,control_type,test_date,test_result,tester,evidence_doc,materiality_threshold,effectiveness_rating,deficiency_severity
+SOX-ENT100-001,ENT100,Segregation of Duties - AP,2025-08-31,Pass,Internal Audit,SOX-TEST-001,10000,Effective,None
+SOX-ENT100-002,ENT100,Authorization Limits - Payments,2025-08-31,Pass,Internal Audit,SOX-TEST-002,50000,Effective,None
+SOX-ENT100-003,ENT100,Bank Reconciliation Review,2025-08-31,Pass,Controller,SOX-TEST-003,5000,Effective,None
+SOX-ENT100-004,ENT100,Journal Entry Approval,2025-08-31,Pass,CFO,SOX-TEST-004,25000,Effective,None
+SOX-ENT100-005,ENT100,Month-End Close Procedures,2025-08-31,Pass,Controller,SOX-TEST-005,15000,Effective,None
+SOX-ENT101-001,ENT101,Segregation of Duties - AP,2025-08-31,Pass,Internal Audit,SOX-TEST-006,8500,Effective,None
+SOX-ENT101-002,ENT101,Authorization Limits - Payments,2025-08-31,Pass,Internal Audit,SOX-TEST-007,42500,Effective,None
+SOX-ENT101-003,ENT101,Bank Reconciliation Review,2025-08-31,Pass,Controller,SOX-TEST-008,4250,Effective,None
+SOX-ENT101-004,ENT101,Journal Entry Approval,2025-08-31,Pass,CFO,SOX-TEST-009,21250,Effective,None
+SOX-ENT101-005,ENT101,FX Revaluation Controls,2025-08-31,Pass,Treasury,SOX-TEST-010,12750,Effective,None
+SOX-ENT102-001,ENT102,Segregation of Duties - AP,2025-08-31,Pass,Internal Audit,SOX-TEST-011,7500,Effective,None
+SOX-ENT102-002,ENT102,Authorization Limits - Payments,2025-08-31,Pass,Internal Audit,SOX-TEST-012,37500,Effective,None
+SOX-ENT102-003,ENT102,Bank Reconciliation Review,2025-08-31,Pass,Controller,SOX-TEST-013,3750,Effective,None
+SOX-ENT102-004,ENT102,Journal Entry Approval,2025-08-31,Pass,CFO,SOX-TEST-014,18750,Effective,None
+SOX-ENT102-005,ENT102,Payroll Accrual Controls,2025-08-31,Pass,HR Controller,SOX-TEST-015,11250,Effective,None

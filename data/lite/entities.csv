@@ -1,0 +1,4 @@
+entity,home_currency,entity_name,country,region
+ENT100,USD,TechCorp US,US,Americas
+ENT101,EUR,TechCorp Europe,DE,EMEA
+ENT102,GBP,TechCorp UK,UK,EMEA

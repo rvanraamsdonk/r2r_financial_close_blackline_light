@@ -1,0 +1,28 @@
+{
+  "accruals_exception_count": 1,
+  "accruals_exception_total_usd": 29408.57,
+  "accruals_exception_by_entity": {
+    "ENT100": 29408.57
+  },
+  "fx_coverage_ok": true,
+  "fx_needed": [
+    "EUR",
+    "GBP",
+    "USD"
+  ],
+  "fx_present": [
+    "BRL",
+    "CAD",
+    "CHF",
+    "EUR",
+    "GBP",
+    "JPY",
+    "USD"
+  ],
+  "tb_balanced_by_entity": false,
+  "tb_entity_sums_usd": {
+    "ENT100": 14768551.08,
+    "ENT101": 34187114.57,
+    "ENT102": 12009514.87
+  }
+}

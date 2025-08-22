@@ -1,0 +1,16 @@
+entity,account,account_name,risk_rating,vendor_risk_class,control_environment_score,historical_error_rate,materiality_threshold,last_exception_date,exception_count_ytd
+ENT100,1000,Accounts Receivable,Medium,N/A,85,0.02,10000,2025-06-15,2
+ENT100,1200,Cash,High,N/A,90,0.01,5000,2025-08-31,1
+ENT100,2000,Accounts Payable,High,Medium,80,0.03,10000,2025-08-16,3
+ENT100,4000,Revenue,Medium,N/A,85,0.015,25000,2025-07-20,1
+ENT100,5000,Cost of Sales,Medium,N/A,80,0.025,15000,2025-05-10,2
+ENT101,1000,Accounts Receivable,Medium,N/A,88,0.018,8500,2025-07-05,1
+ENT101,1200,Cash,High,N/A,92,0.008,4250,Never,0
+ENT101,2000,Accounts Payable,Medium,Low,85,0.02,8500,2025-06-30,2
+ENT101,4000,Revenue,Medium,N/A,87,0.012,21250,2025-08-10,1
+ENT101,6000,FX Gain/Loss,High,N/A,75,0.05,12750,2025-08-31,4
+ENT102,1000,Accounts Receivable,Low,N/A,90,0.01,7500,2025-04-15,1
+ENT102,1200,Cash,Medium,N/A,88,0.015,3750,2025-07-25,1
+ENT102,2000,Accounts Payable,Medium,Medium,82,0.022,7500,2025-08-05,2
+ENT102,4000,Revenue,Low,N/A,92,0.008,18750,Never,0
+ENT102,7000,Payroll Expense,High,N/A,85,0.035,11250,2025-08-31,2

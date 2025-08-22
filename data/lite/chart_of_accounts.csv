@@ -1,0 +1,34 @@
+account,account_name,account_type
+1000,Cash and Cash Equivalents,asset
+1100,Petty Cash,asset
+1200,Accounts Receivable,asset
+1300,Allowance for Doubtful Accounts,asset
+1400,Inventory,asset
+1500,Prepaid Expenses,asset
+1600,Fixed Assets,asset
+1700,Accumulated Depreciation,asset
+2000,Accounts Payable,liability
+2100,Accrued Liabilities,liability
+2200,Intercompany Payable,liability
+2300,Intercompany Receivable,asset
+2400,Short-term Debt,liability
+2500,Long-term Debt,liability
+3000,Share Capital,equity
+3100,Retained Earnings,equity
+4000,Product Revenue,revenue
+4100,Service Revenue,revenue
+4200,License Revenue,revenue
+4300,Other Revenue,revenue
+5000,Cost of Goods Sold,expense
+5100,Direct Labor,expense
+5200,Manufacturing Overhead,expense
+6000,Sales & Marketing,expense
+6100,Research & Development,expense
+6200,General & Administrative,expense
+6300,Professional Services,expense
+7000,Interest Income,revenue
+7100,Interest Expense,expense
+7200,FX Gain/Loss,other
+8000,Tax Expense,expense
+8100,Other Income,revenue
+8200,Other Expenses,expense

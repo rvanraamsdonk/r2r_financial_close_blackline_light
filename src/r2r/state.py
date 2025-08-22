@@ -1,97 +1,43 @@
 from __future__ import annotations
-from typing import TypedDict, Literal, Any, Optional, Dict, Annotated
-from pydantic import BaseModel
-from datetime import date
-from operator import add
 
-Risk = Literal["low","medium","high"]
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+from pydantic import BaseModel, Field
+from .schemas import EvidenceRef, DeterministicRun, PromptRun, OutputTag, MethodType
 
-class Task(BaseModel):
-    id: str
-    stage: str
-    owner: str
-    sla: date
-    predecessors: list[str] = []
-    status: Literal["pending","in_progress","done","blocked"] = "pending"
 
-class AuditEvent(BaseModel):
-    ts: str
-    actor: str  # system|user:<id>|agent:<name>
-    action: str
-    entity: Optional[str] = None
-    details: Dict[str, Any] = {}
-
-class HITLCase(BaseModel):
-    id: str
-    type: Literal["recon_cert","journal_post","ic_settlement","flux_explanation"]
-    risk: Risk
-    payload: Dict[str, Any]
-    status: Literal["queued","approved","rejected"] = "queued"
-    maker: Optional[str] = None
-    checker: Optional[str] = None
-
-class ReconResult(BaseModel):
-    account_id: str
-    entity: str
-    risk: Risk
-    status: Literal["certified","open","decertified"]
-    diff: float
-    rule_hits: list[str] = []
-    evidence_refs: list[str] = []
-    gl_balance_at_cert: float | None = None
-
-class MatchResult(BaseModel):
-    rule_hit: str
-    cleared: int
-    residual: int
-    repeat_exception_tags: list[str] = []
-
-class Journal(BaseModel):
-    id: str
-    entity: str
-    description: str
-    amount: float
-    currency: str
-    status: Literal["draft","approved","posted","rejected"] = "draft"
-    preparer: Optional[str] = None
-    approver: Optional[str] = None
-    links: Dict[str, Any] = {}
-
-class FluxAlert(BaseModel):
-    entity: str
-    account_id: str
-    delta_abs: float
-    delta_pct: float
-    material: bool
-    narrative: Optional[str] = None
-
-class ICItem(BaseModel):
-    pair: tuple[str,str]
-    doc_id: str
-    amount_src: float
-    currency: str
-    status: Literal["open","balanced","net_ready","settled"] = "open"
-    exceptions: list[str] = []
-
-class Match(BaseModel):
-    id: str
-    ar_id: str
-    bank_id: str
-    amount: float
-    match_type: str
-    confidence: float
-    date_diff: int
-
-class CloseState(TypedDict, total=False):
+class R2RState(BaseModel):
+    # Scope
     period: str
-    entities: list[str]
-    tasks: list[Task]
-    events: Annotated[list[AuditEvent], add]
-    recs: list[ReconResult]
-    matches: list[MatchResult]
-    journals: list[Journal]
-    flux: list[FluxAlert]
-    ic: list[ICItem]
-    hitl_queue: list[HITLCase]
-    policy: dict
-    data: dict
+    prior: Optional[str] = None
+    entity: str = "ALL"
+
+    # Paths
+    repo_root: Path
+    data_path: Path
+    out_path: Path
+
+    # Datasets
+    entities_df: Optional[Any] = None
+    coa_df: Optional[Any] = None
+    tb_df: Optional[Any] = None
+    fx_df: Optional[Any] = None
+
+    # Provenance
+    evidence: List[EvidenceRef] = Field(default_factory=list)
+    det_runs: List[DeterministicRun] = Field(default_factory=list)
+    prompt_runs: List[PromptRun] = Field(default_factory=list)
+    lineage: List[Dict[str, Any]] = Field(default_factory=list)
+
+    # Outputs / tags
+    tags: List[OutputTag] = Field(default_factory=list)
+    metrics: Dict[str, Any] = Field(default_factory=dict)
+    messages: List[str] = Field(default_factory=list)  # labeled lines for CLI
+
+    # Policy
+    ai_mode: str = "assist"
+    show_prompts: bool = False
+    save_evidence: bool = True
+
+    class Config:
+        arbitrary_types_allowed = True
