@@ -83,9 +83,12 @@ def tb_diagnostics(state: R2RState, audit: AuditLogger) -> R2RState:
         json.dump(payload, f, indent=2)
 
     # Evidence and deterministic run logging
+    # Standardize period formatting in URI to match data files (YYYY_MM)
+    period_fs = str(state.period).replace("-", "_")
+    tb_path = state.data_path / f"trial_balance_{period_fs}.csv"
     ev = EvidenceRef(
         type="csv",
-        uri=str(state.data_path / f"trial_balance_{state.period}.csv"),
+        uri=str(tb_path),
         input_row_ids=input_row_ids or None,
     )
     state.evidence.append(ev)

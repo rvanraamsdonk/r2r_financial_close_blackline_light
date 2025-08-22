@@ -51,7 +51,17 @@ def load_evidence_for_fn(recs: List[Dict[str, Any]], fn_name: str) -> Dict[str, 
 
 
 def drill_tb(uri: str, input_row_ids: List[str]) -> pd.DataFrame:
-    df = pd.read_csv(uri, dtype={"period": str, "entity": str, "account": str})
+    # Some runs may log a TB URI using hyphenated period (YYYY-MM) while files
+    # use underscore (YYYY_MM). If the original path is missing, try an
+    # underscore variant of the filename.
+    p = Path(uri)
+    if not p.exists():
+        name = p.name
+        if name.startswith("trial_balance_") and "-" in name:
+            alt = p.with_name(name.replace("-", "_"))
+            if alt.exists():
+                p = alt
+    df = pd.read_csv(p, dtype={"period": str, "entity": str, "account": str})
     ids = set(input_row_ids)
     key = df.apply(lambda r: f"{r['period']}|{r['entity']}|{r['account']}", axis=1)
     mask = key.isin(ids)

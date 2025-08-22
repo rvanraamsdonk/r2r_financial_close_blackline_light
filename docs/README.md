@@ -6,6 +6,7 @@ This documentation describes a deterministic, policy-aligned financial close enh
 - Functional modules (end-to-end sequence): `functional_modules.md`
 - AI transparency and labeling ([DET]/[AI]/[HYBRID]): `ai_transparency.md`
 - Provenance and evidence schema: `provenance_schema.md`
+- Email evidence engine and drill-through: `email_evidence.md`
 - Demo script (skeptic-proof): `demo_script.md`
 - Metrics and controls mapping: `metrics_and_controls.md`
 - Data dictionary (files and semantics): `data_dictionary.md`

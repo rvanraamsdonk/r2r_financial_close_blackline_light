@@ -79,7 +79,7 @@ def verify(audit_path: Path) -> int:
             print(f"[DET] - {m}")
         return 1
 
-    print("[DET] Provenance verification PASSED: input_row_ids present for tb_diagnostics, accruals_check, and email_evidence")
+    print("[DET] Provenance verification PASSED: input_row_ids present for tb_diagnostics, accruals_check, and email_evidence", flush=True)
     return 0
 
 
@@ -97,8 +97,14 @@ def main(argv: List[str] | None = None) -> int:
         print(f"[DET] Audit file not found. Searched: {audit_path or out_dir}")
         return 1
 
-    print(f"[DET] Using audit: {audit_path}")
-    return verify(audit_path)
+    print(f"[DET] Using audit: {audit_path}", flush=True)
+    rc = verify(audit_path)
+    # Ensure a line is printed even if upstream prints are buffered or suppressed
+    if rc == 0:
+        print("[DET] Verification completed successfully.", flush=True)
+    else:
+        print("[DET] Verification completed with failures.", flush=True)
+    return rc
 
 
 if __name__ == "__main__":
