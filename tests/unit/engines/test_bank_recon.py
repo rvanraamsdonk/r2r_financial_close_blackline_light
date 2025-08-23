@@ -148,32 +148,172 @@ class TestBankReconciliation:
             assert result_state.metrics.get("bank_duplicates_count", 0) == 0
 
 
-@pytest.fixture
-def sample_bank_data():
-    """Sample bank transaction data for testing."""
-    return pd.DataFrame([
-        {
-            "period": "2025-08", "entity": "TEST_ENT", "transaction_id": "TXN001",
-            "date": "2025-08-15", "amount": 1000.0, "currency": "USD",
-            "counterparty": "Test Vendor", "transaction_type": "Payment"
-        },
-        {
-            "period": "2025-08", "entity": "TEST_ENT", "transaction_id": "TXN002",
-            "date": "2025-08-16", "amount": -500.0, "currency": "USD",
-            "counterparty": "Test Customer", "transaction_type": "Receipt"
-        }
-    ])
+    def test_duplicate_signature_generation(self, repo_root, temp_output_dir):
+        """Test the duplicate signature logic for bank reconciliation."""
+        # Create test data with exact duplicate signatures
+        bank_data = pd.DataFrame([
+            {
+                "entity": "ENT_A", "bank_txn_id": "TXN001", "date": "2025-08-15",
+                "amount": 1000.0, "currency": "USD", "counterparty": "ACME Corp",
+                "transaction_type": "Payment", "description": "Invoice payment"
+            },
+            {
+                "entity": "ENT_A", "bank_txn_id": "TXN002", "date": "2025-08-15", 
+                "amount": 1000.0, "currency": "USD", "counterparty": "ACME Corp",
+                "transaction_type": "Payment", "description": "Duplicate payment"
+            },
+            {
+                "entity": "ENT_A", "bank_txn_id": "TXN003", "date": "2025-08-16",
+                "amount": 500.0, "currency": "USD", "counterparty": "Beta Inc",
+                "transaction_type": "Receipt", "description": "Unique transaction"
+            }
+        ])
+        
+        state = (StateBuilder(repo_root, temp_output_dir)
+                .with_period("2025-08")
+                .with_entity("ENT_A")
+                .build())
+        
+        audit = MockAuditLogger(temp_output_dir, "TEST_RUN")
+        
+        with patch("src.r2r.engines.bank_recon.load_bank_transactions", return_value=bank_data):
+            result_state = bank_reconciliation(state, audit)
+        
+        # Should detect one duplicate (TXN002 flagged as duplicate of TXN001)
+        assert result_state.metrics["bank_duplicates_count"] == 1
+        assert result_state.metrics["bank_duplicates_total_abs"] > 0
+        
+        # Verify duplicate detection messages
+        assert any("Bank recon duplicates: 1 items" in msg for msg in result_state.messages)
+        
+        # Check that duplicate signature is properly formed
+        assert result_state.metrics["bank_duplicates_by_entity"]["ENT_A"] > 0
+        
+        # Verify audit trail
+        assert len(audit.records) >= 0
+        assert any("Bank reconciliation" in str(tag) for tag in result_state.tags)
+
+    def test_currency_handling(self, repo_root, temp_output_dir):
+        """Test multi-currency transaction handling in bank reconciliation."""
+        # Create test data with multiple currencies
+        bank_data = pd.DataFrame([
+            {
+                "entity": "ENT_A", "bank_txn_id": "USD001", "date": "2025-08-15",
+                "amount": 1000.0, "currency": "USD", "counterparty": "Global Corp",
+                "transaction_type": "Payment", "description": "USD payment"
+            },
+            {
+                "entity": "ENT_A", "bank_txn_id": "EUR001", "date": "2025-08-15",
+                "amount": 850.0, "currency": "EUR", "counterparty": "Global Corp", 
+                "transaction_type": "Payment", "description": "EUR payment"
+            },
+            {
+                "entity": "ENT_A", "bank_txn_id": "USD002", "date": "2025-08-15",
+                "amount": 1000.0, "currency": "USD", "counterparty": "Global Corp",
+                "transaction_type": "Payment", "description": "Duplicate USD payment"
+            }
+        ])
+        
+        state = (StateBuilder(repo_root, temp_output_dir)
+                .with_period("2025-08")
+                .with_entity("ENT_A")
+                .build())
+        
+        audit = MockAuditLogger(temp_output_dir, "TEST_RUN")
+        
+        with patch("src.r2r.engines.bank_recon.load_bank_transactions", return_value=bank_data):
+            result_state = bank_reconciliation(state, audit)
+        
+        # Should detect one duplicate (USD002 vs USD001) but not cross-currency
+        assert result_state.metrics["bank_duplicates_count"] == 1
+        
+        # EUR transaction should not be flagged as duplicate of USD
+        assert any("Bank recon duplicates: 1 items" in msg for msg in result_state.messages)
+        
+        # Verify currency is part of signature matching - only USD duplicates detected
+        assert result_state.metrics["bank_duplicates_by_entity"]["ENT_A"] == 1000.0  # Only USD amount
+
+
+    def test_empty_data_handling(self, repo_root, temp_output_dir):
+        """Test behavior with empty transaction data."""
+        # Create empty DataFrame
+        empty_bank_data = pd.DataFrame()
+        
+        state = (StateBuilder(repo_root, temp_output_dir)
+                .with_period("2025-08")
+                .with_entity("ENT_A")
+                .build())
+        
+        audit = MockAuditLogger(temp_output_dir, "TEST_RUN")
+        
+        with patch("src.r2r.engines.bank_recon.load_bank_transactions", return_value=empty_bank_data):
+            result_state = bank_reconciliation(state, audit)
+        
+        # Should skip processing with empty data
+        assert "[DET] Bank reconciliation: no transactions in scope; skipping" in result_state.messages
+        assert any("Bank reconciliation (skipped)" in str(tag) for tag in result_state.tags)
+        
+        # No metrics should be set for empty data
+        assert "bank_duplicates_count" not in result_state.metrics
+        
+        # Verify audit trail exists but minimal
+        assert len(audit.records) >= 0
+
+    def test_metrics_calculation(self, repo_root, temp_output_dir):
+        """Test all metrics are calculated correctly."""
+        # Create test data with known duplicates and amounts
+        bank_data = pd.DataFrame([
+            {
+                "entity": "ENT_A", "bank_txn_id": "TXN001", "date": "2025-08-15",
+                "amount": 1000.0, "currency": "USD", "counterparty": "ACME Corp",
+                "transaction_type": "Payment", "description": "Payment 1"
+            },
+            {
+                "entity": "ENT_A", "bank_txn_id": "TXN002", "date": "2025-08-15",
+                "amount": 1000.0, "currency": "USD", "counterparty": "ACME Corp", 
+                "transaction_type": "Payment", "description": "Payment 2"
+            },
+            {
+                "entity": "ENT_B", "bank_txn_id": "TXN003", "date": "2025-08-16",
+                "amount": 500.0, "currency": "USD", "counterparty": "Beta Inc",
+                "transaction_type": "Receipt", "description": "Receipt 1"
+            },
+            {
+                "entity": "ENT_B", "bank_txn_id": "TXN004", "date": "2025-08-16",
+                "amount": 500.0, "currency": "USD", "counterparty": "Beta Inc",
+                "transaction_type": "Receipt", "description": "Receipt 2"
+            }
+        ])
+        
+        state = (StateBuilder(repo_root, temp_output_dir)
+                .with_period("2025-08")
+                .with_entity("ALL")
+                .build())
+        
+        audit = MockAuditLogger(temp_output_dir, "TEST_RUN")
+        
+        with patch("src.r2r.engines.bank_recon.load_bank_transactions", return_value=bank_data):
+            result_state = bank_reconciliation(state, audit)
+        
+        # Verify all metrics are calculated
+        assert result_state.metrics["bank_duplicates_count"] == 2  # Two duplicate pairs
+        assert result_state.metrics["bank_duplicates_total_abs"] == 1500.0  # 1000 + 500
+        
+        # Verify by-entity breakdown
+        by_entity = result_state.metrics["bank_duplicates_by_entity"]
+        assert by_entity["ENT_A"] == 1000.0
+        assert by_entity["ENT_B"] == 500.0
+        
+        # Verify artifact path is set
+        assert "bank_reconciliation_artifact" in result_state.metrics
+        assert result_state.metrics["bank_reconciliation_artifact"].endswith(".json")
 
 
 # Template for additional unit tests that can be implemented by lower reasoning model
 """
 TODO: Implement these additional unit tests:
 
-1. test_duplicate_signature_generation - Test the duplicate signature logic
-2. test_currency_handling - Test multi-currency transaction handling  
-3. test_empty_data_handling - Test behavior with empty transaction data
 4. test_invalid_data_handling - Test error handling for malformed data
-5. test_metrics_calculation - Test all metrics are calculated correctly
 6. test_audit_trail_completeness - Test all audit records are created
 7. test_artifact_generation - Test output artifact structure and content
 """

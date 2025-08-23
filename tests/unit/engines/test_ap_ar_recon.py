@@ -87,6 +87,70 @@ class TestAPReconciliation:
         assert "ap_exceptions_count" in result_state.metrics
         assert result_state.metrics["ap_exceptions_count"] >= 1
 
+    def test_ap_currency_conversion(self, repo_root, temp_output_dir):
+        """Test AP reconciliation with multi-currency processing."""
+        mock_repo = MockDataRepo()
+        mock_repo.ap_detail_df = pd.DataFrame([
+            {
+                "period": "2025-08", "entity": "TEST_ENT", "bill_id": "BILL_USD_001",
+                "vendor_name": "Vendor A", "amount": 5000.0, "currency": "USD",
+                "status": "Outstanding", "age_days": 15, "notes": "",
+                "bill_date": "2025-08-15"
+            },
+            {
+                "period": "2025-08", "entity": "TEST_ENT", "bill_id": "BILL_EUR_001",
+                "vendor_name": "Vendor B", "amount": 4200.0, "currency": "EUR",
+                "status": "Overdue", "age_days": 45, "notes": "",
+                "bill_date": "2025-07-10"
+            },
+            {
+                "period": "2025-08", "entity": "TEST_ENT", "bill_id": "BILL_GBP_001",
+                "vendor_name": "Vendor C", "amount": 3800.0, "currency": "GBP",
+                "status": "Outstanding", "age_days": 75, "notes": "",
+                "bill_date": "2025-06-15"
+            }
+        ])
+        
+        state = (StateBuilder(repo_root, temp_output_dir)
+                .with_period("2025-08")
+                .with_entity("TEST_ENT")
+                .build())
+        
+        audit = MockAuditLogger(temp_output_dir, "TEST_RUN")
+        
+        with patch("src.r2r.engines.ap_ar_recon.load_ap_detail", 
+                  return_value=mock_repo.ap_detail_df):
+            result_state = ap_reconciliation(state, audit)
+        
+        # Should detect exceptions for overdue and age > 60
+        assert result_state.metrics["ap_exceptions_count"] >= 2
+        assert result_state.metrics["ap_exceptions_total_abs"] > 0
+        
+        # Verify multi-currency handling in by_entity breakdown
+        assert "ap_exceptions_by_entity" in result_state.metrics
+        assert result_state.metrics["ap_exceptions_by_entity"]["TEST_ENT"] > 0
+
+    def test_ap_empty_data(self, repo_root, temp_output_dir):
+        """Test AP reconciliation with empty data."""
+        state = (StateBuilder(repo_root, temp_output_dir)
+                .with_period("2025-08")
+                .with_entity("TEST_ENT")
+                .build())
+        
+        audit = MockAuditLogger(temp_output_dir, "TEST_RUN")
+        
+        # Mock empty DataFrame
+        with patch("src.r2r.engines.ap_ar_recon.load_ap_detail", 
+                  return_value=pd.DataFrame()):
+            result_state = ap_reconciliation(state, audit)
+        
+        # Should handle empty data gracefully - engine skips processing
+        # When empty, no metrics are set (early return)
+        assert len(result_state.metrics) == 0
+        
+        # Should have appropriate message
+        assert any("no AP bills in scope" in msg for msg in result_state.messages)
+
 
 @pytest.mark.unit
 @pytest.mark.deterministic  
@@ -168,6 +232,70 @@ class TestARReconciliation:
         # Should calculate AR exceptions
         assert "ar_exceptions_count" in result_state.metrics
         assert "ar_exceptions_total_abs" in result_state.metrics
+
+    def test_ar_currency_conversion(self, repo_root, temp_output_dir):
+        """Test AR reconciliation with multi-currency processing."""
+        mock_repo = MockDataRepo()
+        mock_repo.ar_detail_df = pd.DataFrame([
+            {
+                "period": "2025-08", "entity": "TEST_ENT", "invoice_id": "INV_USD_001",
+                "customer_name": "Customer A", "amount": 10000.0, "currency": "USD",
+                "status": "Outstanding", "age_days": 30, "notes": "",
+                "invoice_date": "2025-07-31"
+            },
+            {
+                "period": "2025-08", "entity": "TEST_ENT", "invoice_id": "INV_EUR_001",
+                "customer_name": "Customer B", "amount": 8500.0, "currency": "EUR",
+                "status": "Overdue", "age_days": 45, "notes": "",
+                "invoice_date": "2025-07-15"
+            },
+            {
+                "period": "2025-08", "entity": "TEST_ENT", "invoice_id": "INV_GBP_001",
+                "customer_name": "Customer C", "amount": 7200.0, "currency": "GBP",
+                "status": "Outstanding", "age_days": 75, "notes": "",
+                "invoice_date": "2025-06-10"
+            }
+        ])
+        
+        state = (StateBuilder(repo_root, temp_output_dir)
+                .with_period("2025-08")
+                .with_entity("TEST_ENT")
+                .build())
+        
+        audit = MockAuditLogger(temp_output_dir, "TEST_RUN")
+        
+        with patch("src.r2r.engines.ap_ar_recon.load_ar_detail",
+                  return_value=mock_repo.ar_detail_df):
+            result_state = ar_reconciliation(state, audit)
+        
+        # Should detect exceptions for overdue and age > 60
+        assert result_state.metrics["ar_exceptions_count"] >= 2
+        assert result_state.metrics["ar_exceptions_total_abs"] > 0
+        
+        # Verify multi-currency handling in by_entity breakdown
+        assert "ar_exceptions_by_entity" in result_state.metrics
+        assert result_state.metrics["ar_exceptions_by_entity"]["TEST_ENT"] > 0
+
+    def test_ar_empty_data(self, repo_root, temp_output_dir):
+        """Test AR reconciliation with empty data."""
+        state = (StateBuilder(repo_root, temp_output_dir)
+                .with_period("2025-08")
+                .with_entity("TEST_ENT")
+                .build())
+        
+        audit = MockAuditLogger(temp_output_dir, "TEST_RUN")
+        
+        # Mock empty DataFrame
+        with patch("src.r2r.engines.ap_ar_recon.load_ar_detail",
+                  return_value=pd.DataFrame()):
+            result_state = ar_reconciliation(state, audit)
+        
+        # Should handle empty data gracefully - engine skips processing
+        # When empty, no metrics are set (early return)
+        assert len(result_state.metrics) == 0
+        
+        # Should have appropriate message
+        assert any("no AR invoices in scope" in msg for msg in result_state.messages)
 
 
 # Template for additional unit tests
