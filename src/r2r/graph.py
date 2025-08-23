@@ -20,6 +20,8 @@ from .engines import (
     ap_reconciliation,
     ar_reconciliation,
     je_lifecycle,
+    gatekeeping_aggregate,
+    open_hitl_cases,
 )
 from .metrics import compute_metrics
 from .ai import ai_narrative_for_fx
@@ -116,6 +118,16 @@ def _node_email_evidence(state: GraphState) -> GraphState:
     return {**state, "obj": s}
 
 
+def _node_gatekeeping(state: GraphState) -> GraphState:
+    s = gatekeeping_aggregate(state["obj"], state["audit"])
+    return {**state, "obj": s}
+
+
+def _node_hitl(state: GraphState) -> GraphState:
+    s = open_hitl_cases(state["obj"], state["audit"])
+    return {**state, "obj": s}
+
+
 def _node_metrics(state: GraphState) -> GraphState:
     s = compute_metrics(state["obj"])
     return {**state, "obj": s}
@@ -138,6 +150,8 @@ def build_graph() -> StateGraph:
     g.add_node("je_lifecycle", _node_je_lifecycle)
     g.add_node("flux_analysis", _node_flux_analysis)
     g.add_node("email_evidence", _node_email_evidence)
+    g.add_node("gatekeeping", _node_gatekeeping)
+    g.add_node("hitl", _node_hitl)
     g.add_node("metrics", _node_metrics)
 
     g.set_entry_point("period_init")
@@ -155,6 +169,8 @@ def build_graph() -> StateGraph:
     g.add_edge("accruals", "je_lifecycle")
     g.add_edge("je_lifecycle", "flux_analysis")
     g.add_edge("flux_analysis", "email_evidence")
-    g.add_edge("email_evidence", "metrics")
+    g.add_edge("email_evidence", "gatekeeping")
+    g.add_edge("gatekeeping", "hitl")
+    g.add_edge("hitl", "metrics")
     g.add_edge("metrics", END)
     return g

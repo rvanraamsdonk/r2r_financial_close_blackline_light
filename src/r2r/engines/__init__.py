@@ -12,6 +12,8 @@ from .bank_recon import bank_reconciliation
 from .intercompany_recon import intercompany_reconciliation
 from .ap_ar_recon import ap_reconciliation, ar_reconciliation
 from .je_lifecycle import je_lifecycle
+from .gatekeeping import gatekeeping_aggregate
+from .hitl import open_hitl_cases
 
 __all__ = [
     "period_init",
@@ -28,4 +30,6 @@ __all__ = [
     "ap_reconciliation",
     "ar_reconciliation",
     "je_lifecycle",
+    "gatekeeping_aggregate",
+    "open_hitl_cases",
 ]

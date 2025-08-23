@@ -1,0 +1,27 @@
+{
+  "generated_at": "2025-08-23T08:24:45.769244Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "next_period": "2025-09",
+  "exceptions": [
+    {
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-001",
+      "description": "Professional Fees Accrual",
+      "amount_usd": 29408.57,
+      "currency": "USD",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Reversal failed - manual intervention required"
+    }
+  ],
+  "summary": {
+    "count": 1,
+    "total_usd": 29408.57,
+    "by_entity": {
+      "ENT100": 29408.57
+    }
+  }
+}
