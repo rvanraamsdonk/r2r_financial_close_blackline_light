@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Dict, Any, List
 
 import pandas as pd
+from ..utils.strings import safe_str as _shared_safe_str
 
 from ..schemas import OutputTag, MethodType, DeterministicRun, EvidenceRef
 from ..audit.log import AuditLogger
@@ -27,13 +28,8 @@ def _next_period(period: str) -> str:
 
 
 def _safe_str(val: Any) -> str:
-    """Return a stripped string or empty string for NaN/None/invalid values."""
-    if pd.isna(val):
-        return ""
-    try:
-        return str(val).strip()
-    except Exception:
-        return ""
+    """Compatibility wrapper delegating to shared util `safe_str`."""
+    return _shared_safe_str(val)
 
 def accruals_check(state: R2RState, audit: AuditLogger) -> R2RState:
     """

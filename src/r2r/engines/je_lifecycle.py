@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Set
 
 import pandas as pd
+from ..utils.strings import safe_str as _shared_safe_str
 
 from ..audit.log import AuditLogger
 from ..schemas import DeterministicRun, EvidenceRef, MethodType, OutputTag
@@ -26,16 +27,8 @@ def _truthy(val: Any) -> bool:
 
 
 def _safe_str(val: Any) -> str:
-    """Return a stripped string for common pandas values; empty if NaN/None.
-
-    Prevents errors when CSV fields are parsed as float('nan') by pandas.
-    """
-    if pd.isna(val):
-        return ""
-    try:
-        return str(val).strip()
-    except Exception:
-        return ""
+    """Compatibility wrapper delegating to shared util `safe_str`."""
+    return _shared_safe_str(val)
 
 
 def je_lifecycle(state: R2RState, audit: AuditLogger) -> R2RState:

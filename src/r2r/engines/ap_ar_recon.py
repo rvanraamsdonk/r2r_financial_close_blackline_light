@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 import pandas as pd
+from ..utils.strings import safe_str as _shared_safe_str
 
 from ..audit.log import AuditLogger
 from ..schemas import DeterministicRun, EvidenceRef, MethodType, OutputTag
@@ -20,17 +21,12 @@ def _hash_df(df: pd.DataFrame) -> str:
 
 
 def _safe_str(val: Any) -> str:
-    """Return a stripped string or empty string for NaN/None/invalid values.
+    """Compatibility wrapper delegating to shared util `safe_str`.
 
-    Prevents AttributeError when pandas values are float('nan') by coercing
-    safely to string only when not NaN.
+    Centralizes NaN-safe handling across engines while keeping the local name
+    used by tests and existing code.
     """
-    if pd.isna(val):
-        return ""
-    try:
-        return str(val).strip()
-    except Exception:
-        return ""
+    return _shared_safe_str(val)
 
 
 def _resolve_ap_path(data_path: Path, period: str) -> Path:
