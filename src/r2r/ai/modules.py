@@ -27,6 +27,9 @@ from .infra import (
     estimate_tokens,
     estimate_cost_usd,
     default_rate_per_1k_from_env,
+    render_template,
+    call_openai_json,
+    openai_enabled,
 )
 
 
@@ -115,6 +118,67 @@ def _validate_ai(kind: str, payload: Dict[str, Any], state: R2RState) -> None:
         state.tags.append("[AI-WARN]")
 
 
+def _invoke_ai(kind: str, template_name: str, context: Dict[str, Any], payload: Dict[str, Any]) -> Dict[str, Any]:
+    """If OpenAI is enabled, render template and invoke model, expecting JSON.
+
+    The returned dict is merged into payload (shallow merge for known keys per kind).
+    """
+    if not openai_enabled():
+        return payload
+    prompt = render_template(template_name, context)
+    system = (
+        "You are a finance assistant. Return ONLY JSON strictly following the schema for '"
+        + kind
+        + "' with keys present. Do not include markdown or prose."
+    )
+    resp = call_openai_json(prompt, system=system)
+    # Shallow merge for known top-level fields
+    try:
+        match kind:
+            case "validation":
+                for k in ("root_causes", "remediations"):
+                    if isinstance(resp.get(k), list):
+                        payload[k] = resp[k]
+            case "ap_ar":
+                for k in ("matches",):
+                    if isinstance(resp.get(k), list):
+                        payload[k] = resp[k]
+            case "intercompany":
+                for k in ("candidate_pairs", "je_proposals"):
+                    if isinstance(resp.get(k), list):
+                        payload[k] = resp[k]
+            case "flux":
+                if isinstance(resp.get("narratives"), list):
+                    payload["narratives"] = resp["narratives"]
+            case "hitl":
+                for k in ("case_summaries", "next_actions"):
+                    if isinstance(resp.get(k), list):
+                        payload[k] = resp[k]
+            case "bank":
+                if isinstance(resp.get("rationales"), list):
+                    payload["rationales"] = resp["rationales"]
+            case "accruals":
+                for k in ("narratives", "je_rationales"):
+                    if isinstance(resp.get(k), list):
+                        payload[k] = resp[k]
+            case "gatekeeping":
+                if isinstance(resp.get("rationales"), list):
+                    payload["rationales"] = resp["rationales"]
+            case "controls":
+                for k in ("owner_summaries", "residual_risks"):
+                    if isinstance(resp.get(k), list):
+                        payload[k] = resp[k]
+            case "report":
+                if isinstance(resp.get("executive_summary"), str):
+                    payload["executive_summary"] = resp["executive_summary"]
+            case _:
+                pass
+    except Exception:
+        # Keep original payload on any merge error
+        return payload
+    return payload
+
+
 def ai_validation_root_causes(state: R2RState, audit: AuditLogger) -> R2RState:
     if state.ai_mode == "off":
         return state
@@ -149,6 +213,27 @@ def ai_validation_root_causes(state: R2RState, audit: AuditLogger) -> R2RState:
     }
     if state.ai_mode == "strict":
         _validate_ai("validation", payload, state)
+    # Enrich validation context with optional gatekeeping aggregates to avoid Jinja Undefined
+    categories, totals = {}, {}
+    try:
+        gk_path = (state.metrics or {}).get("gatekeeping_artifact")
+        if gk_path and Path(gk_path).exists():
+            with Path(gk_path).open("r", encoding="utf-8") as f:
+                gk = json.load(f)
+            categories = gk.get("categories") or {}
+            totals = gk.get("totals") or {}
+    except Exception:
+        categories, totals = {}, {}
+    # Try to populate via OpenAI
+    context = {
+        "period": state.period,
+        "entity": state.entity,
+        "citations": payload["citations"],
+        "counts": inputs["counts"],
+        "categories": categories,
+        "totals": totals,
+    }
+    payload = _invoke_ai("validation", "validation.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(
         lambda: with_cache(
@@ -197,6 +282,71 @@ def ai_ap_ar_suggestions(state: R2RState, audit: AuditLogger) -> R2RState:
     }
     if state.ai_mode == "strict":
         _validate_ai("ap_ar", payload, state)
+    # Extract compact top-N AP/AR exception slices to enrich prompt context
+    ap_slice = []
+    ar_slice = []
+    try:
+        ap_path = m.get("ap_reconciliation_artifact")
+        if ap_path and Path(ap_path).exists():
+            with Path(ap_path).open("r", encoding="utf-8") as f:
+                ap_json = json.load(f)
+            ap_exc = ap_json.get("exceptions") or []
+            # Sort by absolute amount desc; take top 8 for context compactness
+            ap_exc_sorted = sorted(ap_exc, key=lambda e: abs(float(e.get("amount", 0.0))), reverse=True)[:8]
+            for e in ap_exc_sorted:
+                ap_slice.append(
+                    {
+                        "bill_id": e.get("bill_id"),
+                        "entity": e.get("entity"),
+                        "vendor_name": e.get("vendor_name"),
+                        "bill_date": e.get("bill_date"),
+                        "amount": float(e.get("amount", 0.0)),
+                        "currency": e.get("currency"),
+                        "age_days": int(e.get("age_days", 0) or 0),
+                        "status": e.get("status"),
+                        "reason": e.get("reason"),
+                        "ai_rationale": e.get("ai_rationale"),
+                        "candidates": e.get("candidates") or [],
+                    }
+                )
+    except Exception:
+        # Non-fatal; continue with minimal context
+        ap_slice = []
+    try:
+        ar_path = m.get("ar_reconciliation_artifact")
+        if ar_path and Path(ar_path).exists():
+            with Path(ar_path).open("r", encoding="utf-8") as f:
+                ar_json = json.load(f)
+            ar_exc = ar_json.get("exceptions") or []
+            ar_exc_sorted = sorted(ar_exc, key=lambda e: abs(float(e.get("amount", 0.0))), reverse=True)[:8]
+            for e in ar_exc_sorted:
+                ar_slice.append(
+                    {
+                        "invoice_id": e.get("invoice_id"),
+                        "entity": e.get("entity"),
+                        "customer_name": e.get("customer_name"),
+                        "invoice_date": e.get("invoice_date"),
+                        "amount": float(e.get("amount", 0.0)),
+                        "currency": e.get("currency"),
+                        "age_days": int(e.get("age_days", 0) or 0),
+                        "status": e.get("status"),
+                        "reason": e.get("reason"),
+                        "ai_rationale": e.get("ai_rationale"),
+                        "candidates": e.get("candidates") or [],
+                    }
+                )
+    except Exception:
+        ar_slice = []
+    context = {
+        "period": state.period,
+        "entity": state.entity,
+        "citations": payload["citations"],
+        "unresolved_summary": payload["unresolved_summary"],
+        # enriched deterministic evidence slices
+        "ap_exceptions": ap_slice,
+        "ar_exceptions": ar_slice,
+    }
+    payload = _invoke_ai("ap_ar", "ap_ar.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(
         lambda: with_cache(
@@ -240,6 +390,40 @@ def ai_ic_match_proposals(state: R2RState, audit: AuditLogger) -> R2RState:
     }
     if state.ai_mode == "strict":
         _validate_ai("intercompany", payload, state)
+    # Extract compact top-N IC exception slices (schema-agnostic, safe)
+    ic_slice = []
+    try:
+        ic_path = m.get("intercompany_reconciliation_artifact")
+        if ic_path and Path(ic_path).exists():
+            with Path(ic_path).open("r", encoding="utf-8") as f:
+                ic_json = json.load(f)
+            ic_exc = ic_json.get("exceptions") or []
+            # Sorting key prefers any present difference metric; fallback to 0.0
+            def diff_key(e: Dict[str, Any]) -> float:
+                for k in ("diff", "amount_diff", "delta", "delta_usd"):
+                    try:
+                        return abs(float(e.get(k, 0.0)))
+                    except Exception:
+                        continue
+                return 0.0
+            ic_exc_sorted = sorted(ic_exc, key=diff_key, reverse=True)[:8]
+            for e in ic_exc_sorted:
+                compact = {k: e.get(k) for k in (
+                    "pair", "src_entity", "dst_entity", "src_amount", "dst_amount", "currency",
+                    "status", "reason", "ai_rationale", "je_proposal_id",
+                    "diff", "amount_diff", "delta", "delta_usd",
+                ) if k in e}
+                ic_slice.append(compact)
+    except Exception:
+        ic_slice = []
+    context = {
+        "period": state.period,
+        "entity": state.entity,
+        "citations": payload["citations"],
+        "counts": inputs["counts"],
+        "ic_exceptions": ic_slice,
+    }
+    payload = _invoke_ai("intercompany", "intercompany.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(
         lambda: with_cache(
@@ -282,6 +466,40 @@ def ai_flux_narratives(state: R2RState, audit: AuditLogger) -> R2RState:
     }
     if state.ai_mode == "strict":
         _validate_ai("flux", payload, state)
+    # Extract top variances for compact context from flux analysis rows
+    flux_slice = []
+    try:
+        flux_path = m.get("flux_analysis_artifact")
+        if flux_path and Path(flux_path).exists():
+            with Path(flux_path).open("r", encoding="utf-8") as f:
+                flux_json = json.load(f)
+            rows = flux_json.get("rows") or []
+            def variance_magnitude(r: Dict[str, Any]) -> float:
+                # prefer the larger of abs var vs budget/prior when available
+                vb = abs(float(r.get("var_vs_budget", 0.0) or 0.0))
+                vp = abs(float(r.get("var_vs_prior", 0.0) or 0.0))
+                return max(vb, vp)
+            top_rows = sorted(rows, key=variance_magnitude, reverse=True)[:12]
+            for r in top_rows:
+                flux_slice.append({
+                    "entity": r.get("entity"),
+                    "account": r.get("account"),
+                    "var_vs_budget": r.get("var_vs_budget"),
+                    "var_vs_prior": r.get("var_vs_prior"),
+                    "band_vs_budget": r.get("band_vs_budget"),
+                    "band_vs_prior": r.get("band_vs_prior"),
+                    "ai_basis": r.get("ai_basis"),
+                })
+    except Exception:
+        flux_slice = []
+    context = {
+        "period": state.period,
+        "entity": state.entity,
+        "citations": payload["citations"],
+        "counts": inputs["counts"],
+        "top_variances": flux_slice,
+    }
+    payload = _invoke_ai("flux", "flux.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(
         lambda: with_cache(
@@ -325,6 +543,35 @@ def ai_hitl_case_summaries(state: R2RState, audit: AuditLogger) -> R2RState:
     }
     if state.ai_mode == "strict":
         _validate_ai("hitl", payload, state)
+    # Include compact open case slices
+    cases_slice = []
+    try:
+        cases_path = m.get("hitl_cases_artifact")
+        if cases_path and Path(cases_path).exists():
+            with Path(cases_path).open("r", encoding="utf-8") as f:
+                cases = json.load(f)
+            def severity_rank(s: str) -> int:
+                order = {"critical": 3, "high": 2, "medium": 1, "low": 0}
+                return order.get((s or "").lower(), 0)
+            open_cases = [c for c in (cases or []) if (c.get("status") or "").lower() == "open"]
+            top = sorted(open_cases, key=lambda c: severity_rank(c.get("severity")), reverse=True)[:8]
+            for c in top:
+                cases_slice.append({
+                    "id": c.get("id"),
+                    "source": c.get("source"),
+                    "severity": c.get("severity"),
+                    "title": c.get("title"),
+                })
+    except Exception:
+        cases_slice = []
+    context = {
+        "period": state.period,
+        "entity": state.entity,
+        "citations": payload["citations"],
+        "counts": inputs["counts"],
+        "open_cases": cases_slice,
+    }
+    payload = _invoke_ai("hitl", "hitl.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(
         lambda: with_cache(
@@ -362,6 +609,30 @@ def ai_bank_rationales(state: R2RState, audit: AuditLogger) -> R2RState:
     inputs = {"period": state.period, "entity": state.entity, "citations": payload["citations"]}
     if state.ai_mode == "strict":
         _validate_ai("bank", payload, state)
+    # Include compact bank exception slices if present
+    bank_slice = []
+    try:
+        bank_path = m.get("bank_reconciliation_artifact")
+        if bank_path and Path(bank_path).exists():
+            with Path(bank_path).open("r", encoding="utf-8") as f:
+                bank_json = json.load(f)
+            exc = bank_json.get("exceptions") or []
+            def amt(e: Dict[str, Any]) -> float:
+                try:
+                    return abs(float(e.get("amount", 0.0)))
+                except Exception:
+                    return 0.0
+            top_exc = sorted(exc, key=amt, reverse=True)[:8]
+            for e in top_exc:
+                compact = {k: e.get(k) for k in (
+                    "entity", "date", "amount", "currency", "counterparty", "transaction_type",
+                    "status", "reason", "ai_rationale",
+                ) if k in e}
+                bank_slice.append(compact)
+    except Exception:
+        bank_slice = []
+    context = {"period": state.period, "entity": state.entity, "citations": payload["citations"], "bank_exceptions": bank_slice}
+    payload = _invoke_ai("bank", "bank.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(
         lambda: with_cache(
@@ -400,6 +671,55 @@ def ai_accruals_narratives(state: R2RState, audit: AuditLogger) -> R2RState:
     inputs = {"period": state.period, "entity": state.entity, "citations": payload["citations"]}
     if state.ai_mode == "strict":
         _validate_ai("accruals", payload, state)
+    # Include compact accrual exceptions and proposals slices
+    accr_exc_slice, accr_prop_slice = [], []
+    try:
+        accr_path = m.get("accruals_artifact")
+        if accr_path and Path(accr_path).exists():
+            with Path(accr_path).open("r", encoding="utf-8") as f:
+                accr = json.load(f)
+            exc = accr.get("exceptions") or []
+            def exc_amt(e: Dict[str, Any]) -> float:
+                try:
+                    return abs(float(e.get("amount_usd", 0.0)))
+                except Exception:
+                    return 0.0
+            top_exc = sorted(exc, key=exc_amt, reverse=True)[:8]
+            for e in top_exc:
+                accr_exc_slice.append({
+                    "accrual_id": e.get("accrual_id"),
+                    "entity": e.get("entity"),
+                    "amount_usd": e.get("amount_usd"),
+                    "status": e.get("status"),
+                    "accrual_date": e.get("accrual_date"),
+                    "reversal_date": e.get("reversal_date"),
+                    "reason": e.get("reason"),
+                })
+            props = accr.get("proposals") or []
+            def prop_amt(p: Dict[str, Any]) -> float:
+                try:
+                    return abs(float(p.get("amount_usd", 0.0)))
+                except Exception:
+                    return 0.0
+            top_props = sorted(props, key=prop_amt, reverse=True)[:6]
+            for p in top_props:
+                accr_prop_slice.append({
+                    "proposal_type": p.get("proposal_type"),
+                    "entity": p.get("entity"),
+                    "accrual_id": p.get("accrual_id"),
+                    "proposed_period": p.get("proposed_period"),
+                    "amount_usd": p.get("amount_usd"),
+                })
+    except Exception:
+        accr_exc_slice, accr_prop_slice = [], []
+    context = {
+        "period": state.period,
+        "entity": state.entity,
+        "citations": payload["citations"],
+        "accruals_exceptions": accr_exc_slice,
+        "accruals_proposals": accr_prop_slice,
+    }
+    payload = _invoke_ai("accruals", "accruals.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(
         lambda: with_cache(
@@ -439,6 +759,27 @@ def ai_gatekeeping_rationales(state: R2RState, audit: AuditLogger) -> R2RState:
     inputs = {"period": state.period, "entity": state.entity, "citations": payload["citations"], "risk": payload["risk_level"]}
     if state.ai_mode == "strict":
         _validate_ai("gatekeeping", payload, state)
+    # Add gatekeeping categories and totals for richer context
+    categories, totals = {}, {}
+    try:
+        gk_path = m.get("gatekeeping_artifact")
+        if gk_path and Path(gk_path).exists():
+            with Path(gk_path).open("r", encoding="utf-8") as f:
+                gk = json.load(f)
+            categories = gk.get("categories") or {}
+            totals = gk.get("totals") or {}
+    except Exception:
+        categories, totals = {}, {}
+    context = {
+        "period": state.period,
+        "entity": state.entity,
+        "citations": payload["citations"],
+        "risk": payload.get("risk_level"),
+        "counts": {"risk_level": payload.get("risk_level")},
+        "categories": categories,
+        "totals": totals,
+    }
+    payload = _invoke_ai("gatekeeping", "validation.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(
         lambda: with_cache(
@@ -477,6 +818,29 @@ def ai_controls_owner_summaries(state: R2RState, audit: AuditLogger) -> R2RState
     inputs = {"period": state.period, "entity": state.entity, "citations": payload["citations"]}
     if state.ai_mode == "strict":
         _validate_ai("controls", payload, state)
+    # Include failing or notable controls as compact list
+    controls_slice = []
+    try:
+        ctrl_path = m.get("controls_mapping_artifact")
+        if ctrl_path and Path(ctrl_path).exists():
+            with Path(ctrl_path).open("r", encoding="utf-8") as f:
+                ctrl = json.load(f)
+            mappings = (ctrl.get("mappings") or {}).items()
+            for key, val in mappings:
+                v = val.get("value") if isinstance(val, dict) else None
+                # Select booleans that are concerning (False) and counts above zero
+                if (isinstance(v, bool) and v is False) or (isinstance(v, (int, float)) and float(v) > 0):
+                    controls_slice.append({
+                        "key": key,
+                        "control_id": val.get("control_id") if isinstance(val, dict) else None,
+                        "value": v,
+                        "description": val.get("description") if isinstance(val, dict) else None,
+                    })
+            controls_slice = controls_slice[:12]
+    except Exception:
+        controls_slice = []
+    context = {"period": state.period, "entity": state.entity, "citations": payload["citations"], "controls_notable": controls_slice}
+    payload = _invoke_ai("controls", "controls.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(
         lambda: with_cache(
@@ -520,6 +884,20 @@ def ai_close_report_exec_summary(state: R2RState, audit: AuditLogger) -> R2RStat
     inputs = {"period": state.period, "entity": state.entity, "citations": payload["citations"]}
     if state.ai_mode == "strict":
         _validate_ai("report", payload, state)
+    # Include key highlights for the executive summary from gatekeeping and flux
+    highlights = {}
+    try:
+        gk_path = m.get("gatekeeping_artifact")
+        if gk_path and Path(gk_path).exists():
+            with Path(gk_path).open("r", encoding="utf-8") as f:
+                gk = json.load(f)
+            highlights["risk_level"] = gk.get("risk_level")
+            highlights["block_close"] = gk.get("block_close")
+            highlights["categories"] = gk.get("categories")
+    except Exception:
+        pass
+    context = {"period": state.period, "entity": state.entity, "citations": payload["citations"], "highlights": highlights}
+    payload = _invoke_ai("report", "report.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(
         lambda: with_cache(

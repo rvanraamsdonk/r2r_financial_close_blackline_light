@@ -20,7 +20,7 @@ class Settings(BaseModel):
     save_evidence: bool = Field(default=True)
 
     # AI providers / networking policy
-    r2r_allow_network: bool = Field(default=False)
+    r2r_allow_network: bool = Field(default=True)
 
     # Azure OpenAI
     azure_openai_endpoint: Optional[str] = Field(default=None)
@@ -62,7 +62,7 @@ def load_settings_with_env(**overrides) -> Settings:
         entity=os.getenv("R2R_ENTITY", overrides.get("entity", "ALL")),
         show_prompts=_to_bool(os.getenv("R2R_SHOW_PROMPTS", str(overrides.get("show_prompts", False)))),
         save_evidence=_to_bool(os.getenv("R2R_SAVE_EVIDENCE", str(overrides.get("save_evidence", True)))),
-        r2r_allow_network=_to_bool(os.getenv("R2R_ALLOW_NETWORK", str(overrides.get("r2r_allow_network", False)))),
+        r2r_allow_network=_to_bool(os.getenv("R2R_ALLOW_NETWORK", str(overrides.get("r2r_allow_network", True)))),
         azure_openai_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
         azure_openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
         azure_openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION"),

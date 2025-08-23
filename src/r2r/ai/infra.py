@@ -5,7 +5,16 @@ import json
 import time
 import os
 from pathlib import Path
-from typing import Any, Dict, Tuple, Callable
+from typing import Any, Dict, Tuple, Callable, Optional
+
+# Prompt rendering and OpenAI client (optional until installed)
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+try:  # OpenAI v1 SDK
+    from openai import OpenAI  # type: ignore
+except Exception:  # pragma: no cover
+    OpenAI = None  # type: ignore
+
+from ..config import load_settings_with_env
 
 
 def compute_inputs_hash(data: Dict[str, Any]) -> str:
@@ -67,6 +76,88 @@ def estimate_cost_usd(tokens: int, rate_per_1k: float = 0.0) -> float:
         return round((tokens / 1000.0) * float(rate_per_1k), 6)
     except Exception:
         return 0.0
+
+
+# -----------------------------
+# OpenAI integration helpers
+# -----------------------------
+_template_env: Optional[Environment] = None
+
+
+def _templates_dir() -> Path:
+    return Path(__file__).parent / "templates"
+
+
+def _get_template_env() -> Environment:
+    global _template_env
+    if _template_env is None:
+        _template_env = Environment(
+            loader=FileSystemLoader(str(_templates_dir())),
+            autoescape=select_autoescape(disabled_extensions=(".md", ".txt")),
+            trim_blocks=True,
+            lstrip_blocks=True,
+        )
+    return _template_env
+
+
+def render_template(name: str, context: Dict[str, Any]) -> str:
+    env = _get_template_env()
+    tmpl = env.get_template(name)
+    return tmpl.render(**context)
+
+
+def openai_enabled() -> bool:
+    s = load_settings_with_env()
+    return bool(s.r2r_allow_network and (s.openai_api_key))
+
+
+def _make_openai_client():
+    s = load_settings_with_env()
+    if not s.r2r_allow_network:
+        raise RuntimeError("Networking not allowed (R2R_ALLOW_NETWORK is False)")
+    if s.openai_api_key:
+        if OpenAI is None:
+            raise RuntimeError("openai package not installed. Add 'openai' to requirements and install.")
+        return OpenAI(api_key=s.openai_api_key)
+    raise RuntimeError("No OpenAI credentials found (OPENAI_API_KEY)")
+
+
+def call_openai_json(prompt: str, *, system: Optional[str] = None, model_env_var: str = "OPENAI_MODEL") -> Dict[str, Any]:
+    """Call OpenAI chat and parse a JSON object from the response.
+
+    Uses OPENAI_MODEL env var or defaults to 'gpt-4o-mini'.
+    """
+    client = _make_openai_client()
+    model = os.getenv(model_env_var, "gpt-4o-mini").strip() or "gpt-4o-mini"
+    messages = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    messages.append({"role": "user", "content": prompt})
+    # Use responses API with JSON mode if available; fall back to chat.completions
+    try:
+        resp = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0.2,
+            response_format={"type": "json_object"},
+        )
+        content = resp.choices[0].message.content or "{}"
+    except Exception:
+        # Fallback to an empty JSON to avoid crashes if provider unavailable
+        content = "{}"
+    try:
+        return json.loads(content)
+    except Exception:
+        # Try to extract JSON substring
+        import re
+        m = re.search(r"\{[\s\S]*\}", content)
+        if m:
+            try:
+                return json.loads(m.group(0))
+            except Exception:
+                return {}
+        return {}
+
 
 
 def default_rate_per_1k_from_env(env_var: str = "R2R_AI_RATE_PER_1K") -> float:
