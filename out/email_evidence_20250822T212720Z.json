@@ -1,0 +1,96 @@
+{
+  "generated_at": "2025-08-22T21:27:20.893146Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "items": [
+    {
+      "email_id": "EMAIL-001",
+      "subject": "Professional Fees Accrual Reversal Failed - Action Required",
+      "from": "finance.controller@techcorp.com",
+      "to": "accounting.team@techcorp.com",
+      "timestamp": "2025-09-01T08:15:23Z",
+      "body": "The automated reversal for Professional Fees Accrual ACR-2025-08-ENT100-001 ($29,408.57) failed during overnight processing. System error code: REV_FAIL_001. Manual journal entry required to reverse August accrual before close. Please coordinate with Legal team on outstanding invoices from external counsel.",
+      "summary": "Professional fees accrual reversal failure requiring manual intervention",
+      "linked_transactions": [
+        "ACR-2025-08-ENT100-001"
+      ],
+      "priority": "High",
+      "category": "Accrual Management",
+      "requires_action": true
+    },
+    {
+      "email_id": "EMAIL-002",
+      "subject": "Duplicate Payment Alert - Salesforce Invoice",
+      "from": "ap.manager@techcorp.com",
+      "to": "treasury@techcorp.com",
+      "timestamp": "2025-08-16T14:32:17Z",
+      "body": "Alert: Duplicate payment detected for Salesforce invoice SF-2025-08-001. Original payment $12,500 processed on 08/15, duplicate payment $12,500 processed on 08/16. Payment reference: PAY-ENT100-0847 and PAY-ENT100-0851. Initiating recovery process with vendor. Please hold future Salesforce payments pending resolution.",
+      "summary": "Duplicate Salesforce payment requiring vendor recovery",
+      "linked_transactions": [
+        "BILL-2025-08-ENT100-0847",
+        "BANK-ENT100-0851"
+      ],
+      "priority": "High",
+      "category": "Payment Processing",
+      "requires_action": true
+    },
+    {
+      "email_id": "EMAIL-003",
+      "subject": "Google Payment Timing Difference - August Close",
+      "from": "bank.reconciliation@techcorp.com",
+      "to": "month.end.close@techcorp.com",
+      "timestamp": "2025-09-01T09:45:12Z",
+      "body": "Google payment $45,000 received August 31st at 23:58 UTC but recorded in September due to cutoff timing. Transaction ref: BANK-ENT100-0923. Requires cutoff adjustment for August close accuracy. Supporting documentation attached showing wire receipt timestamp vs. system posting date.",
+      "summary": "Google payment cutoff timing difference requiring adjustment",
+      "linked_transactions": [
+        "BANK-ENT100-0923",
+        "BILL-2025-08-ENT100-0923"
+      ],
+      "priority": "Medium",
+      "category": "Cutoff Procedures",
+      "requires_action": true
+    },
+    {
+      "email_id": "EMAIL-004",
+      "subject": "FX Revaluation Impact - EUR/USD Rate Change",
+      "from": "treasury@techcorp.com",
+      "to": "financial.reporting@techcorp.com",
+      "timestamp": "2025-08-31T16:20:45Z",
+      "body": "EUR/USD exchange rate moved from 1.085 to 1.092 during August, resulting in \u20ac850K revaluation gain on EUR-denominated positions. Impact primarily on ENT101 cash and receivables balances. Revaluation journal entry JE-2025-08-FX-001 prepared for month-end close. Please review for materiality assessment.",
+      "summary": "EUR/USD revaluation gain requiring materiality review",
+      "linked_transactions": [
+        "JE-2025-08-FX-001"
+      ],
+      "priority": "Medium",
+      "category": "FX Management",
+      "requires_action": false
+    },
+    {
+      "email_id": "EMAIL-005",
+      "subject": "Intercompany Reconciliation - ENT100/ENT101 Variance",
+      "from": "ic.accounting@techcorp.com",
+      "to": "consolidation.team@techcorp.com",
+      "timestamp": "2025-08-30T11:15:33Z",
+      "body": "Intercompany reconciliation between ENT100 and ENT101 shows $15K variance in software license transfers. ENT100 records $485K payable, ENT101 records $500K receivable. Investigating timing difference in August license allocation. May require elimination adjustment for consolidated reporting.",
+      "summary": "Intercompany reconciliation variance requiring investigation",
+      "linked_transactions": [
+        "IC-ENT100-ENT101-001"
+      ],
+      "priority": "Medium",
+      "category": "Intercompany",
+      "requires_action": true
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "relevant": 5,
+    "requires_action": 4,
+    "by_category": {
+      "Accrual Management": 1,
+      "Cutoff Procedures": 1,
+      "FX Management": 1,
+      "Intercompany": 1,
+      "Payment Processing": 1
+    }
+  }
+}

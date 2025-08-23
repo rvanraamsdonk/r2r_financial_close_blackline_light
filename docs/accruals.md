@@ -49,3 +49,9 @@ Detect accruals that should have reversed and those with missing or misaligned r
 - Evidence recorded as `EvidenceRef` includes `input_row_ids` for row-level traceability.
 - For each exception, we capture the accrual row ID as `<entity>|<accrual_id>`.
 - Enables drill-through from `out/audit_<run_id>.jsonl` to `data/lite/supporting/accruals.csv`.
+
+## Robustness
+
+- Text fields like `status` and `reversal_date` may be `NaN` when blank.
+- The engine uses a NaN-safe string helper to coerce such values to empty strings before
+  applying `.strip()` or prefix checks, preventing runtime errors on messy data.

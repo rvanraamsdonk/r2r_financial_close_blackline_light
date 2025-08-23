@@ -26,6 +26,15 @@ def _next_period(period: str) -> str:
     return f"{y}-{m+1:02d}"
 
 
+def _safe_str(val: Any) -> str:
+    """Return a stripped string or empty string for NaN/None/invalid values."""
+    if pd.isna(val):
+        return ""
+    try:
+        return str(val).strip()
+    except Exception:
+        return ""
+
 def accruals_check(state: R2RState, audit: AuditLogger) -> R2RState:
     """
     Deterministic accruals check:
@@ -70,8 +79,8 @@ def accruals_check(state: R2RState, audit: AuditLogger) -> R2RState:
     input_row_ids: List[str] = []
 
     for _, r in df_p.iterrows():
-        status = (r.get("status") or "").strip()
-        rev = (r.get("reversal_date") or "").strip()
+        status = _safe_str(r.get("status"))
+        rev = _safe_str(r.get("reversal_date"))
         reason = None
         if status == "Should Reverse":
             reason = "explicit_should_reverse"

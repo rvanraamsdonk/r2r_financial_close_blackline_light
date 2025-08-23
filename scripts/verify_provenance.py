@@ -85,6 +85,9 @@ def verify(audit_path: Path) -> int:
     check_fn("bank_reconciliation", allow_empty_or_none=True)
     check_fn("intercompany_reconciliation", allow_empty_or_none=True)
     check_fn("flux_analysis", allow_empty_or_none=True)
+    check_fn("ap_reconciliation", allow_empty_or_none=True)
+    check_fn("ar_reconciliation", allow_empty_or_none=True)
+    check_fn("je_lifecycle", allow_empty_or_none=True)
 
     if failures:
         print("[DET] Provenance verification FAILED:")
@@ -93,7 +96,12 @@ def verify(audit_path: Path) -> int:
         return 1
 
     print(
-        "[DET] Provenance verification PASSED: input_row_ids present/valid for tb_diagnostics, accruals_check, email_evidence, bank_reconciliation, intercompany_reconciliation, flux_analysis",
+        (
+            "[DET] Provenance verification PASSED: input_row_ids present/valid for "
+            "tb_diagnostics, accruals_check, email_evidence, "
+            "bank_reconciliation, intercompany_reconciliation, flux_analysis, "
+            "ap_reconciliation, ar_reconciliation, je_lifecycle"
+        ),
         flush=True,
     )
     return 0

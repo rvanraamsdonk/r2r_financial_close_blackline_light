@@ -10,6 +10,8 @@ from .email_evidence import email_evidence_analysis
 from .period import period_init
 from .bank_recon import bank_reconciliation
 from .intercompany_recon import intercompany_reconciliation
+from .ap_ar_recon import ap_reconciliation, ar_reconciliation
+from .je_lifecycle import je_lifecycle
 
 __all__ = [
     "period_init",
@@ -23,4 +25,7 @@ __all__ = [
     "email_evidence_analysis",
     "bank_reconciliation",
     "intercompany_reconciliation",
+    "ap_reconciliation",
+    "ar_reconciliation",
+    "je_lifecycle",
 ]
