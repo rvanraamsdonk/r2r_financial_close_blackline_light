@@ -87,7 +87,8 @@ def main(argv: list[str] | None = None) -> int:
 
     # Build & run graph
     graph = build_graph().compile()
-    res = graph.invoke({"obj": state, "audit": audit})
+    # Increase recursion limit to accommodate the full number of nodes including AI steps
+    res = graph.invoke({"obj": state, "audit": audit}, config={"recursion_limit": 60})
     state = res["obj"]
 
     # Export metrics
