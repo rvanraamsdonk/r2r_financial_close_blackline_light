@@ -22,6 +22,8 @@ from .engines import (
     je_lifecycle,
     gatekeeping_aggregate,
     open_hitl_cases,
+    controls_mapping,
+    close_reporting,
 )
 from .metrics import compute_metrics
 from .ai import ai_narrative_for_fx
@@ -133,6 +135,15 @@ def _node_metrics(state: GraphState) -> GraphState:
     return {**state, "obj": s}
 
 
+def _node_controls_mapping(state: GraphState) -> GraphState:
+    s = controls_mapping(state["obj"], state["audit"])
+    return {**state, "obj": s}
+
+
+def _node_close_reporting(state: GraphState) -> GraphState:
+    s = close_reporting(state["obj"], state["audit"])
+    return {**state, "obj": s}
+
 def build_graph() -> StateGraph:
     g = StateGraph(GraphState)  # type: ignore[arg-type]
     g.add_node("period_init", _node_period_init)
@@ -153,6 +164,8 @@ def build_graph() -> StateGraph:
     g.add_node("gatekeeping", _node_gatekeeping)
     g.add_node("hitl", _node_hitl)
     g.add_node("metrics", _node_metrics)
+    g.add_node("controls_mapping", _node_controls_mapping)
+    g.add_node("close_reporting", _node_close_reporting)
 
     g.set_entry_point("period_init")
     g.add_edge("period_init", "validate")
@@ -172,5 +185,7 @@ def build_graph() -> StateGraph:
     g.add_edge("email_evidence", "gatekeeping")
     g.add_edge("gatekeeping", "hitl")
     g.add_edge("hitl", "metrics")
-    g.add_edge("metrics", END)
+    g.add_edge("metrics", "controls_mapping")
+    g.add_edge("controls_mapping", "close_reporting")
+    g.add_edge("close_reporting", END)
     return g

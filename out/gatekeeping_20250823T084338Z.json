@@ -1,0 +1,38 @@
+{
+  "generated_at": "2025-08-23T08:43:38.268323Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "inputs": {
+    "fx_coverage_ok": null,
+    "tb_balanced_by_entity": null,
+    "tb_entity_sums_usd": null
+  },
+  "categories": {
+    "bank_duplicates": 0,
+    "ap_exceptions": 119,
+    "ar_exceptions": 150,
+    "ic_mismatches": 0,
+    "accruals_exceptions": 1,
+    "je_exceptions": 3,
+    "flux_exceptions": 127
+  },
+  "totals": {
+    "ap_exceptions_total_abs": 663788.88,
+    "ar_exceptions_total_abs": 1053791.17,
+    "ic_mismatch_total_diff_abs": 0.0,
+    "accruals_exception_total_usd": 29408.57,
+    "je_exceptions_total_abs": 73817.14
+  },
+  "risk_level": "high",
+  "block_close": true,
+  "referenced_artifacts": {
+    "period_init_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/period_init_20250823T084338Z.json",
+    "fx_translation_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/fx_translation_20250823T084338Z.json",
+    "bank_reconciliation_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/bank_reconciliation_20250823T084338Z.json",
+    "ap_reconciliation_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/ap_reconciliation_20250823T084338Z.json",
+    "ar_reconciliation_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/ar_reconciliation_20250823T084338Z.json",
+    "intercompany_reconciliation_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/intercompany_reconciliation_20250823T084338Z.json",
+    "je_lifecycle_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/je_lifecycle_20250823T084338Z.json",
+    "flux_analysis_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/flux_analysis_20250823T084338Z.json"
+  }
+}

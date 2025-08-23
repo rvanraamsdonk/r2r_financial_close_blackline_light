@@ -1,0 +1,32 @@
+[
+  {
+    "id": "CASE-209901-AP_EXCEPTIONS-001",
+    "created_at": "2025-08-23T08:44:02.328670Z",
+    "period": "2099-01",
+    "entity": "ALL",
+    "source": "ap_exceptions",
+    "severity": "medium",
+    "title": "Ap Exceptions: 2 items",
+    "description": "Automated detection opened this HITL case for category 'ap_exceptions' with 2 exception items in period 2099-01.",
+    "evidence_uris": [],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-209901-AR_EXCEPTIONS-002",
+    "created_at": "2025-08-23T08:44:02.328670Z",
+    "period": "2099-01",
+    "entity": "ALL",
+    "source": "ar_exceptions",
+    "severity": "medium",
+    "title": "Ar Exceptions: 1 items",
+    "description": "Automated detection opened this HITL case for category 'ar_exceptions' with 1 exception items in period 2099-01.",
+    "evidence_uris": [],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  }
+]
