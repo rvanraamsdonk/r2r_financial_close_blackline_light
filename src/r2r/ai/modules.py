@@ -161,3 +161,108 @@ def ai_hitl_case_summaries(state: R2RState, audit: AuditLogger) -> R2RState:
     state.metrics["hitl_ai_artifact"] = str(path)
     state.messages.append(f"[AI] HITL: case summaries and next actions -> {path}")
     return state
+
+
+def ai_bank_rationales(state: R2RState, audit: AuditLogger) -> R2RState:
+    if state.ai_mode == "off":
+        return state
+    m = state.metrics or {}
+    now = _now_iso()
+    payload = {
+        "generated_at": now,
+        "period": state.period,
+        "entity_scope": state.entity,
+        "rationales": [],
+        "citations": [m.get("bank_reconciliation_artifact")],
+    }
+    path = _write_json(Path(audit.out_dir), "bank_ai_rationales", _audit_run_id(audit), payload)
+    _record_ai(state, audit, kind="bank", payload=payload, artifact=path)
+    state.metrics["bank_ai_artifact"] = str(path)
+    state.messages.append(f"[AI] Bank: timing/error rationales prepared -> {path}")
+    return state
+
+
+def ai_accruals_narratives(state: R2RState, audit: AuditLogger) -> R2RState:
+    if state.ai_mode == "off":
+        return state
+    m = state.metrics or {}
+    now = _now_iso()
+    payload = {
+        "generated_at": now,
+        "period": state.period,
+        "entity_scope": state.entity,
+        "narratives": [],
+        "je_rationales": [],
+        "citations": [m.get("accruals_artifact"), m.get("je_lifecycle_artifact"), m.get("email_evidence_artifact")],
+    }
+    path = _write_json(Path(audit.out_dir), "accruals_ai_narratives", _audit_run_id(audit), payload)
+    _record_ai(state, audit, kind="accruals", payload=payload, artifact=path)
+    state.metrics["accruals_ai_artifact"] = str(path)
+    state.messages.append(f"[AI] Accruals: JE narratives and rationales -> {path}")
+    return state
+
+
+def ai_gatekeeping_rationales(state: R2RState, audit: AuditLogger) -> R2RState:
+    if state.ai_mode == "off":
+        return state
+    m = state.metrics or {}
+    now = _now_iso()
+    payload = {
+        "generated_at": now,
+        "period": state.period,
+        "entity_scope": state.entity,
+        "risk_level": m.get("gatekeeping_risk_level"),
+        "block_close": m.get("gatekeeping_block_close"),
+        "rationales": [],
+        "citations": [m.get("gatekeeping_artifact")],
+    }
+    path = _write_json(Path(audit.out_dir), "gatekeeping_ai_rationales", _audit_run_id(audit), payload)
+    _record_ai(state, audit, kind="gatekeeping", payload=payload, artifact=path)
+    state.metrics["gatekeeping_ai_artifact"] = str(path)
+    state.messages.append(f"[AI] Gatekeeping: risk rationales and escalation -> {path}")
+    return state
+
+
+def ai_controls_owner_summaries(state: R2RState, audit: AuditLogger) -> R2RState:
+    if state.ai_mode == "off":
+        return state
+    m = state.metrics or {}
+    now = _now_iso()
+    payload = {
+        "generated_at": now,
+        "period": state.period,
+        "entity_scope": state.entity,
+        "owner_summaries": [],
+        "residual_risks": [],
+        "citations": [m.get("controls_mapping_artifact")],
+    }
+    path = _write_json(Path(audit.out_dir), "controls_ai_summaries", _audit_run_id(audit), payload)
+    _record_ai(state, audit, kind="controls", payload=payload, artifact=path)
+    state.metrics["controls_ai_artifact"] = str(path)
+    state.messages.append(f"[AI] Controls: owner summaries and residual risks -> {path}")
+    return state
+
+
+def ai_close_report_exec_summary(state: R2RState, audit: AuditLogger) -> R2RState:
+    if state.ai_mode == "off":
+        return state
+    m = state.metrics or {}
+    now = _now_iso()
+    payload = {
+        "generated_at": now,
+        "period": state.period,
+        "entity_scope": state.entity,
+        "executive_summary": "",
+        "citations": [
+            m.get("close_report_artifact"),
+            m.get("gatekeeping_artifact"),
+            m.get("flux_analysis_artifact"),
+            m.get("ap_reconciliation_artifact"),
+            m.get("ar_reconciliation_artifact"),
+        ],
+    }
+    path = _write_json(Path(audit.out_dir), "report_ai_executive_summary", _audit_run_id(audit), payload)
+    _record_ai(state, audit, kind="report", payload=payload, artifact=path)
+    state.metrics["report_ai_artifact"] = str(path)
+    state.messages.append(f"[AI] Report: executive summary prepared -> {path}")
+    return state

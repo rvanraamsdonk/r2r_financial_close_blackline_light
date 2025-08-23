@@ -5,6 +5,11 @@ from .modules import (
     ai_ic_match_proposals,
     ai_flux_narratives,
     ai_hitl_case_summaries,
+    ai_bank_rationales,
+    ai_accruals_narratives,
+    ai_gatekeeping_rationales,
+    ai_controls_owner_summaries,
+    ai_close_report_exec_summary,
 )
 
 __all__ = [
@@ -14,4 +19,9 @@ __all__ = [
     "ai_ic_match_proposals",
     "ai_flux_narratives",
     "ai_hitl_case_summaries",
+    "ai_bank_rationales",
+    "ai_accruals_narratives",
+    "ai_gatekeeping_rationales",
+    "ai_controls_owner_summaries",
+    "ai_close_report_exec_summary",
 ]
