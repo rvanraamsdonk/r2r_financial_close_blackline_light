@@ -1,0 +1,14 @@
+{
+  "generated_at": "2025-08-23T09:01:34Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "matches": [],
+  "unresolved_summary": {
+    "ap_exceptions": 119,
+    "ar_exceptions": 150
+  },
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/ap_reconciliation_20250823T090134Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/ar_reconciliation_20250823T090134Z.json"
+  ]
+}

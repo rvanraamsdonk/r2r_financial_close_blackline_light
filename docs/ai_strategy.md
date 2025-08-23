@@ -15,7 +15,7 @@ This system is AI-first: AI is used for explanation, summarization, and reasonin
 - Modes: `ai_mode`: off | assist | strict.
 - Provenance: append `prompt_runs` with inputs hash, timestamps, artifact URI.
 - Evidence: write AI artifacts to `out/` and log `EvidenceRef` in audit.
-- Metrics: `ai_*_artifact` keys per step; optional cost/latency in future.
+- Metrics: `ai_*_artifact` per step; cost/latency metrics recorded.
 
 ## Module AI Artifacts (Phase 1)
 
@@ -45,5 +45,27 @@ FX has an existing AI narrative node `ai_fx` after `fx` and before `fx_translati
 
 ## Next Steps
 
-- Add prompt templates, external LLM integration, caching, and cost/latency tracking.
+- Add prompt templates, external LLM integration, caching, and cost/latency tracking. [In progress]
 - Extend docs with per-module AI sections and examples.
+
+## Cost & Token Transparency (Audit-Ready)
+
+- Each AI helper writes two audit records:
+  - `ai_output` with `kind`, `artifact`, `generated_at`.
+  - `ai_metrics` with `kind`, `tokens`, `cost_usd`.
+- Heuristic token estimation uses payload size/4; cost defaults to 0 in offline mode. When integrating a provider, set per-1k token rates to compute actual `cost_usd`.
+- Metrics surface to `state.metrics` as `ai_<kind>_tokens`, `ai_<kind>_cost_usd`, and `ai_<kind>_latency_ms` for dashboards and governance.
+
+## Inspecting AI Artifacts via CLI
+
+Use `scripts/drill_through.py list-ai` to enumerate AI artifacts and metrics from the latest (or specified) audit log.
+
+Examples:
+
+```bash
+.venv/bin/python scripts/drill_through.py list-ai
+.venv/bin/python scripts/drill_through.py list-ai --json
+.venv/bin/python scripts/drill_through.py list-ai --run 20250823T090910Z
+```
+
+This supports Big 4 expectations for traceability: clear linkage from narratives to artifacts, plus explicit token/cost disclosures per AI step.

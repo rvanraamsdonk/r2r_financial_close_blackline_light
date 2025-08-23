@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Dict, Any, List
 
@@ -10,22 +11,37 @@ import pandas as pd
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Drill-through to source rows using audit evidence input_row_ids")
-    p.add_argument(
+    p = argparse.ArgumentParser(description="Audit drill-through and AI artifact inspection")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    # drill subcommand
+    pdrl = sub.add_parser("drill", help="Drill-through to source rows using audit evidence input_row_ids")
+    pdrl.add_argument(
         "--fn",
         required=True,
         choices=["tb_diagnostics", "accruals_check", "email_evidence"],
         help="Function to drill through",
     )
-    p.add_argument("--audit", dest="audit_path", default=None, help="Path to audit_*.jsonl; if omitted, pick latest in out/")
-    p.add_argument("--limit", type=int, default=None, help="Limit number of matched rows printed")
-    p.add_argument("--format", dest="fmt", choices=["csv", "json"], default="csv", help="Output format")
+    pdrl.add_argument("--audit", dest="audit_path", default=None, help="Path to audit_*.jsonl; if omitted, pick latest in out/")
+    pdrl.add_argument("--limit", type=int, default=None, help="Limit number of matched rows printed")
+    pdrl.add_argument("--format", dest="fmt", choices=["csv", "json"], default="csv", help="Output format")
+
+    # list-ai subcommand
+    plai = sub.add_parser("list-ai", help="List AI artifacts and metrics from audit log")
+    plai.add_argument("--audit", dest="audit_path", default=None, help="Path to audit_*.jsonl; if omitted, pick latest in out/")
+    plai.add_argument("--run", dest="run_id", default=None, help="Run ID to select audit_*.jsonl explicitly (overrides --audit)")
+    plai.add_argument("--json", dest="as_json", action="store_true", help="Emit JSON instead of text lines")
     return p.parse_args()
 
 
 def find_latest_audit(out_dir: Path) -> Path | None:
     files = sorted(out_dir.glob("audit_*.jsonl"), key=lambda p: p.stat().st_mtime, reverse=True)
     return files[0] if files else None
+
+
+def find_audit_by_run(out_dir: Path, run_id: str) -> Path | None:
+    cand = out_dir / f"audit_{run_id}.jsonl"
+    return cand if cand.exists() else None
 
 
 def read_jsonl(path: Path) -> List[Dict[str, Any]]:
@@ -92,12 +108,51 @@ def main() -> int:
     repo_root = Path(__file__).resolve().parents[1]
     out_dir = repo_root / "out"
 
-    audit_path = Path(args.audit_path) if args.audit_path else (find_latest_audit(out_dir) or Path())
-    if not audit_path.exists():
+    # Resolve audit path based on subcommand
+    audit_path: Path | None = None
+    if getattr(args, "run_id", None):
+        audit_path = find_audit_by_run(out_dir, args.run_id)
+    if not audit_path and getattr(args, "audit_path", None):
+        audit_path = Path(args.audit_path)
+    if not audit_path:
+        audit_path = find_latest_audit(out_dir)
+    if not audit_path or not audit_path.exists():
         print(f"[DET] Audit file not found. Searched: {audit_path or out_dir}")
         return 1
 
     recs = read_jsonl(audit_path)
+
+    if args.cmd == "list-ai":
+        # Gather ai_output, ai_metrics
+        outputs: List[Dict[str, Any]] = []
+        metrics_map: Dict[str, Dict[str, Any]] = {}
+        for r in recs:
+            if r.get("type") == "ai_output":
+                outputs.append(r)
+            elif r.get("type") == "ai_metrics":
+                k = r.get("kind")
+                metrics_map[k] = {"tokens": r.get("tokens"), "cost_usd": r.get("cost_usd")}
+        outputs.sort(key=lambda r: r.get("generated_at", ""))
+        if args.as_json:
+            enriched = []
+            for o in outputs:
+                k = o.get("kind")
+                mm = metrics_map.get(k, {})
+                enriched.append({**o, **{f"ai_{k}_tokens": mm.get("tokens"), f"ai_{k}_cost_usd": mm.get("cost_usd")}})
+            # Write explicitly to stdout and flush to avoid buffered/no-output issues in some environments
+            sys.stdout.write(json.dumps(enriched, indent=2) + "\n")
+            sys.stdout.flush()
+        else:
+            print(f"[DET] AI artifacts for run: {audit_path.name}")
+            for o in outputs:
+                k = o.get("kind")
+                mm = metrics_map.get(k, {})
+                print(
+                    f"[AI] kind={k} artifact={o.get('artifact')} tokens={mm.get('tokens')} cost_usd={mm.get('cost_usd')} generated_at={o.get('generated_at')}"
+                )
+        return 0
+
+    # cmd == drill
     ev = load_evidence_for_fn(recs, args.fn)
     uri = ev.get("uri")
     rows = ev.get("input_row_ids") or []
