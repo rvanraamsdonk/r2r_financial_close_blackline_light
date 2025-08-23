@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
 from hashlib import sha256
 from pathlib import Path
 from typing import List, Dict, Any
@@ -11,6 +10,7 @@ import pandas as pd
 from ..schemas import OutputTag, MethodType, DeterministicRun, EvidenceRef
 from ..audit.log import AuditLogger
 from ..state import R2RState
+from ..utils import now_iso_z, run_id
 
 
 def _hash_df(df: pd.DataFrame) -> str:
@@ -22,7 +22,7 @@ def _extract_run_id_from_audit(audit: AuditLogger) -> str:
     name = Path(audit.log_path).name  # audit_<runid>.jsonl
     if name.startswith("audit_") and name.endswith(".jsonl"):
         return name[len("audit_") : -len(".jsonl")]
-    return datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    return run_id()
 
 
 def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
@@ -86,7 +86,7 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
     run_id = _extract_run_id_from_audit(audit)
     out_path = Path(audit.out_dir) / f"fx_translation_{run_id}.json"
     artifact = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": now_iso_z(),
         "period": state.period,
         "entity_scope": state.entity,
         "policy": {

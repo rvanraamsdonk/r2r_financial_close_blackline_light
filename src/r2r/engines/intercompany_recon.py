@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from .. import utils
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, List
@@ -93,9 +93,44 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
                     "diff_abs": float(round(diff, 2)),
                     "threshold": float(round(thr, 2)),
                     "reason": "ic_amount_mismatch_above_threshold",
+                    "ai_rationale": f"[DET] IC doc {r['doc_id']} {src}->{dst}: diff={diff:.2f} USD exceeds threshold {thr:.2f}. Cites doc_id, entities, and computed threshold.",
                 }
             )
             input_row_ids.append(str(r["doc_id"]))
+
+    # Build simple candidate hints per exception: other exceptions in same pair/currency with closest diff_abs
+    if exceptions:
+        # Precompute by pair+currency for deterministic filtering
+        buckets: Dict[str, List[Dict[str, Any]]] = {}
+        for e in exceptions:
+            key = f"{e['entity_src']}->{e['entity_dst']}|{e.get('currency')}"
+            buckets.setdefault(key, []).append(e)
+
+        for e in exceptions:
+            key = f"{e['entity_src']}->{e['entity_dst']}|{e.get('currency')}"
+            peers = [p for p in buckets.get(key, []) if p is not e]
+            base = float(e.get("diff_abs", 0.0))
+            cands: List[Dict[str, Any]] = []
+            for p in peers:
+                dv = float(p.get("diff_abs", 0.0))
+                denom = base + dv + 1e-6
+                score = max(0.0, 1.0 - abs(base - dv) / denom)
+                cands.append(
+                    {
+                        "doc_id": p["doc_id"],
+                        "entity_src": p["entity_src"],
+                        "entity_dst": p["entity_dst"],
+                        "diff_abs": float(round(dv, 2)),
+                        "det_score": float(round(score, 4)),
+                    }
+                )
+            # Deterministic sort: by score desc, then doc_id asc
+            cands.sort(key=lambda x: (-x["det_score"], str(x["doc_id"])) )
+            e["candidates"] = cands[:3]
+            e["assistive_hint"] = True
+            e["det_candidate_summary"] = (
+                f"[DET] {e['entity_src']}->{e['entity_dst']} doc {e['doc_id']}: {len(e['candidates'])} assistive candidate hint(s) by diff magnitude in {e.get('currency')}; no match claim."
+            )
 
     # Build artifact
     run_id = Path(audit.log_path).stem.replace("audit_", "")
@@ -108,18 +143,42 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
         key = f"{e['entity_src']}->{e['entity_dst']}"
         by_pair[key] = by_pair.get(key, 0.0) + e.get("diff_abs", 0.0)
 
+    # Build simple true-up proposals for each exception: adjust dst to match src
+    proposals: List[Dict[str, Any]] = []
+    for e in exceptions:
+        amt_src = float(e["amount_src"])  # positive means debit on src in this simplified model
+        amt_dst = float(e["amount_dst"])  # should match src
+        adj = round(amt_src - amt_dst, 2)
+        if adj == 0.0:
+            continue
+        simulated_after = round(amt_dst + adj, 2)
+        proposals.append(
+            {
+                "proposal_type": "ic_true_up",
+                "doc_id": e["doc_id"],
+                "entity_src": e["entity_src"],
+                "entity_dst": e["entity_dst"],
+                "adjustment_usd": float(adj),
+                "simulated_dst_after": float(simulated_after),
+                "balanced_after": bool(abs(simulated_after - amt_src) < 1e-6),
+                "narrative": f"Adjust destination entity to match source (delta {adj:+.2f} USD)",
+            }
+        )
+
     payload = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": utils.now_iso_z(),
         "period": period,
         "rules": {
             "mismatch_rule": "flag |amount_src-amount_dst| > max(materiality[src], materiality[dst])",
             "default_floor_usd": 1000.0,
         },
         "exceptions": exceptions,
+        "proposals": proposals,
         "summary": {
             "count": len(exceptions),
             "total_diff_abs": float(round(total_diff, 2)),
             "by_pair_diff_abs": {k: float(round(v, 2)) for k, v in by_pair.items()},
+            "proposal_count": len(proposals),
         },
     }
 
@@ -159,7 +218,7 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
     # Messages, tags, metrics
     if exceptions:
         msgs.append(
-            f"[DET] Intercompany mismatches: {len(exceptions)} items, total_diff_abs={payload['summary']['total_diff_abs']:.2f} -> {out_path}"
+            f"[DET] Intercompany mismatches: {len(exceptions)} items, total_diff_abs={payload['summary']['total_diff_abs']:.2f}, proposals={len(proposals)} -> {out_path}"
         )
     else:
         msgs.append("[DET] Intercompany: no mismatches above materiality")

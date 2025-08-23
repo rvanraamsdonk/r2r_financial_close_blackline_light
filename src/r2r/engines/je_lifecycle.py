@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from .. import utils
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, List, Set
@@ -87,6 +87,15 @@ def je_lifecycle(state: R2RState, audit: AuditLogger) -> R2RState:
     exceptions: List[Dict[str, Any]] = []
     input_row_ids: Set[str] = set()
 
+    # Materiality thresholds by entity for four-eyes enforcement
+    materiality_map: Dict[str, float] = {}
+    if isinstance(state.metrics.get("materiality_thresholds_usd"), dict):
+        for k, v in state.metrics["materiality_thresholds_usd"].items():
+            try:
+                materiality_map[str(k)] = float(v)
+            except Exception:
+                continue
+
     for _, r in df.iterrows():
         je_id = str(r.get("je_id"))
         amount = float(r.get("amount", 0.0)) if pd.notna(r.get("amount")) else 0.0
@@ -94,6 +103,8 @@ def je_lifecycle(state: R2RState, audit: AuditLogger) -> R2RState:
         supp = _safe_str(r.get("supporting_doc"))
         is_manual = _truthy(r.get("manual_flag"))
         is_reversal = _truthy(r.get("reversal_flag"))
+        ent = _safe_str(r.get("entity"))
+        approver = _safe_str(r.get("approver"))
 
         # Approval exceptions
         if approval and approval.lower() != "approved":
@@ -111,6 +122,25 @@ def je_lifecycle(state: R2RState, audit: AuditLogger) -> R2RState:
                 }
             )
             input_row_ids.add(je_id)
+
+        # Four-eyes enforcement for material amounts: require approved + approver present
+        thr = materiality_map.get(ent)
+        if thr is not None and abs(amount) > float(thr):
+            if (not approval) or (approval.lower() != "approved") or (not approver):
+                exceptions.append(
+                    {
+                        "je_id": je_id,
+                        "entity": ent,
+                        "amount": amount,
+                        "currency": r.get("currency"),
+                        "source_system": r.get("source_system"),
+                        "reason": "four_eyes_breach",
+                        "approval_status": approval,
+                        "approver": approver,
+                        "materiality_threshold_usd": float(thr),
+                    }
+                )
+                input_row_ids.add(je_id)
 
         # Manual missing support
         if is_manual and (not supp):
@@ -150,7 +180,7 @@ def je_lifecycle(state: R2RState, audit: AuditLogger) -> R2RState:
         by_reason[e["reason"]] = by_reason.get(e["reason"], 0) + 1
 
     payload = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": utils.now_iso_z(),
         "period": period,
         "entity_scope": entity_scope,
         "rules": {

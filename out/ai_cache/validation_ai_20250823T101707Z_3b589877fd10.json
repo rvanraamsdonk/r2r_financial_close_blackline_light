@@ -1,0 +1,17 @@
+{
+  "generated_at": "2025-08-23T10:17:07Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "summary": {
+    "schema_issues": 0,
+    "duplicate_rows": 0,
+    "fx_coverage_ok": null
+  },
+  "root_causes": [],
+  "remediations": [],
+  "citations": [
+    null,
+    null,
+    null
+  ]
+}

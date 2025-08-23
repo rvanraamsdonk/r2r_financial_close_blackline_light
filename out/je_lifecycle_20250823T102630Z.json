@@ -1,0 +1,48 @@
+{
+  "generated_at": "2025-08-23T10:26:32.551801Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "rules": {
+    "flag_if_approval_not_approved": true,
+    "flag_manual_missing_support": true,
+    "flag_reversal": true
+  },
+  "exceptions": [
+    {
+      "je_id": "JE-2025-08-001",
+      "entity": "ENT100",
+      "amount": 29408.57,
+      "currency": "USD",
+      "source_system": "Manual",
+      "reason": "approval_pending",
+      "approval_status": "Pending",
+      "approver": "Controller"
+    },
+    {
+      "je_id": "JE-2025-08-001",
+      "entity": "ENT100",
+      "amount": 29408.57,
+      "currency": "USD",
+      "source_system": "Manual",
+      "reason": "reversal_flagged"
+    },
+    {
+      "je_id": "JE-2025-08-004",
+      "entity": "ENT101",
+      "amount": 15000.0,
+      "currency": "USD",
+      "source_system": "Manual",
+      "reason": "approval_pending",
+      "approval_status": "Pending",
+      "approver": "IC Controller"
+    }
+  ],
+  "summary": {
+    "count": 3,
+    "total_abs_amount": 73817.14,
+    "by_reason": {
+      "approval_pending": 2,
+      "reversal_flagged": 1
+    }
+  }
+}

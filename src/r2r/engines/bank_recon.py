@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, UTC
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
@@ -102,9 +102,55 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                     "reason": "duplicate_candidate",
                     "duplicate_signature": {k: v for k, v in zip(sig_cols, key if isinstance(key, Tuple) else (key,))},
                     "primary_bank_txn_id": primary["bank_txn_id"],
+                    "classification": "error_duplicate",
+                    "ai_rationale": (
+                        f"[DET] Bank duplicate candidate: entity {r['entity']}, txn {r['bank_txn_id']} matches signature with primary {primary['bank_txn_id']} on same date. "
+                        f"Classify=error_duplicate. Cites entity, date={r['date']}, amount={float(r['amount']):.2f} {r['currency']}, counterparty={r['counterparty']}, type={r['transaction_type']}."
+                    ),
                 }
                 exceptions.append(exc)
                 input_row_ids.append(str(r["bank_txn_id"]))
+
+    # Timing-difference heuristic: same signature excluding date, within window days
+    timing_window_days = 3
+    sig_no_date = [c for c in sig_cols if c != "date"]
+    grp2 = df.groupby(sig_no_date, dropna=False, as_index=False)
+    for key2, idx2 in grp2.indices.items():
+        if len(idx2) < 2:
+            continue
+        rows = df.loc[list(idx2)].sort_values(["entity", "amount", "currency", "counterparty", "transaction_type", "date", "bank_txn_id"]).reset_index(drop=True)
+        # pair successive rows by date proximity deterministically
+        dates = pd.to_datetime(rows["date"], errors="coerce")
+        for i in range(1, len(rows)):
+            r_prev = rows.iloc[i - 1]
+            r_curr = rows.iloc[i]
+            d_prev = dates.iloc[i - 1]
+            d_curr = dates.iloc[i]
+            if pd.isna(d_prev) or pd.isna(d_curr):
+                continue
+            day_diff = int(abs((d_curr - d_prev).days))
+            if 0 < day_diff <= timing_window_days:
+                # Flag the later transaction as timing candidate referencing the earlier one
+                exc = {
+                    "entity": r_curr["entity"],
+                    "bank_txn_id": r_curr["bank_txn_id"],
+                    "date": r_curr["date"],
+                    "amount": float(r_curr["amount"]),
+                    "currency": r_curr["currency"],
+                    "counterparty": r_curr["counterparty"],
+                    "transaction_type": r_curr["transaction_type"],
+                    "description": r_curr.get("description"),
+                    "reason": "timing_candidate",
+                    "matched_bank_txn_id": r_prev["bank_txn_id"],
+                    "day_diff": day_diff,
+                    "classification": "timing_difference",
+                    "ai_rationale": (
+                        f"[DET] Bank timing candidate: entity {r_curr['entity']}, txn {r_curr['bank_txn_id']} matches amount/counterparty/type with txn {r_prev['bank_txn_id']} within {day_diff} days. "
+                        f"Classify=timing_difference. Cites dates {r_prev['date']} -> {r_curr['date']}, amount={float(r_curr['amount']):.2f} {r_curr['currency']}, counterparty={r_curr['counterparty']}."
+                    ),
+                }
+                exceptions.append(exc)
+                input_row_ids.append(str(r_curr["bank_txn_id"]))
 
     # Build artifact
     run_id = Path(audit.log_path).stem.replace("audit_", "")
@@ -117,11 +163,12 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
         by_ent[ent] = by_ent.get(ent, 0.0) + abs(float(e.get("amount", 0.0)))
 
     payload = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
         "period": period,
         "entity_scope": entity_scope,
         "rules": {
             "duplicate_signature": sig_cols,
+            "timing_window_days": timing_window_days,
         },
         "exceptions": exceptions,
         "summary": {

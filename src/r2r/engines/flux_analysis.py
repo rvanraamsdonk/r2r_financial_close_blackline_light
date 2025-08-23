@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from .. import utils
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -110,6 +110,21 @@ def flux_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
         pct_b = (var_b / bud) if abs(bud) > 1e-9 else None
         pct_p = (var_p / prev) if abs(prev) > 1e-9 else None
         thr = ent_threshold(ent)
+        band_b = "within" if abs(var_b) <= thr else "above"
+        band_p = "within" if abs(var_p) <= thr else "above"
+
+        # Determine a simple deterministic driver basis for narrative purposes
+        basis = "budget" if abs(var_b) >= abs(var_p) else "prior"
+        var_used = var_b if basis == "budget" else var_p
+        band_used = ("within" if abs(var_used) <= thr else "above") if basis == "budget" else (
+            "within" if abs(var_used) <= thr else "above"
+        )
+
+        # Deterministic [AI]-labeled narrative with citations to computed fields
+        ai_narrative = (
+            f"[AI] {ent}/{acct}: variance vs {basis} = {var_used:.2f} USD (thr={thr:.2f}, band={band_used}). "
+            f"Cites entity={ent}, account={acct}, period={period}."
+        )
 
         row = {
             "entity": ent,
@@ -122,6 +137,10 @@ def flux_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
             "pct_vs_budget": round(pct_b, 4) if pct_b is not None else None,
             "pct_vs_prior": round(pct_p, 4) if pct_p is not None else None,
             "threshold_usd": round(thr, 2),
+            "band_vs_budget": band_b,
+            "band_vs_prior": band_p,
+            "ai_basis": basis,
+            "ai_narrative": ai_narrative,
         }
         rows.append(row)
 
@@ -164,15 +183,43 @@ def flux_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
         "rows": len(rows),
         "exceptions_count": len(exceptions),
         "by_entity_count": {},
+        "band_counts": {"budget": {"within": 0, "above": 0}, "prior": {"within": 0, "above": 0}},
     }
     by_ent: Dict[str, int] = {}
     for e in exceptions:
         ent = str(e.get("entity"))
         by_ent[ent] = by_ent.get(ent, 0) + 1
     summary["by_entity_count"] = by_ent
+    # Band counts
+    for r in rows:
+        summary["band_counts"]["budget"][str(r.get("band_vs_budget"))] += 1
+        summary["band_counts"]["prior"][str(r.get("band_vs_prior"))] += 1
+
+    # AI highlights: top absolute variances across chosen basis, and counts
+    # Build a list of (entity, account, basis, variance_abs, variance_usd)
+    top_items: List[Dict[str, Any]] = []
+    for r in rows:
+        basis = str(r.get("ai_basis"))
+        v = float(r.get("var_vs_budget")) if basis == "budget" else float(r.get("var_vs_prior"))
+        top_items.append(
+            {
+                "entity": r.get("entity"),
+                "account": r.get("account"),
+                "basis": basis,
+                "variance_usd": round(v, 2),
+                "variance_abs": round(abs(v), 2),
+            }
+        )
+    top_items_sorted = sorted(top_items, key=lambda x: x["variance_abs"], reverse=True)
+    ai_highlights = {
+        "top_variances": top_items_sorted[:3],
+        "count_above_budget": int(summary["band_counts"]["budget"]["above"]),
+        "count_above_prior": int(summary["band_counts"]["prior"]["above"]),
+    }
+    summary["ai_highlights"] = ai_highlights
 
     artifact = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": utils.now_iso_z(),
         "period": period,
         "prior": prior,
         "entity_scope": entity_scope,

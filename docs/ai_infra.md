@@ -29,6 +29,7 @@ This document summarizes the AI infra used across modules.
 
 - Token estimation is provider-agnostic: `estimate_tokens(payload_bytes)` divides JSON byte length by 4 as a heuristic.
 - Cost estimation defaults to 0.0 USD in offline mode; hook in provider rates when integrating real APIs via `estimate_cost_usd(tokens, rate_per_1k)`.
+- Environment-driven rate: set `R2R_AI_RATE_PER_1K` to apply a USD cost per 1,000 tokens across all AI helpers. If unset/invalid, cost remains `0.0`.
 - Per-AI helper metrics are recorded in `state.metrics` and audit log as:
   - `ai_<kind>_tokens`
   - `ai_<kind>_cost_usd`
@@ -50,3 +51,23 @@ Examples (run from repo root, in venv):
 ```
 
 JSON output includes enriched fields per entry: `ai_<kind>_tokens`, `ai_<kind>_cost_usd`.
+
+### Aggregated totals (`--sum`)
+
+To report aggregate tokens and cost across the run:
+
+```bash
+.venv/bin/python scripts/drill_through.py list-ai --sum
+.venv/bin/python scripts/drill_through.py list-ai --json --sum
+```
+
+- Text mode appends a total line: `"[AI] TOTAL tokens=<N> cost_usd=<X>"`.
+- JSON `--sum` returns an object: `{ "artifacts": [...], "summary": { "total_tokens": N, "total_cost_usd": X } }`.
+
+Example to set a non-zero cost rate during a run:
+
+```bash
+export R2R_AI_RATE_PER_1K=0.5
+.venv/bin/python scripts/run_close.py
+.venv/bin/python scripts/drill_through.py list-ai --sum
+```

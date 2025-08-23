@@ -1,6 +1,7 @@
 import json
 import subprocess
 from pathlib import Path
+import os
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PY = str(REPO_ROOT / ".venv/bin/python")
@@ -53,3 +54,28 @@ def test_run_produces_ai_metrics_and_cli_outputs():
     k = sample.get("kind")
     assert k, "Missing kind in list-ai --json entry"
     assert f"ai_{k}_tokens" in sample and f"ai_{k}_cost_usd" in sample, "Enriched ai_* metrics missing in JSON output"
+
+
+def test_list_ai_sum_and_env_cost_rate():
+    # Set env rate to a known non-zero value
+    env = os.environ.copy()
+    env["R2R_AI_RATE_PER_1K"] = "0.5"  # $0.5 per 1k tokens
+
+    # 1) Run full close with env rate
+    run = subprocess.run([PY, str(REPO_ROOT / "scripts/run_close.py")], env=env, capture_output=True, text=True)
+    assert run.returncode == 0, f"run_close failed: {run.stderr}\n{run.stdout}"
+
+    # 2) JSON mode with --sum should include summary with totals and non-zero (or >=0) costs
+    cli_json = subprocess.run([PY, str(REPO_ROOT / "scripts/drill_through.py"), "list-ai", "--json", "--sum"], env=env, capture_output=True, text=True)
+    assert cli_json.returncode == 0, f"list-ai --json --sum failed: {cli_json.stderr}\n{cli_json.stdout}"
+    payload = json.loads(cli_json.stdout)
+    assert isinstance(payload, dict) and "artifacts" in payload and "summary" in payload, "--json --sum should return dict with artifacts+summary"
+    summary = payload["summary"]
+    assert "total_tokens" in summary and isinstance(summary["total_tokens"], int)
+    assert "total_cost_usd" in summary and isinstance(summary["total_cost_usd"], (int, float))
+
+    # 3) Text mode with --sum should print TOTAL line
+    cli_txt = subprocess.run([PY, str(REPO_ROOT / "scripts/drill_through.py"), "list-ai", "--sum"], env=env, capture_output=True, text=True)
+    assert cli_txt.returncode == 0, f"list-ai --sum failed: {cli_txt.stderr}\n{cli_txt.stdout}"
+    stdout = cli_txt.stdout
+    assert "[AI] TOTAL tokens=" in stdout and "cost_usd=" in stdout

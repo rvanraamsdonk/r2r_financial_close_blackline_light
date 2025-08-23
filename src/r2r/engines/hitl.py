@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, asdict
-from datetime import datetime
+from datetime import datetime, UTC
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -66,7 +66,7 @@ def open_hitl_cases(state: R2RState, audit: AuditLogger) -> R2RState:
     base_severity = "high" if gate_block else ("medium" if any(v > 0 for v in categories.values()) else "low")
 
     cases: List[Case] = []
-    now = datetime.utcnow().isoformat() + "Z"
+    now = datetime.now(UTC).isoformat().replace("+00:00", "Z")
 
     idx = 1
     for cat, count in categories.items():

@@ -70,6 +70,16 @@ def tb_diagnostics(state: R2RState, audit: AuditLogger) -> R2RState:
                 ]
             )
 
+    # Compute rollups and balance flags regardless of off state for summary
+    by_entity_totals = tb.groupby("entity")["balance_usd"].sum().round(2).to_dict()
+    entity_balanced = {ent: float(v) == 0.0 for ent, v in by_entity_totals.items()}
+    by_account_type: Dict[str, float] | None = None
+    if coa is not None and "account_type" in coa.columns:
+        tb_join = tb.merge(coa[["account", "account_type"]], on="account", how="left")
+        by_account_type = (
+            tb_join.groupby("account_type")["balance_usd"].sum().round(2).to_dict()
+        )
+
     # Persist artifact
     run_id = _extract_run_id_from_audit(audit)
     out_path = Path(audit.out_dir) / f"tb_diagnostics_{run_id}.json"
@@ -78,6 +88,11 @@ def tb_diagnostics(state: R2RState, audit: AuditLogger) -> R2RState:
         "period": state.period,
         "entity_scope": state.entity,
         "diagnostics": diagnostics,
+        "rollups": {
+            "by_entity_total_usd": {k: float(v) for k, v in by_entity_totals.items()},
+            "entity_balanced": entity_balanced,
+            **({"by_account_type_total_usd": {k: float(v) for k, v in by_account_type.items()}} if by_account_type else {}),
+        },
     }
     with out_path.open("w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)

@@ -25,8 +25,18 @@
   - `exceptions` items:
     - `doc_id`, `entity_src`, `entity_dst`, `amount_src`, `amount_dst`, `currency`, `transaction_type`, `description`
     - `diff_abs`, `threshold`, `reason`
+    - `ai_rationale` (new): `[AI]`-labeled deterministic rationale citing `doc_id`, entities, computed diff and threshold
+    - `candidates[]` (new): up to 3 nearest diff magnitude hints within same pair and currency
+      - Items: `doc_id, entity_src, entity_dst, diff_abs, score (0..1)`
+    - `ai_candidate_summary` (new): `[AI]`-labeled summary indicating number of candidates
+  - `proposals` (new): deterministic true-up JE suggestions per exception
+    - `proposal_type = "ic_true_up"`
+    - `adjustment_usd` (signed, to align destination with source)
+    - `simulated_dst_after` (destination amount after applying adjustment)
+    - `balanced_after` (boolean indicating match with source after simulation)
+    - `narrative`
   - `summary`:
-    - `count`, `total_diff_abs`, `by_pair_diff_abs`
+    - `count`, `total_diff_abs`, `by_pair_diff_abs`, `proposal_count`
 
 ## Provenance & Audit
 
@@ -44,3 +54,5 @@
 
 - Relies on `period_init` to compute `materiality_thresholds_usd`; if absent, uses `$1,000` floor.
 - Purely deterministic; no probabilistic assumptions.
+- Message includes proposal count when mismatches exist.
+- Candidate hints are assistive only; they do not auto-resolve mismatches.

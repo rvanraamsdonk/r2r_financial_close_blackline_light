@@ -1,0 +1,68 @@
+{
+  "generated_at": "2025-08-23T10:04:49.806153Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "mappings": {
+    "tb_balanced_by_entity": {
+      "control_id": "TB.BAL.001",
+      "description": "Entity-level TB balances to 0 in USD",
+      "value": false
+    },
+    "fx_coverage_ok": {
+      "control_id": "FX.COV.001",
+      "description": "FX rates coverage meets policy",
+      "value": true
+    },
+    "bank_duplicates_count": {
+      "control_id": "BANK.REC.002",
+      "description": "Bank duplicate detection exceptions count",
+      "value": 0
+    },
+    "ap_exceptions_count": {
+      "control_id": "AP.REC.003",
+      "description": "AP reconciliation exceptions count",
+      "value": 119
+    },
+    "ar_exceptions_count": {
+      "control_id": "AR.REC.004",
+      "description": "AR reconciliation exceptions count",
+      "value": 150
+    },
+    "ic_mismatch_count": {
+      "control_id": "IC.REC.005",
+      "description": "Intercompany mismatches count",
+      "value": 0
+    },
+    "accruals_exception_count": {
+      "control_id": "ACCR.REV.006",
+      "description": "Accruals exception count (incl. reversals)",
+      "value": 1
+    },
+    "je_exceptions_count": {
+      "control_id": "JE.APP.007",
+      "description": "JE approval/reversal exceptions count",
+      "value": 3
+    },
+    "flux_exceptions_count": {
+      "control_id": "FLUX.ANAL.008",
+      "description": "Flux analysis exception count across accounts",
+      "value": 127
+    },
+    "gatekeeping_risk_level": {
+      "control_id": "GATE.RISK.009",
+      "description": "Gatekeeping overall risk level",
+      "value": "high"
+    },
+    "gatekeeping_block_close": {
+      "control_id": "GATE.BLOCK.010",
+      "description": "Gatekeeping block close flag",
+      "value": true
+    },
+    "hitl_cases_open_count": {
+      "control_id": "HITL.CASE.011",
+      "description": "Open HITL cases count",
+      "value": 5
+    }
+  },
+  "count": 12
+}

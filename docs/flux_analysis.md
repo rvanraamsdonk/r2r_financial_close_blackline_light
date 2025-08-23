@@ -50,7 +50,9 @@
       "var_vs_prior": 199488.0,
       "pct_vs_budget": 0.0322,
       "pct_vs_prior": 0.0212,
-      "threshold_usd": 100000.0
+      "threshold_usd": 100000.0,
+      "band_vs_budget": "within",
+      "band_vs_prior": "above"
     }
   ],
   "exceptions": [
@@ -67,7 +69,11 @@
   "summary": {
     "rows": 120,
     "exceptions_count": 3,
-    "by_entity_count": {"ENT100": 2, "ENT101": 1}
+    "by_entity_count": {"ENT100": 2, "ENT101": 1},
+    "band_counts": {
+      "budget": {"within": 95, "above": 25},
+      "prior": {"within": 90, "above": 30}
+    }
   }
 }
 ```

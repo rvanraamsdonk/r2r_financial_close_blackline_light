@@ -1,0 +1,13 @@
+{
+  "generated_at": "2025-08-23T10:34:49Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "executive_summary": "",
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/close_report_20250823T103447Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/gatekeeping_20250823T103447Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/flux_analysis_20250823T103447Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/ap_reconciliation_20250823T103447Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/ar_reconciliation_20250823T103447Z.json"
+  ]
+}

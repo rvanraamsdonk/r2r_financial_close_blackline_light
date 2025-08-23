@@ -28,7 +28,15 @@ Detect accruals that should have reversed and those with missing or misaligned r
 - Keys:
   - `generated_at`, `period`, `next_period`, `entity_scope`
   - `exceptions[]`: `{ entity, accrual_id, description, amount_usd, currency, status, accrual_date, reversal_date, notes, reason }`
-  - `summary`: `{ count, total_usd, by_entity }`
+  - `proposals` (new): deterministic reversal suggestions for flagged items
+    - `proposal_type = "accrual_reversal"`
+    - `proposed_period` (next period), `amount_usd` (negative of accrual)
+    - `narrative`
+    - `ai_narrative` (new): `[DET]`-labeled deterministic helper text citing `entity`, `accrual_id`, `proposed_period`, and `amount_usd`.
+      - Example: `[DET] Reverse A-123 for entity E1 in 2025-09: amount_usd=-1200.00. Cites entity, accrual_id, proposed_period, amount.`
+      - Note: The `ai_narrative` field is generated deterministically from computed values and is clearly labeled as `[DET]`.
+  - `summary`: `{ count, total_usd, by_entity, proposal_count }`
+    - `roll_forward` (new): `{ next_period, proposed_reversals_total_usd, proposed_reversals_by_entity }`
 
 ## Metrics & Audit
 
@@ -38,11 +46,12 @@ Detect accruals that should have reversed and those with missing or misaligned r
   - `accruals_exception_by_entity`
 - Evidence recorded for `supporting/accruals.csv` with a deterministic input hash.
 - Audit log entry (`out/audit_<run_id>.jsonl`) includes `artifact` path and parameters.
+- Message includes the number of proposals alongside the exception count.
 
 ## Reproducibility
 
 - Fully deterministic given the same inputs.
-- No AI influence on calculations.
+- No AI influence on calculations. The `[DET]` fields are template-generated from computed values and clearly labeled.
 
 ## Provenance & Drill-Through
 

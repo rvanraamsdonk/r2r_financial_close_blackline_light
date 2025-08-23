@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
 
 from ..state import R2RState
 from ..audit import AuditLogger
 from ..schemas import EvidenceRef, DeterministicRun
+from ..utils import now_iso_z, run_id
 from .schemas import (
     ValidationAI,
     APARAI,
@@ -31,7 +31,8 @@ from .infra import (
 
 
 def _now_iso() -> str:
-    return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    # Delegate to centralized time provider
+    return now_iso_z()
 
 
 def _write_json(out_dir: Path, name: str, run_id: str, payload: Dict[str, Any]) -> Path:
@@ -47,7 +48,7 @@ def _audit_run_id(audit: AuditLogger) -> str:
         return stem.replace("audit_", "", 1)
     except Exception:
         # fallback to timestamp
-        return datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        return run_id()
 
 
 def _record_ai(

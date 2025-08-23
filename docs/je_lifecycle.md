@@ -16,6 +16,8 @@ For the in-scope period (and optional entity):
   - Otherwise → `approval_pending`
 - Flags manual JEs with missing `supporting_doc` → `manual_missing_support`
 - Flags entries where `reversal_flag` is true → `reversal_flagged`
+- Four-eyes (SoD) enforcement (new): when `abs(amount) > materiality_thresholds_usd[entity]`
+  - If `approval_status != "Approved"` or missing `approver` → `four_eyes_breach`
 
 Each exception includes `je_id`, `entity`, `amount`, `currency`, `source_system`, and `reason`.
 
@@ -29,6 +31,7 @@ Each exception includes `je_id`, `entity`, `amount`, `currency`, `source_system`
   - `je_exceptions_total_abs`
   - `je_exceptions_by_reason`
   - `je_lifecycle_artifact`
+  - Note: `four_eyes_breach` exceptions are included in counts and `by_reason`.
 
 ## Graph Placement
 

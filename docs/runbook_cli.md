@@ -127,3 +127,32 @@ Notes:
 - TB evidence file uses underscore period format `trial_balance_YYYY_MM.csv` (standardized at the source). The script also tolerates older hyphenated URIs.
 - Accruals source: `data/lite/supporting/accruals.csv` keyed by `entity|accrual_id`.
 - Email evidence: `data/lite/supporting/emails.json` keyed by `email_id`.
+
+---
+
+## AI Metrics CLI: list-ai and aggregated totals
+
+Inspect AI artifacts and metrics captured in the audit log:
+
+```bash
+.venv/bin/python scripts/drill_through.py list-ai
+.venv/bin/python scripts/drill_through.py list-ai --json
+```
+
+Aggregate tokens and cost across the run:
+
+```bash
+.venv/bin/python scripts/drill_through.py list-ai --sum
+.venv/bin/python scripts/drill_through.py list-ai --json --sum
+```
+
+- Text mode prints a total line at the end: `"[AI] TOTAL tokens=<N> cost_usd=<X>"`.
+- JSON with `--sum` returns `{ artifacts: [...], summary: { total_tokens, total_cost_usd } }`.
+
+Environment-driven AI cost rate:
+
+```bash
+export R2R_AI_RATE_PER_1K=0.5  # USD per 1,000 tokens
+.venv/bin/python scripts/run_close.py
+.venv/bin/python scripts/drill_through.py list-ai --sum
+```

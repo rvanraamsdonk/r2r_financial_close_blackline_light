@@ -1,0 +1,16 @@
+{
+  "generated_at": "2025-08-23T11:27:22Z",
+  "period": "2025-08",
+  "rules": {
+    "mismatch_rule": "flag |amount_src-amount_dst| > max(materiality[src], materiality[dst])",
+    "default_floor_usd": 1000.0
+  },
+  "exceptions": [],
+  "proposals": [],
+  "summary": {
+    "count": 0,
+    "total_diff_abs": 0.0,
+    "by_pair_diff_abs": {},
+    "proposal_count": 0
+  }
+}

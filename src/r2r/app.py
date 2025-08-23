@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import os
-from datetime import datetime
 from pathlib import Path
 import json
 
@@ -16,6 +15,7 @@ from .data import load_entities, load_coa, load_tb, load_fx
 from .audit import AuditLogger
 from .graph import build_graph
 from .metrics import export_metrics
+from .utils import run_id as gen_run_id
 
 
 console = Console()
@@ -49,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
     settings = load_settings_with_env(**overrides)
 
     # Prepare run
-    run_id = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    run_id = gen_run_id()
     out_dir = Path(settings.out_path)
     out_dir.mkdir(parents=True, exist_ok=True)
     audit = AuditLogger(out_dir, run_id)

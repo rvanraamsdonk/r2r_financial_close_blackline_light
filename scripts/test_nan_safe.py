@@ -17,7 +17,7 @@ def assert_eq(actual, expected, msg: str = ""):
         raise AssertionError(f"{msg} (actual={actual!r}, expected={expected!r})")
 
 
-def test_module_safe_str(mod, name: str):
+def helper_module_safe_str(mod, name: str):
     f = getattr(mod, "_safe_str")
     assert callable(f), f"_safe_str missing in {name}"
     # Core behaviors
@@ -34,7 +34,7 @@ def main():
         (accruals, "accruals"),
     ]:
         try:
-            test_module_safe_str(mod, nm)
+            helper_module_safe_str(mod, nm)
             print(f"[OK] {nm}._safe_str")
         except Exception as e:
             failures += 1

@@ -5,39 +5,51 @@
 - Data source: `data/lite/subledgers/bank_statements/bank_transactions_*.csv` (loaded via `load_bank_transactions()`)
 
 ## Input Scope
+
 - `period`: `state.period` (e.g., `2025-08`)
 - `entity`: `state.entity` (e.g., `ALL` or `ENT100`)
 
 ## Rule Logic
+
 - Duplicate signature: `[entity, date, amount, currency, counterparty, transaction_type]`
 - For any signature group with size > 1, mark all but the first (stable by `bank_txn_id`) as `duplicate_candidate`.
+- Timing heuristic (new): same signature excluding `date` within `rules.timing_window_days` (default 3 days) → flag later txn as `timing_candidate`.
 
 ## Artifact
+
 - Path: `out/bank_reconciliation_{run_id}.json`
 - Schema:
   - `generated_at`: UTC ISO timestamp
   - `period`, `entity_scope`
   - `rules.duplicate_signature`: list of columns used for matching
+  - `rules.timing_window_days` (new): day window for timing classification (default `3`)
   - `exceptions`: array of objects
     - `entity`, `bank_txn_id`, `date`, `amount`, `currency`, `counterparty`, `transaction_type`, `description`
-    - `reason`: `duplicate_candidate`
-    - `duplicate_signature`: map of signature values
-    - `primary_bank_txn_id`: reference to the primary record in the group
+    - `reason`: `duplicate_candidate` or `timing_candidate`
+    - `duplicate_signature` (for duplicates): map of signature values
+    - `primary_bank_txn_id` (for duplicates)
+    - `matched_bank_txn_id` (for timing): earlier transaction in the match
+    - `day_diff` (for timing): integer day gap
+    - `classification` (new): `error_duplicate` | `timing_difference`
+    - `ai_rationale` (new): `[DET]`-labeled deterministic narrative citing entity, ids, dates, amount, counterparty, type
   - `summary`
     - `count`: number of exceptions
     - `total_abs_amount`: sum(|amount|) of duplicates
     - `by_entity_abs_amount`: map of entity -> sum(|amount|)
 
 ## Provenance & Audit
+
 - Evidence: CSV URI of the bank transactions file + `input_row_ids` = list of flagged `bank_txn_id`s.
 - Deterministic run: function name, params, dataset hash of filtered DataFrame, artifact path.
 
 ## Metrics
+
 - `bank_duplicates_count`
 - `bank_duplicates_total_abs`
 - `bank_duplicates_by_entity`
 - `bank_reconciliation_artifact`
 
 ## Notes
+
 - Uses canonical loader for consistent filtering and CSV resolution.
-- No assumptions beyond input data; thresholds are not applied here (pure duplicate detection).
+- No thresholds; duplicate and timing detection are purely signature- and window-based, deterministic.

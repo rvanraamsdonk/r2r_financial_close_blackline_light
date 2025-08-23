@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 from typing import Any, Dict
 
@@ -14,4 +14,4 @@ class AuditLogger:
 
     def append(self, record: Dict[str, Any]) -> None:
         with self.log_path.open("a", encoding="utf-8") as f:
-            f.write(json.dumps({"ts": datetime.utcnow().isoformat() + "Z", **record}) + "\n")
+            f.write(json.dumps({"ts": datetime.now(UTC).isoformat().replace("+00:00", "Z"), **record}) + "\n")

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, List
 
 import pandas as pd
 from ..utils.strings import safe_str as _shared_safe_str
+from ..utils import now_iso_z
 
 from ..audit.log import AuditLogger
 from ..schemas import DeterministicRun, EvidenceRef, MethodType, OutputTag
@@ -79,6 +79,59 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
     exceptions: List[Dict[str, Any]] = []
     input_row_ids: List[str] = []
 
+    # Precompute simple deterministic duplicate candidates within AP
+    def _norm_name(x: Any) -> str:
+        s = _safe_str(x).lower().strip()
+        return " ".join(s.split())
+
+    def _parse_date(s: Any) -> pd.Timestamp | None:
+        try:
+            return pd.to_datetime(s, errors="coerce")
+        except Exception:
+            return None
+
+    df["_norm_vendor"] = df["vendor_name"].map(_norm_name)
+    df["_date"] = df["bill_date"].map(_parse_date)
+
+    def _ap_candidates(row: pd.Series) -> List[Dict[str, Any]]:
+        cand: List[Dict[str, Any]] = []
+        amt0 = float(row.get("amount", 0.0))
+        ent0 = _safe_str(row.get("entity"))
+        name0 = _norm_name(row.get("vendor_name"))
+        d0 = row.get("_date")
+        for _, r2 in df.iterrows():
+            if str(r2.get("bill_id")) == str(row.get("bill_id")):
+                continue
+            if _safe_str(r2.get("entity")) != ent0:
+                continue
+            if _norm_name(r2.get("vendor_name")) != name0:
+                continue
+            amt2 = float(r2.get("amount", 0.0))
+            # amount similarity in [0,1]
+            denom = max(abs(amt0), abs(amt2), 1.0)
+            amt_sim = 1.0 - (abs(amt0 - amt2) / denom)
+            # date proximity contribution
+            d2 = r2.get("_date")
+            if pd.notna(d0) and pd.notna(d2):
+                days = abs((d0 - d2).days)
+                date_sim = max(0.0, 1.0 - min(days, 30) / 30.0)  # within 30 days -> down to 0
+            else:
+                date_sim = 0.5
+            score = round(0.7 * amt_sim + 0.3 * date_sim, 3)
+            if score >= 0.6:
+                cand.append(
+                    {
+                        "bill_id": r2.get("bill_id"),
+                        "vendor_name": r2.get("vendor_name"),
+                        "bill_date": r2.get("bill_date"),
+                        "amount": float(amt2),
+                        "score": float(score),
+                    }
+                )
+        # sort and cap
+        cand.sort(key=lambda x: x["score"], reverse=True)
+        return cand[:3]
+
     for _, r in df.iterrows():
         status = _safe_str(r.get("status"))
         # age_days may be str/int; coerce safely
@@ -108,6 +161,15 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                 "reason": reason,
                 "notes": notes or None,
             }
+            # Attach deterministic candidates and [AI]-labeled rationale
+            cand = _ap_candidates(r) if reason in ("duplicate_flag", "overdue", "age_gt_60") else []
+            if cand:
+                e["candidates"] = cand
+            e["ai_rationale"] = (
+                f"[DET] AP {r.get('entity')} bill {r.get('bill_id')}: reason={reason}, "
+                f"amount={float(r.get('amount', 0.0)):.2f} {r.get('currency')}, age_days={age}. "
+                f"Candidates={len(cand)} (vendor={_safe_str(r.get('vendor_name'))})."
+            )
             exceptions.append(e)
             input_row_ids.append(str(r.get("bill_id")))
 
@@ -122,7 +184,7 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
         by_ent[ent] = by_ent.get(ent, 0.0) + abs(float(e.get("amount", 0.0)))
 
     payload = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": now_iso_z(),
         "period": period,
         "entity_scope": entity_scope,
         "rules": {
@@ -218,6 +280,55 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
 
     exceptions: List[Dict[str, Any]] = []
     input_row_ids: List[str] = []
+    # Precompute deterministic candidates within AR (near-duplicates)
+    def _norm_cust(x: Any) -> str:
+        s = _safe_str(x).lower().strip()
+        return " ".join(s.split())
+
+    def _parse_date_ar(s: Any) -> pd.Timestamp | None:
+        try:
+            return pd.to_datetime(s, errors="coerce")
+        except Exception:
+            return None
+
+    df["_norm_customer"] = df["customer_name"].map(_norm_cust)
+    df["_date"] = df["invoice_date"].map(_parse_date_ar)
+
+    def _ar_candidates(row: pd.Series) -> List[Dict[str, Any]]:
+        cand: List[Dict[str, Any]] = []
+        amt0 = float(row.get("amount", 0.0))
+        ent0 = _safe_str(row.get("entity"))
+        name0 = _norm_cust(row.get("customer_name"))
+        d0 = row.get("_date")
+        for _, r2 in df.iterrows():
+            if str(r2.get("invoice_id")) == str(row.get("invoice_id")):
+                continue
+            if _safe_str(r2.get("entity")) != ent0:
+                continue
+            if _norm_cust(r2.get("customer_name")) != name0:
+                continue
+            amt2 = float(r2.get("amount", 0.0))
+            denom = max(abs(amt0), abs(amt2), 1.0)
+            amt_sim = 1.0 - (abs(amt0 - amt2) / denom)
+            d2 = r2.get("_date")
+            if pd.notna(d0) and pd.notna(d2):
+                days = abs((d0 - d2).days)
+                date_sim = max(0.0, 1.0 - min(days, 30) / 30.0)
+            else:
+                date_sim = 0.5
+            score = round(0.7 * amt_sim + 0.3 * date_sim, 3)
+            if score >= 0.6:
+                cand.append(
+                    {
+                        "invoice_id": r2.get("invoice_id"),
+                        "customer_name": r2.get("customer_name"),
+                        "invoice_date": r2.get("invoice_date"),
+                        "amount": float(amt2),
+                        "score": float(score),
+                    }
+                )
+        cand.sort(key=lambda x: x["score"], reverse=True)
+        return cand[:3]
 
     for _, r in df.iterrows():
         status = _safe_str(r.get("status"))
@@ -243,6 +354,14 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                 "status": status,
                 "reason": reason,
             }
+            cand = _ar_candidates(r) if reason in ("overdue", "age_gt_60") else []
+            if cand:
+                e["candidates"] = cand
+            e["ai_rationale"] = (
+                f"[DET] AR {r.get('entity')} invoice {r.get('invoice_id')}: reason={reason}, "
+                f"amount={float(r.get('amount', 0.0)):.2f} {r.get('currency')}, age_days={age}. "
+                f"Candidates={len(cand)} (customer={_safe_str(r.get('customer_name'))})."
+            )
             exceptions.append(e)
             input_row_ids.append(str(r.get("invoice_id")))
 
@@ -257,7 +376,7 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
         by_ent[ent] = by_ent.get(ent, 0.0) + abs(float(e.get("amount", 0.0)))
 
     payload = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": now_iso_z(),
         "period": period,
         "entity_scope": entity_scope,
         "rules": {

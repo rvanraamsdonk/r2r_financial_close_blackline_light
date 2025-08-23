@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict
@@ -9,6 +8,7 @@ from typing import Any, Dict
 from ..audit.log import AuditLogger
 from ..schemas import EvidenceRef, DeterministicRun, OutputTag, MethodType
 from ..state import R2RState
+from ..utils import now_iso_z
 
 
 def _hash_payload(payload: Dict[str, Any]) -> str:
@@ -22,7 +22,7 @@ def close_reporting(state: R2RState, audit: AuditLogger) -> R2RState:
     """
     m = state.metrics or {}
     run_id = Path(audit.log_path).stem.replace("audit_", "")
-    now = datetime.utcnow().isoformat() + "Z"
+    now = now_iso_z()
 
     # Collect all artifact URIs present in metrics
     artifacts: Dict[str, str] = {

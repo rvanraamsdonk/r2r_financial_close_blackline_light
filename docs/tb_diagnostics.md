@@ -31,6 +31,10 @@ Identify entities whose trial balance (TB) does not sum to zero and provide a dr
   - `generated_at`, `period`, `entity_scope`
   - `diagnostics`: list of `{ entity, imbalance_usd, top_accounts[] }`
   - `top_accounts[]`: `{ account, balance_usd, account_name?, account_type? }`
+  - `rollups` (new):
+    - `by_entity_total_usd`: `{ <entity>: <sum balance_usd> }`
+    - `entity_balanced`: `{ <entity>: true|false }`
+    - `by_account_type_total_usd` (when COA has `account_type`)
 
 ## CLI Summary
 

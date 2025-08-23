@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from .schemas import EvidenceRef, DeterministicRun, PromptRun, OutputTag, MethodType
 
 
 class R2RState(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
     # Scope
     period: str
     prior: Optional[str] = None
@@ -39,5 +40,4 @@ class R2RState(BaseModel):
     show_prompts: bool = False
     save_evidence: bool = True
 
-    class Config:
-        arbitrary_types_allowed = True
+    

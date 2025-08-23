@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from .. import utils
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, List
@@ -92,7 +92,7 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
     out_path = Path(audit.out_dir) / f"gatekeeping_{run_id}.json"
 
     payload: Dict[str, Any] = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": utils.now_iso_z(),
         "period": state.period,
         "entity_scope": state.entity,
         "inputs": {
