@@ -1,7 +1,7 @@
 [
   {
     "id": "CASE-209901-AP_EXCEPTIONS-001",
-    "created_at": "2025-08-23T09:15:03.243365Z",
+    "created_at": "2025-08-23T09:30:26.770727Z",
     "period": "2099-01",
     "entity": "ALL",
     "source": "ap_exceptions",
@@ -16,7 +16,7 @@
   },
   {
     "id": "CASE-209901-AR_EXCEPTIONS-002",
-    "created_at": "2025-08-23T09:15:03.243365Z",
+    "created_at": "2025-08-23T09:30:26.770727Z",
     "period": "2099-01",
     "entity": "ALL",
     "source": "ar_exceptions",

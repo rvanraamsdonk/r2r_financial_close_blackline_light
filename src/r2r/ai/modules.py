@@ -20,7 +20,14 @@ from .schemas import (
     ControlsAI,
     ReportAI,
 )
-from .infra import compute_inputs_hash, with_cache, time_call, estimate_tokens, estimate_cost_usd
+from .infra import (
+    compute_inputs_hash,
+    with_cache,
+    time_call,
+    estimate_tokens,
+    estimate_cost_usd,
+    default_rate_per_1k_from_env,
+)
 
 
 def _now_iso() -> str:
@@ -154,7 +161,7 @@ def ai_validation_root_causes(state: R2RState, audit: AuditLogger) -> R2RState:
     path, _payload, was_cached = result
     # token/cost metrics (provider-agnostic)
     tokens = estimate_tokens(_payload)
-    cost = estimate_cost_usd(tokens)
+    cost = estimate_cost_usd(tokens, default_rate_per_1k_from_env())
     text = "Validation review completed; see artifact for counts and evidence citations."
     _record_ai(state, audit, kind="validation", artifact=path, inputs_hash=ih, latency_ms=dt, cached=was_cached)
     state.metrics["validation_ai_artifact"] = str(path)
@@ -201,7 +208,7 @@ def ai_ap_ar_suggestions(state: R2RState, audit: AuditLogger) -> R2RState:
     )
     path, _payload, was_cached = result
     tokens = estimate_tokens(_payload)
-    cost = estimate_cost_usd(tokens)
+    cost = estimate_cost_usd(tokens, default_rate_per_1k_from_env())
     _record_ai(state, audit, kind="ap_ar", artifact=path, inputs_hash=ih, latency_ms=dt, cached=was_cached)
     state.metrics["ap_ar_ai_artifact"] = str(path)
     state.metrics["ai_ap_ar_tokens"] = tokens
@@ -244,7 +251,7 @@ def ai_ic_match_proposals(state: R2RState, audit: AuditLogger) -> R2RState:
     )
     path, _payload, was_cached = result
     tokens = estimate_tokens(_payload)
-    cost = estimate_cost_usd(tokens)
+    cost = estimate_cost_usd(tokens, default_rate_per_1k_from_env())
     _record_ai(state, audit, kind="intercompany", artifact=path, inputs_hash=ih, latency_ms=dt, cached=was_cached)
     state.metrics["ic_ai_artifact"] = str(path)
     state.metrics["ai_intercompany_tokens"] = tokens
@@ -286,7 +293,7 @@ def ai_flux_narratives(state: R2RState, audit: AuditLogger) -> R2RState:
     )
     path, _payload, was_cached = result
     tokens = estimate_tokens(_payload)
-    cost = estimate_cost_usd(tokens)
+    cost = estimate_cost_usd(tokens, default_rate_per_1k_from_env())
     _record_ai(state, audit, kind="flux", artifact=path, inputs_hash=ih, latency_ms=dt, cached=was_cached)
     state.metrics["flux_ai_artifact"] = str(path)
     state.metrics["ai_flux_tokens"] = tokens
@@ -329,7 +336,7 @@ def ai_hitl_case_summaries(state: R2RState, audit: AuditLogger) -> R2RState:
     )
     path, _payload, was_cached = result
     tokens = estimate_tokens(_payload)
-    cost = estimate_cost_usd(tokens)
+    cost = estimate_cost_usd(tokens, default_rate_per_1k_from_env())
     _record_ai(state, audit, kind="hitl", artifact=path, inputs_hash=ih, latency_ms=dt, cached=was_cached)
     state.metrics["hitl_ai_artifact"] = str(path)
     state.metrics["ai_hitl_tokens"] = tokens
@@ -366,7 +373,7 @@ def ai_bank_rationales(state: R2RState, audit: AuditLogger) -> R2RState:
     )
     path, _payload, was_cached = result
     tokens = estimate_tokens(_payload)
-    cost = estimate_cost_usd(tokens)
+    cost = estimate_cost_usd(tokens, default_rate_per_1k_from_env())
     _record_ai(state, audit, kind="bank", artifact=path, inputs_hash=ih, latency_ms=dt, cached=was_cached)
     state.metrics["bank_ai_artifact"] = str(path)
     state.metrics["ai_bank_tokens"] = tokens
@@ -404,7 +411,7 @@ def ai_accruals_narratives(state: R2RState, audit: AuditLogger) -> R2RState:
     )
     path, _payload, was_cached = result
     tokens = estimate_tokens(_payload)
-    cost = estimate_cost_usd(tokens)
+    cost = estimate_cost_usd(tokens, default_rate_per_1k_from_env())
     _record_ai(state, audit, kind="accruals", artifact=path, inputs_hash=ih, latency_ms=dt, cached=was_cached)
     state.metrics["accruals_ai_artifact"] = str(path)
     state.metrics["ai_accruals_tokens"] = tokens
@@ -443,7 +450,7 @@ def ai_gatekeeping_rationales(state: R2RState, audit: AuditLogger) -> R2RState:
     )
     path, _payload, was_cached = result
     tokens = estimate_tokens(_payload)
-    cost = estimate_cost_usd(tokens)
+    cost = estimate_cost_usd(tokens, default_rate_per_1k_from_env())
     _record_ai(state, audit, kind="gatekeeping", artifact=path, inputs_hash=ih, latency_ms=dt, cached=was_cached)
     state.metrics["gatekeeping_ai_artifact"] = str(path)
     state.metrics["ai_gatekeeping_tokens"] = tokens
@@ -481,7 +488,7 @@ def ai_controls_owner_summaries(state: R2RState, audit: AuditLogger) -> R2RState
     )
     path, _payload, was_cached = result
     tokens = estimate_tokens(_payload)
-    cost = estimate_cost_usd(tokens)
+    cost = estimate_cost_usd(tokens, default_rate_per_1k_from_env())
     _record_ai(state, audit, kind="controls", artifact=path, inputs_hash=ih, latency_ms=dt, cached=was_cached)
     state.metrics["controls_ai_artifact"] = str(path)
     state.metrics["ai_controls_tokens"] = tokens
@@ -524,7 +531,7 @@ def ai_close_report_exec_summary(state: R2RState, audit: AuditLogger) -> R2RStat
     )
     path, _payload, was_cached = result
     tokens = estimate_tokens(_payload)
-    cost = estimate_cost_usd(tokens)
+    cost = estimate_cost_usd(tokens, default_rate_per_1k_from_env())
     _record_ai(state, audit, kind="report", artifact=path, inputs_hash=ih, latency_ms=dt, cached=was_cached)
     state.metrics["report_ai_artifact"] = str(path)
     state.metrics["ai_report_tokens"] = tokens

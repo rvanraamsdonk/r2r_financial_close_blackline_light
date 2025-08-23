@@ -31,6 +31,7 @@ def parse_args() -> argparse.Namespace:
     plai.add_argument("--audit", dest="audit_path", default=None, help="Path to audit_*.jsonl; if omitted, pick latest in out/")
     plai.add_argument("--run", dest="run_id", default=None, help="Run ID to select audit_*.jsonl explicitly (overrides --audit)")
     plai.add_argument("--json", dest="as_json", action="store_true", help="Emit JSON instead of text lines")
+    plai.add_argument("--sum", dest="as_sum", action="store_true", help="Show aggregated totals for tokens and cost")
     return p.parse_args()
 
 
@@ -135,12 +136,26 @@ def main() -> int:
         outputs.sort(key=lambda r: r.get("generated_at", ""))
         if args.as_json:
             enriched = []
+            total_tokens = 0
+            total_cost = 0.0
             for o in outputs:
                 k = o.get("kind")
                 mm = metrics_map.get(k, {})
+                t = mm.get("tokens") or 0
+                c = mm.get("cost_usd") or 0.0
+                total_tokens += int(t)
+                try:
+                    total_cost += float(c)
+                except Exception:
+                    pass
                 enriched.append({**o, **{f"ai_{k}_tokens": mm.get("tokens"), f"ai_{k}_cost_usd": mm.get("cost_usd")}})
+            payload: Any
+            if args.as_sum:
+                payload = {"artifacts": enriched, "summary": {"total_tokens": total_tokens, "total_cost_usd": round(total_cost, 6)}}
+            else:
+                payload = enriched
             # Write explicitly to stdout and flush to avoid buffered/no-output issues in some environments
-            sys.stdout.write(json.dumps(enriched, indent=2) + "\n")
+            sys.stdout.write(json.dumps(payload, indent=2) + "\n")
             sys.stdout.flush()
         else:
             print(f"[DET] AI artifacts for run: {audit_path.name}")
@@ -150,6 +165,15 @@ def main() -> int:
                 print(
                     f"[AI] kind={k} artifact={o.get('artifact')} tokens={mm.get('tokens')} cost_usd={mm.get('cost_usd')} generated_at={o.get('generated_at')}"
                 )
+            if args.as_sum:
+                total_tokens = sum(int((metrics_map.get(o.get("kind"), {}).get("tokens") or 0)) for o in outputs)
+                def _as_float(x: Any) -> float:
+                    try:
+                        return float(x)
+                    except Exception:
+                        return 0.0
+                total_cost = sum(_as_float(metrics_map.get(o.get("kind"), {}).get("cost_usd")) for o in outputs)
+                print(f"[AI] TOTAL tokens={total_tokens} cost_usd={round(total_cost, 6)}")
         return 0
 
     # cmd == drill

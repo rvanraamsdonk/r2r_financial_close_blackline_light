@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import time
+import os
 from pathlib import Path
 from typing import Any, Dict, Tuple, Callable
 
@@ -64,5 +65,17 @@ def estimate_cost_usd(tokens: int, rate_per_1k: float = 0.0) -> float:
     """Compute approximate USD cost given tokens and $/1k rate. Default 0 for offline mode."""
     try:
         return round((tokens / 1000.0) * float(rate_per_1k), 6)
+    except Exception:
+        return 0.0
+
+
+def default_rate_per_1k_from_env(env_var: str = "R2R_AI_RATE_PER_1K") -> float:
+    """Fetch a default $/1k token rate from environment; returns 0.0 if unset/invalid.
+
+    Example: export R2R_AI_RATE_PER_1K=0.5
+    """
+    try:
+        v = os.getenv(env_var, "0").strip()
+        return float(v or 0.0)
     except Exception:
         return 0.0
