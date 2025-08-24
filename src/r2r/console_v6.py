@@ -119,10 +119,31 @@ def _amount_fields(item: Dict[str, Any]) -> Tuple[Optional[Any], Optional[str]]:
 
 def _kv_presentable(item: Dict[str, Any], keys: List[str]) -> List[str]:
     parts: List[str] = []
+    label_map = {
+        # AP
+        "vendor_name": "Vendor",
+        "bill_id": "Inv",
+        # AR
+        "customer_name": "Customer",
+        "invoice_id": "Inv",
+        # FLUX
+        "account": "Account",
+        "dimension": "Dim",
+        # BANK
+        "statement_id": "Stmt",
+        "txn_id": "Txn",
+        # JE
+        "je_id": "JE",
+        "je_source": "Src",
+        # ACCRUALS
+        "accrual_id": "Accrual",
+        "ref": "Ref",
+    }
     for k in keys:
         v = item.get(k)
         if v is not None and v != "":
-            parts.append(f"{k.replace('_', '').capitalize()}={v}")
+            label = label_map.get(k, k)
+            parts.append(f"{label}={v}")
     return parts
 
 
@@ -178,18 +199,26 @@ def _render_section(console: Console, num: int, name: str, artifact: Path, items
             line1_parts.append(f"Owner={owner}")
         console.print("  ".join(line1_parts))
 
-        rec, why, conf = _ai_fields(it)
-        rec_s = rec or "Review"
-        pct = _pct(conf)
-        conf_s = f" [Conf; {pct}%]" if pct is not None else ""
-        console.print(f"AI recommends: {rec_s}{conf_s}")
-        if why:
-            console.print(f"WHY: {why}")
-        else:
-            console.print("WHY: -")
+        # Determine AI overlay for AR using ap_ar_ai_suggestions (step 1)
+        ai_overlay = _ai_overlay_for_item(name, it)
 
-        # Evidence
-        evid = _collect_evidence(it)
+        if ai_overlay:
+            rec_s = ai_overlay.get("rec", "Review")
+            pct = _pct(ai_overlay.get("confidence"))
+            conf_s = f" [Conf; {pct}%]" if pct is not None else ""
+            console.print(f"AI recommends: {rec_s}{conf_s}")
+            console.print("WHY: " + (ai_overlay.get("why") or "-"))
+            evid = ai_overlay.get("evidence", [])
+        else:
+            rec, why, conf = _ai_fields(it)
+            rec_s = rec or "Review"
+            pct = _pct(conf)
+            conf_s = f" [Conf; {pct}%]" if pct is not None else ""
+            console.print(f"AI recommends: {rec_s}{conf_s}")
+            console.print(f"WHY: {why}" if why else "WHY: -")
+            evid = _collect_evidence(it)
+
+        # Evidence printing (from overlay or item)
         if evid:
             labels = []
             for e in evid:
@@ -207,6 +236,102 @@ def _extract_run_id(filename: str) -> str:
     # Expect *_YYYYmmddTHHMMSSZ.json
     m = re.search(r"_(\d{8}T\d{6}Z)\.json$", filename)
     return m.group(1) if m else "unknown"
+
+
+# -----------------------------
+# AI overlay helpers (Step 1: AR via ap_ar_ai_suggestions)
+# -----------------------------
+_AP_AR_AI_CACHE: Dict[str, Any] = {}
+_AP_AR_AI_INDEX: Dict[str, Dict[str, Any]] = {}
+
+
+def _latest_ai_artifact(out_dir: Path, kind_prefix: str) -> Optional[Path]:
+    cache_dir = out_dir / "ai_cache"
+    files = sorted(cache_dir.glob(f"{kind_prefix}_*.json"))
+    if not files:
+        return None
+    return files[-1]
+
+
+def _load_ap_ar_ai(out_dir: Path) -> Dict[str, Any]:
+    global _AP_AR_AI_CACHE
+    if _AP_AR_AI_CACHE:
+        return _AP_AR_AI_CACHE
+    # Find latest ap_ar_ai_suggestions artifact
+    root = Path(__file__).resolve().parents[2]
+    out_dir = out_dir if out_dir.is_absolute() else (root / out_dir)
+    art = _latest_ai_artifact(out_dir, "ap_ar_ai_suggestions")
+    data: Dict[str, Any] = {}
+    if art and art.exists():
+        try:
+            data = json.loads(art.read_text())
+        except Exception:
+            data = {}
+    _AP_AR_AI_CACHE = data
+    return data
+
+
+def _ai_overlay_for_item(section_name: str, item: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Return an AI overlay dict with keys: rec, why, confidence, evidence.
+
+    Step 1: Only for AR section; use ap_ar_ai_suggestions matches joined by invoice_id.
+    """
+    if not section_name.startswith("AR"):
+        return None
+    # Locate latest AI data
+    try:
+        # Derive out_dir relative to repo root
+        root = Path(__file__).resolve().parents[2]
+        out_dir = root / "out"
+        ai = _load_ap_ar_ai(out_dir)
+        matches = ai.get("matches", []) if isinstance(ai, dict) else []
+
+        # Build and cache an index for quick lookups by AR invoice id
+        global _AP_AR_AI_INDEX
+        if not _AP_AR_AI_INDEX and matches:
+            try:
+                # For each ar_invoice_id, keep the highest-confidence match
+                tmp: Dict[str, Dict[str, Any]] = {}
+                for m in matches:
+                    k = str(m.get("ar_invoice_id")) if m.get("ar_invoice_id") is not None else None
+                    if not k:
+                        continue
+                    cur = tmp.get(k)
+                    if not cur or float(m.get("confidence", 0) or 0.0) > float(cur.get("confidence", 0) or 0.0):
+                        tmp[k] = m
+                _AP_AR_AI_INDEX = tmp
+            except Exception:
+                _AP_AR_AI_INDEX = {}
+
+        # Normalize possible invoice id fields
+        inv_id = (
+            item.get("invoice_id")
+            or item.get("invoice_no")
+            or item.get("id")
+        )
+        if not inv_id:
+            return None
+        inv_id = str(inv_id)
+
+        top = _AP_AR_AI_INDEX.get(inv_id)
+        if not top:
+            return None
+        rec = f"Investigate cross-ledger match: AP {top.get('ap_bill_id')}"
+        why = top.get("reason")
+        conf = top.get("confidence")
+        # Evidence: citations from AI artifact + deterministic artifacts referenced there
+        evid = []
+        cits = ai.get("citations") or []
+        for c in cits:
+            try:
+                p = Path(c)
+                url = f"file://{p.resolve()}"
+                evid.append(url)
+            except Exception:
+                continue
+        return {"rec": rec, "why": why, "confidence": conf, "evidence": evid}
+    except Exception:
+        return None
 
 
 def render_printable(out_dir: Path, console: Optional[Console] = None) -> None:
