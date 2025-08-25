@@ -1,0 +1,428 @@
+{
+  "generated_at": "2025-08-25T18:50:01.590387Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "next_period": "2025-09",
+  "exceptions": [
+    {
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-001",
+      "description": "Professional Fees Accrual",
+      "amount_usd": 29408.57,
+      "currency": "USD",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Reversal failed - manual intervention required"
+    },
+    {
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-005",
+      "description": "Bonus Accrual",
+      "amount_usd": 125000.0,
+      "currency": "USD",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Reversal failed - amount disputed"
+    },
+    {
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-007",
+      "description": "Legal Fees Accrual",
+      "amount_usd": 45000.0,
+      "currency": "USD",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Reversal pending approval"
+    },
+    {
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-009",
+      "description": "Marketing Campaign Accrual",
+      "amount_usd": 65000.0,
+      "currency": "USD",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Campaign cancelled - reversal needed"
+    },
+    {
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-012",
+      "description": "Training Costs Accrual",
+      "amount_usd": 22000.0,
+      "currency": "USD",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Training postponed - partial reversal"
+    },
+    {
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-015",
+      "description": "Restructuring Accrual",
+      "amount_usd": 185000.0,
+      "currency": "USD",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Restructuring cancelled"
+    },
+    {
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-019",
+      "description": "Equipment Maintenance Accrual",
+      "amount_usd": 32500.0,
+      "currency": "USD",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Maintenance contract disputed"
+    },
+    {
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-005",
+      "description": "VAT Accrual",
+      "amount_usd": 49050.0,
+      "currency": "EUR",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "VAT calculation error - reversal needed"
+    },
+    {
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-007",
+      "description": "Professional Services Accrual",
+      "amount_usd": 70850.0,
+      "currency": "EUR",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Service contract terminated"
+    },
+    {
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-009",
+      "description": "Legal Settlement Accrual",
+      "amount_usd": 136250.0,
+      "currency": "EUR",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Settlement amount reduced"
+    },
+    {
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-012",
+      "description": "Training Accrual",
+      "amount_usd": 16895.0,
+      "currency": "EUR",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Training program cancelled"
+    },
+    {
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-014",
+      "description": "Bonus Pool Accrual",
+      "amount_usd": 103550.0,
+      "currency": "EUR",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Bonus criteria not met"
+    },
+    {
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-018",
+      "description": "Environmental Provision Accrual",
+      "amount_usd": 92650.0,
+      "currency": "EUR",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Environmental assessment completed"
+    },
+    {
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-004",
+      "description": "Corporation Tax Accrual",
+      "amount_usd": 156250.0,
+      "currency": "GBP",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Tax calculation revised"
+    },
+    {
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-008",
+      "description": "Marketing Accrual",
+      "amount_usd": 35000.0,
+      "currency": "GBP",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Campaign budget reduced"
+    },
+    {
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-010",
+      "description": "Commission Accrual",
+      "amount_usd": 52500.0,
+      "currency": "GBP",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Sales targets not met"
+    },
+    {
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-012",
+      "description": "Training Accrual",
+      "amount_usd": 27500.0,
+      "currency": "GBP",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Training provider changed"
+    },
+    {
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-015",
+      "description": "Legal Settlement Accrual",
+      "amount_usd": 118750.0,
+      "currency": "GBP",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Settlement reached for lower amount"
+    },
+    {
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-016",
+      "description": "Restructuring Accrual",
+      "amount_usd": 156250.0,
+      "currency": "GBP",
+      "status": "Should Reverse",
+      "accrual_date": "2025-08-31",
+      "reversal_date": "2025-09-01",
+      "reason": "explicit_should_reverse",
+      "notes": "Restructuring plan cancelled"
+    }
+  ],
+  "proposals": [
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-001",
+      "proposed_period": "2025-09",
+      "amount_usd": -29408.57,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT100-001 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT100-001 for entity ENT100 in 2025-09: amount_usd=-29408.57. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-005",
+      "proposed_period": "2025-09",
+      "amount_usd": -125000.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT100-005 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT100-005 for entity ENT100 in 2025-09: amount_usd=-125000.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-007",
+      "proposed_period": "2025-09",
+      "amount_usd": -45000.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT100-007 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT100-007 for entity ENT100 in 2025-09: amount_usd=-45000.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-009",
+      "proposed_period": "2025-09",
+      "amount_usd": -65000.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT100-009 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT100-009 for entity ENT100 in 2025-09: amount_usd=-65000.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-012",
+      "proposed_period": "2025-09",
+      "amount_usd": -22000.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT100-012 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT100-012 for entity ENT100 in 2025-09: amount_usd=-22000.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-015",
+      "proposed_period": "2025-09",
+      "amount_usd": -185000.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT100-015 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT100-015 for entity ENT100 in 2025-09: amount_usd=-185000.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT100",
+      "accrual_id": "ACR-2025-08-ENT100-019",
+      "proposed_period": "2025-09",
+      "amount_usd": -32500.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT100-019 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT100-019 for entity ENT100 in 2025-09: amount_usd=-32500.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-005",
+      "proposed_period": "2025-09",
+      "amount_usd": -49050.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT101-005 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT101-005 for entity ENT101 in 2025-09: amount_usd=-49050.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-007",
+      "proposed_period": "2025-09",
+      "amount_usd": -70850.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT101-007 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT101-007 for entity ENT101 in 2025-09: amount_usd=-70850.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-009",
+      "proposed_period": "2025-09",
+      "amount_usd": -136250.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT101-009 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT101-009 for entity ENT101 in 2025-09: amount_usd=-136250.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-012",
+      "proposed_period": "2025-09",
+      "amount_usd": -16895.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT101-012 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT101-012 for entity ENT101 in 2025-09: amount_usd=-16895.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-014",
+      "proposed_period": "2025-09",
+      "amount_usd": -103550.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT101-014 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT101-014 for entity ENT101 in 2025-09: amount_usd=-103550.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT101",
+      "accrual_id": "ACR-2025-08-ENT101-018",
+      "proposed_period": "2025-09",
+      "amount_usd": -92650.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT101-018 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT101-018 for entity ENT101 in 2025-09: amount_usd=-92650.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-004",
+      "proposed_period": "2025-09",
+      "amount_usd": -156250.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT102-004 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT102-004 for entity ENT102 in 2025-09: amount_usd=-156250.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-008",
+      "proposed_period": "2025-09",
+      "amount_usd": -35000.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT102-008 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT102-008 for entity ENT102 in 2025-09: amount_usd=-35000.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-010",
+      "proposed_period": "2025-09",
+      "amount_usd": -52500.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT102-010 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT102-010 for entity ENT102 in 2025-09: amount_usd=-52500.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-012",
+      "proposed_period": "2025-09",
+      "amount_usd": -27500.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT102-012 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT102-012 for entity ENT102 in 2025-09: amount_usd=-27500.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-015",
+      "proposed_period": "2025-09",
+      "amount_usd": -118750.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT102-015 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT102-015 for entity ENT102 in 2025-09: amount_usd=-118750.00. Cites entity, accrual_id, proposed_period, amount."
+    },
+    {
+      "proposal_type": "accrual_reversal",
+      "entity": "ENT102",
+      "accrual_id": "ACR-2025-08-ENT102-016",
+      "proposed_period": "2025-09",
+      "amount_usd": -156250.0,
+      "narrative": "Propose reversal of accrual ACR-2025-08-ENT102-016 in 2025-09",
+      "ai_narrative": "[DET] Reverse ACR-2025-08-ENT102-016 for entity ENT102 in 2025-09: amount_usd=-156250.00. Cites entity, accrual_id, proposed_period, amount."
+    }
+  ],
+  "summary": {
+    "count": 19,
+    "total_usd": 1519403.57,
+    "by_entity": {
+      "ENT100": 503908.57,
+      "ENT101": 469245.0,
+      "ENT102": 546250.0
+    },
+    "proposal_count": 19,
+    "roll_forward": {
+      "next_period": "2025-09",
+      "proposed_reversals_total_usd": -1519403.57,
+      "proposed_reversals_by_entity": {
+        "ENT100": -503908.57,
+        "ENT101": -469245.0,
+        "ENT102": -546250.0
+      }
+    }
+  }
+}

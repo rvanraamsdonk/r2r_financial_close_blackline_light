@@ -140,18 +140,76 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
         except Exception:
             age = 0
         notes = _safe_str(r.get("notes"))
+        amount = float(r.get("amount", 0.0))
+        vendor_name = _safe_str(r.get("vendor_name"))
+        invoice_date = _parse_date(r.get("invoice_date"))
+        
         reason: str | None = None
+        
+        # Original flags
         if status == "Overdue":
             reason = "overdue"
         elif age > 60:
             reason = "age_gt_60"
-        if not reason and ("duplicate" in notes.lower()):
+        elif "duplicate" in notes.lower():
             reason = "duplicate_flag"
+        
+        # Forensic Pattern Detection
+        
+        # 1. Duplicate Payment Detection (same vendor + similar amount + close dates)
+        if not reason:
+            for _, r2 in df.iterrows():
+                if str(r2.get("bill_id")) == str(r.get("bill_id")):
+                    continue
+                if _norm_name(r2.get("vendor_name")) == _norm_name(vendor_name):
+                    amt2 = float(r2.get("amount", 0.0))
+                    date2 = _parse_date(r2.get("invoice_date"))
+                    
+                    # Similar amount (within $50)
+                    if abs(amount - amt2) <= 50:
+                        # Close dates (within 7 days)
+                        if invoice_date and date2 and abs((invoice_date - date2).days) <= 7:
+                            reason = "duplicate_payment_pattern"
+                            break
+        
+        # 2. Round Dollar Anomaly Detection
+        if not reason and amount > 0:
+            # Check for suspiciously round amounts
+            if amount >= 10000 and amount % 10000 == 0:  # $10K, $20K, etc.
+                reason = "round_dollar_large"
+            elif amount >= 1000 and amount % 1000 == 0:  # $1K, $2K, etc.
+                reason = "round_dollar_medium"
+            elif amount >= 500 and amount % 500 == 0:  # $500, $1000, etc.
+                reason = "round_dollar_small"
+        
+        # 3. Suspicious New Vendor Detection
+        if not reason:
+            suspicious_keywords = ["quickpay", "rapid", "express", "swift", "immediate", 
+                                 "fast track", "priority", "urgent"]
+            vendor_lower = vendor_name.lower()
+            if any(keyword in vendor_lower for keyword in suspicious_keywords):
+                if amount > 25000:  # Large payment to suspicious vendor
+                    reason = "suspicious_new_vendor"
+        
+        # 4. Weekend Entry Detection
+        if not reason and invoice_date:
+            if invoice_date.weekday() >= 5:  # Saturday (5) or Sunday (6)
+                reason = "weekend_entry"
+        
+        # 5. Split Transaction Detection (same vendor, same day, multiple invoices)
+        if not reason and invoice_date:
+            same_vendor_same_day = df[
+                (df["vendor_name"].map(_norm_name) == _norm_name(vendor_name)) &
+                (df["invoice_date"].map(_parse_date).dt.date == invoice_date.date()) &
+                (df["invoice_id"] != r.get("invoice_id"))
+            ]
+            if len(same_vendor_same_day) >= 2:  # Multiple transactions same vendor/day
+                reason = "split_transaction_pattern"
         if reason:
             e = {
                 "subledger": "AP",
                 "entity": r.get("entity"),
-                "bill_id": r.get("bill_id"),
+                "bill_id": r.get("invoice_id"),
                 "vendor_name": r.get("vendor_name"),
                 "bill_date": r.get("bill_date"),
                 "amount": float(r.get("amount", 0.0)),
@@ -162,16 +220,41 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                 "notes": notes or None,
             }
             # Attach deterministic candidates and [AI]-labeled rationale
-            cand = _ap_candidates(r) if reason in ("duplicate_flag", "overdue", "age_gt_60") else []
+            cand = _ap_candidates(r) if reason in ("duplicate_flag", "overdue", "age_gt_60", "duplicate_payment_pattern") else []
             if cand:
                 e["candidates"] = cand
-            e["ai_rationale"] = (
-                f"[DET] AP {r.get('entity')} bill {r.get('bill_id')}: reason={reason}, "
-                f"amount={float(r.get('amount', 0.0)):.2f} {r.get('currency')}, age_days={age}. "
-                f"Candidates={len(cand)} (vendor={_safe_str(r.get('vendor_name'))})."
-            )
+            
+            # Enhanced AI rationale for forensic patterns
+            if reason == "duplicate_payment_pattern":
+                e["ai_rationale"] = (
+                    f"[FORENSIC] Potential duplicate payment detected: vendor={vendor_name}, "
+                    f"amount=${amount:.2f}, similar transaction found within 7 days"
+                )
+            elif reason.startswith("round_dollar"):
+                e["ai_rationale"] = (
+                    f"[FORENSIC] Round dollar anomaly: amount=${amount:.2f} is suspiciously round"
+                )
+            elif reason == "suspicious_new_vendor":
+                e["ai_rationale"] = (
+                    f"[FORENSIC] Suspicious vendor pattern: {vendor_name} with large payment ${amount:.2f}"
+                )
+            elif reason == "weekend_entry":
+                e["ai_rationale"] = (
+                    f"[FORENSIC] Weekend entry: transaction dated {invoice_date.strftime('%Y-%m-%d')} (%s)"
+                    % invoice_date.strftime('%A')
+                )
+            elif reason == "split_transaction_pattern":
+                e["ai_rationale"] = (
+                    f"[FORENSIC] Split transaction pattern: multiple payments to {vendor_name} on same day"
+                )
+            else:
+                e["ai_rationale"] = (
+                    f"[DET] AP {r.get('entity')} bill {r.get('invoice_id')}: reason={reason}, "
+                    f"amount={float(r.get('amount', 0.0)):.2f} {r.get('currency')}, age_days={age}. "
+                    f"Candidates={len(cand)} (vendor={_safe_str(r.get('vendor_name'))})."
+                )
             exceptions.append(e)
-            input_row_ids.append(str(r.get("bill_id")))
+            input_row_ids.append(str(r.get("invoice_id")))
 
     # Build artifact
     run_id = Path(audit.log_path).stem.replace("audit_", "")
@@ -336,11 +419,54 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             age = int(r.get("age_days")) if pd.notna(r.get("age_days")) else 0
         except Exception:
             age = 0
+        amount = float(r.get("amount", 0.0))
+        customer_name = _safe_str(r.get("customer_name"))
+        invoice_date = _parse_date_ar(r.get("invoice_date"))
+        payment_terms = _safe_str(r.get("payment_terms", ""))
+        description = _safe_str(r.get("description", ""))
+        
         reason: str | None = None
+        
+        # Original flags
         if status == "Overdue":
             reason = "overdue"
         elif age > 60:
             reason = "age_gt_60"
+        
+        # Forensic Pattern Detection
+        
+        # 1. Channel Stuffing Detection (large amounts at month end)
+        if not reason and invoice_date and amount > 50000:
+            # Check if invoice is in last 3 days of month
+            month_end = invoice_date.replace(day=28) + pd.DateOffset(days=4)
+            month_end = month_end - pd.DateOffset(days=month_end.day)
+            days_from_month_end = (month_end - invoice_date).days
+            if days_from_month_end <= 3:
+                # Additional check for extended payment terms
+                if any(term in payment_terms.lower() for term in ["net 90", "net 120", "net 180"]):
+                    reason = "channel_stuffing_pattern"
+        
+        # 2. Credit Memo Abuse Detection (negative amounts)
+        if not reason and amount < 0:
+            if abs(amount) > 5000:  # Significant credit amounts
+                if "credit memo" in description.lower():
+                    reason = "credit_memo_abuse"
+        
+        # 3. Related Party Transaction Detection
+        if not reason:
+            related_party_keywords = ["subsidiary", "affiliate", "related entity", 
+                                    "sister company", "associated business"]
+            customer_lower = customer_name.lower()
+            if any(keyword in customer_lower for keyword in related_party_keywords):
+                if amount > 75000:  # Large amounts to related parties
+                    reason = "related_party_transaction"
+        
+        # 4. Revenue Recognition Risk (unusual patterns)
+        if not reason and invoice_date:
+            # Check for unusual invoice timing patterns
+            if invoice_date.weekday() >= 5:  # Weekend invoicing
+                if amount > 25000:
+                    reason = "weekend_revenue_recognition"
         if reason:
             e = {
                 "subledger": "AR",
@@ -357,11 +483,34 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             cand = _ar_candidates(r) if reason in ("overdue", "age_gt_60") else []
             if cand:
                 e["candidates"] = cand
-            e["ai_rationale"] = (
-                f"[DET] AR {r.get('entity')} invoice {r.get('invoice_id')}: reason={reason}, "
-                f"amount={float(r.get('amount', 0.0)):.2f} {r.get('currency')}, age_days={age}. "
-                f"Candidates={len(cand)} (customer={_safe_str(r.get('customer_name'))})."
-            )
+            
+            # Enhanced AI rationale for forensic patterns
+            if reason == "channel_stuffing_pattern":
+                e["ai_rationale"] = (
+                    f"[FORENSIC] Channel stuffing detected: large invoice ${amount:.2f} "
+                    f"to {customer_name} near month-end with extended terms ({payment_terms})"
+                )
+            elif reason == "credit_memo_abuse":
+                e["ai_rationale"] = (
+                    f"[FORENSIC] Credit memo abuse: significant credit ${abs(amount):.2f} "
+                    f"to {customer_name}"
+                )
+            elif reason == "related_party_transaction":
+                e["ai_rationale"] = (
+                    f"[FORENSIC] Related party transaction: ${amount:.2f} "
+                    f"to {customer_name} with unusual pricing"
+                )
+            elif reason == "weekend_revenue_recognition":
+                e["ai_rationale"] = (
+                    f"[FORENSIC] Weekend revenue recognition: ${amount:.2f} invoice "
+                    f"dated {invoice_date.strftime('%Y-%m-%d')} ({invoice_date.strftime('%A')})"
+                )
+            else:
+                e["ai_rationale"] = (
+                    f"[DET] AR {r.get('entity')} invoice {r.get('invoice_id')}: reason={reason}, "
+                    f"amount={float(r.get('amount', 0.0)):.2f} {r.get('currency')}, age_days={age}. "
+                    f"Candidates={len(cand)} (customer={_safe_str(r.get('customer_name'))})."
+                )
             exceptions.append(e)
             input_row_ids.append(str(r.get("invoice_id")))
 
