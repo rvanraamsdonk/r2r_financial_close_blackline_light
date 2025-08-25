@@ -74,7 +74,7 @@ class ArtifactService {
   // Get available runs
   async getAvailableRuns(): Promise<any> {
     try {
-      const response = await fetch('http://localhost:5001/api/runs');
+      const response = await fetch('/runs_manifest.json');
       if (!response.ok) return { runs: [], latest: null };
       return await response.json();
     } catch (error) {
@@ -106,7 +106,7 @@ class ArtifactService {
   // Build canonical artifact URL resolved by backend to timestamped file
   private async buildArtifactUrl(canonicalPath: string): Promise<string> {
     const timestamp = await this.getCurrentRunTimestamp();
-    return `${this.baseUrl}/api/runs/${timestamp}/artifact/${canonicalPath}`;
+    return `${this.baseUrl}/api/runs/run_${timestamp}/artifact/${canonicalPath}`;
   }
 
   // Get close report for selected run

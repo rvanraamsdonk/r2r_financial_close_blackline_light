@@ -167,36 +167,50 @@ def add_forensic_to_trial_balance():
     print(f"✅ Trial balance forensic scenarios added: {len(df)} records")
 
 def add_forensic_to_intercompany():
-    """Add forensic scenarios to intercompany data"""
-    print("🔍 Adding forensic scenarios to intercompany data...")
+    """Add forensic scenarios to intercompany data by creating data patterns."""
+    print("🔍 Embedding pattern-based forensic scenarios in intercompany data...")
     
     ic_path = Path("../data/subledgers/intercompany/ic_transactions_aug.csv")
     df = pd.read_csv(ic_path)
-    
-    # Add forensic flags
-    df['transfer_pricing_risk'] = False
-    df['profit_shifting_risk'] = False
-    df['documentation_gap'] = False
-    df['arm_length_violation'] = False
-    
-    # Transfer pricing issues (15%)
-    tp_indices = random.sample(range(len(df)), int(len(df) * 0.15))
-    df.loc[tp_indices, 'transfer_pricing_risk'] = True
-    
-    # Profit shifting (10%)
-    profit_indices = random.sample(range(len(df)), int(len(df) * 0.10))
-    df.loc[profit_indices, 'profit_shifting_risk'] = True
-    
-    # Documentation gaps (20%)
-    doc_indices = random.sample(range(len(df)), int(len(df) * 0.20))
-    df.loc[doc_indices, 'documentation_gap'] = True
-    
-    # Arm's length violations (8%)
-    arm_indices = random.sample(range(len(df)), int(len(df) * 0.08))
-    df.loc[arm_indices, 'arm_length_violation'] = True
-    
+
+    # Remove old boolean flags if they exist
+    risk_cols = ['transfer_pricing_risk', 'profit_shifting_risk', 'documentation_gap', 'arm_length_violation']
+    df = df.drop(columns=[col for col in risk_cols if col in df.columns], errors='ignore')
+
+    # 1. Transfer Pricing / Arm's Length Violation Scenarios (15% of transactions)
+    # Simulate by creating a mismatch between src and dst amounts where it's not justified by FX.
+    tp_indices = df.sample(frac=0.15, random_state=42).index
+    for idx in tp_indices:
+        # Introduce a 10-25% discrepancy
+        discrepancy = 1 + random.choice([-1, 1]) * random.uniform(0.10, 0.25)
+        df.loc[idx, 'amount_dst'] = df.loc[idx, 'amount_src'] * discrepancy
+        df.loc[idx, 'description'] += " (Review TP)"
+
+    # 2. Profit Shifting Scenarios (10% of 'Management Fee' transactions)
+    # Simulate by making management fees unusually high or low.
+    fee_df = df[df['transaction_type'] == 'Management Fee']
+    if not fee_df.empty:
+        profit_shift_indices = fee_df.sample(frac=0.10, random_state=43).index
+        for idx in profit_shift_indices:
+            # Inflate or deflate by 50-200%
+            factor = random.choice([0.5, 1.5, 2.0]) 
+            df.loc[idx, 'amount_src'] *= factor
+            df.loc[idx, 'amount_dst'] *= factor
+            df.loc[idx, 'description'] = "Aggressive Management Fee Allocation"
+
+    # 3. Documentation Gap Scenarios (20% of transactions)
+    # Simulate by making descriptions and references vague or missing.
+    doc_gap_indices = df.sample(frac=0.20, random_state=44).index
+    for idx in doc_gap_indices:
+        df.loc[idx, 'description'] = 'Intercompany Charge'
+        df.loc[idx, 'reference'] = f'IC-REF-{random.randint(100, 999)}'
+
+    # Ensure amounts are rounded to 2 decimal places
+    df['amount_src'] = df['amount_src'].round(2)
+    df['amount_dst'] = df['amount_dst'].round(2)
+
     df.to_csv(ic_path, index=False)
-    print(f"✅ Intercompany forensic scenarios added: {len(df)} records")
+    print(f"✅ Intercompany forensic scenarios embedded: {len(df)} records updated.")
 
 def add_forensic_to_accruals():
     """Add forensic scenarios to accruals"""

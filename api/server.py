@@ -293,31 +293,30 @@ def get_artifact(timestamp, artifact_name):
       - artifact_name: 'ap_reconciliation.json' resolves to 'ap_reconciliation_*.json'
       - artifact_name: 'ai_cache/flux_ai_narratives.json' resolves to 'ai_cache/flux_ai_narratives_*.json'
     """
-    run_dir = OUT_DIR / f"run_{timestamp}"
+    run_dir = OUT_DIR / timestamp
     if not run_dir.exists():
         return jsonify({"error": "Run not found"}), 404
 
-    # Allow nested paths
+    # Allow nested paths and search recursively
     requested_path = Path(artifact_name)
-    search_dir = run_dir / requested_path.parent
-    if not search_dir.exists():
-        return jsonify({"error": "Artifact directory not found"}), 404
-
     base = requested_path.name
     if '.' not in base:
         return jsonify({"error": "Artifact must include extension"}), 400
     stem, ext = base.rsplit('.', 1)
 
-    # 1) Prefer exact match if present
-    exact_path = search_dir / base
-    if exact_path.exists():
-        return send_from_directory(search_dir, base)
+    # Search recursively for the file, preferring exact match then timestamped variant
+    # Pattern matches files like 'ap_reconciliation.json' or 'ap_reconciliation_..._....json'
+    pattern = f"**/{stem}*.{ext}"
+    candidates = list(run_dir.rglob(pattern))
 
-    # 2) Otherwise, look for timestamped variant: <stem>_*.ext
-    candidates = sorted(search_dir.glob(f"{stem}_*.{ext}"), key=lambda p: p.stat().st_mtime, reverse=True)
-    if candidates:
-        chosen = candidates[0]
-        return send_from_directory(chosen.parent, chosen.name)
+    if not candidates:
+        return jsonify({"error": f"Artifact '{artifact_name}' not found with pattern '{pattern}'"}), 404
+
+    # Sort by modification time to get the latest one
+    candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    chosen = candidates[0]
+
+    return send_from_directory(chosen.parent, chosen.name)
 
     return jsonify({"error": "Artifact not found"}), 404
 

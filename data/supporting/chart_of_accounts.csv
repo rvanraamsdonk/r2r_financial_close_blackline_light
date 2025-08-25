@@ -1,0 +1,14 @@
+account_id,account_name,category,subcategory
+1010,Cash,Assets,Current Assets
+1200,Accounts Receivable,Assets,Current Assets
+1500,Prepaid Expenses,Assets,Current Assets
+1700,Fixed Assets,Assets,Long-Term Assets
+2010,Accounts Payable,Liabilities,Current Liabilities
+2100,Accrued Expenses,Liabilities,Current Liabilities
+3000,Common Stock,Equity,Contributed Capital
+3500,Retained Earnings,Equity,Retained Earnings
+4000,Sales Revenue,Revenue,Sales
+5010,Cost of Goods Sold,Expenses,COGS
+6000,Salaries and Wages,Expenses,Operating Expenses
+6100,Rent Expense,Expenses,Operating Expenses
+6200,Utilities Expense,Expenses,Operating Expenses

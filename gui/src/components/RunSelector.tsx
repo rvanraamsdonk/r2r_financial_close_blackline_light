@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, ChevronDown, Clock, CheckCircle, XCircle, Loader } from 'lucide-react';
-import { artifactService } from '../services/artifactService.js';
-import { ProgressToast } from './ProgressToast.js';
+import { artifactService } from '../services/artifactService';
+import { ProgressToast } from './ProgressToast';
 
 interface Run {
   timestamp: string;

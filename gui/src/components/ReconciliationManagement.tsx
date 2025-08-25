@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { DenseDataTable } from './DenseDataTable.js';
-import { CompactAIBadge } from './AITransparency.js';
-import { renderCurrency } from './DenseDataTable.js';
-import type { ColumnDefinition, ID } from './DenseDataTable.js';
-import { artifactService } from '../services/artifactService.js';
+import { DenseDataTable } from './DenseDataTable';
+import { CompactAIBadge } from './AITransparency';
+import { renderCurrency } from './DenseDataTable';
+import type { ColumnDefinition, ID } from './DenseDataTable';
+import { artifactService } from '../services/artifactService';
 import { 
   Calculator, 
   AlertTriangle, 
@@ -40,6 +40,8 @@ interface ReconciliationManagementProps {
 export const ReconciliationManagement: React.FC<ReconciliationManagementProps> = ({ className = "" }) => {
   const [apExceptions, setApExceptions] = useState<ReconciliationException[]>([]);
   const [arExceptions, setArExceptions] = useState<ReconciliationException[]>([]);
+  const [bankExceptions, setBankExceptions] = useState<ReconciliationException[]>([]);
+  const [icExceptions, setIcExceptions] = useState<ReconciliationException[]>([]);
   const [activeTab, setActiveTab] = useState<'ap' | 'ar' | 'bank' | 'ic'>('ap');
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>('all');
@@ -54,14 +56,24 @@ export const ReconciliationManagement: React.FC<ReconciliationManagementProps> =
     try {
       if (activeTab === 'ap') {
         const apData = await artifactService.getReconciliationData('ap');
-        if (apData && apData.exceptions) {
-          setApExceptions(transformAPExceptions(apData.exceptions));
-        }
+        console.log('Fetched AP Data:', apData);
+        const apItems = apData?.exceptions ? transformAPExceptions(apData.exceptions) : [];
+        setApExceptions(apItems);
       } else if (activeTab === 'ar') {
         const arData = await artifactService.getReconciliationData('ar');
-        if (arData && arData.exceptions) {
-          setArExceptions(transformARExceptions(arData.exceptions));
-        }
+        console.log('Fetched AR Data:', arData);
+        const arItems = arData?.exceptions ? transformARExceptions(arData.exceptions) : [];
+        setArExceptions(arItems);
+      } else if (activeTab === 'bank') {
+        const bankData = await artifactService.getReconciliationData('bank');
+        console.log('Fetched Bank Data:', bankData);
+        const bankItems = bankData?.exceptions ? transformBankExceptions(bankData.exceptions) : [];
+        setBankExceptions(bankItems);
+      } else if (activeTab === 'ic') {
+        const icData = await artifactService.getReconciliationData('intercompany');
+        console.log('Fetched Intercompany Data:', icData);
+        const icItems = icData?.exceptions ? transformICExceptions(icData.exceptions) : [];
+        setIcExceptions(icItems);
       }
     } catch (error) {
       console.error('Failed to load reconciliation data:', error);
@@ -72,54 +84,109 @@ export const ReconciliationManagement: React.FC<ReconciliationManagementProps> =
 
   // Transform AP exceptions from artifact format
   const transformAPExceptions = (exceptions: any[]): ReconciliationException[] => {
-    return exceptions.slice(0, 25).map((exc, index) => ({
-      id: `AP-${index + 1}`,
-      account: exc.account || '2000',
-      description: exc.description || `AP Exception ${index + 1}`,
-      amount: exc.amount || Math.random() * 50000,
-      currency: 'USD',
-      type: ['timing', 'variance', 'unmatched', 'missing'][Math.floor(Math.random() * 4)] as any,
-      age_days: Math.floor(Math.random() * 90),
-      entity: exc.entity || 'ENT100',
-      source: 'AP Subledger',
-      ai_suggestion: {
-        match_confidence: Math.floor(Math.random() * 40) + 60,
-        suggested_action: 'Auto-match with invoice',
-        reasoning: 'Similar amount and vendor pattern detected'
-      }
-    }));
+    return exceptions.map((exc, index) => {
+      const reason: string = (exc.reason || '').toString();
+      let type: ReconciliationException['type'] = 'variance';
+      const r = reason.toLowerCase();
+      if (r.includes('unmatched')) type = 'unmatched';
+      else if (r.includes('missing')) type = 'missing';
+      else if (r.includes('timing')) type = 'timing';
+
+      return {
+        id: exc.invoice_id || exc.id || `AP-${index + 1}`,
+        account: exc.account || 'N/A',
+        description: exc.description || exc.vendor_name || reason || 'AP exception',
+        amount: Math.abs(exc.amount ?? exc.diff_abs ?? exc.open_amount ?? 0),
+        currency: exc.currency || 'USD',
+        type,
+        age_days: exc.age_days ?? 0,
+        entity: exc.entity || exc.company || 'N/A',
+        source: 'AP Subledger',
+        ai_suggestion: exc.ai_suggestion || undefined
+      };
+    });
   };
 
   // Transform AR exceptions from artifact format
   const transformARExceptions = (exceptions: any[]): ReconciliationException[] => {
-    return exceptions.slice(0, 30).map((exc, index) => ({
-      id: `AR-${index + 1}`,
-      account: exc.account || '1200',
-      description: exc.description || `AR Exception ${index + 1}`,
-      amount: exc.amount || Math.random() * 75000,
-      currency: 'USD',
-      type: ['timing', 'variance', 'unmatched', 'missing'][Math.floor(Math.random() * 4)] as any,
-      age_days: Math.floor(Math.random() * 120),
-      entity: exc.entity || 'ENT101',
-      source: 'AR Subledger',
-      ai_suggestion: {
-        match_confidence: Math.floor(Math.random() * 35) + 65,
-        suggested_action: 'Match with payment',
-        reasoning: 'Customer payment pattern analysis suggests match'
-      }
+    return exceptions.map((exc, index) => {
+      const reason: string = (exc.reason || '').toString();
+      let type: ReconciliationException['type'] = 'variance';
+      const r = reason.toLowerCase();
+      if (r.includes('unmatched')) type = 'unmatched';
+      else if (r.includes('missing')) type = 'missing';
+      else if (r.includes('timing')) type = 'timing';
+
+      return {
+        id: exc.invoice_id || exc.id || `AR-${index + 1}`,
+        account: exc.account || 'N/A',
+        description: exc.description || exc.customer_name || reason || 'AR exception',
+        amount: Math.abs(exc.amount ?? exc.diff_abs ?? exc.open_amount ?? 0),
+        currency: exc.currency || 'USD',
+        type,
+        age_days: exc.age_days ?? 0,
+        entity: exc.entity || exc.company || 'N/A',
+        source: 'AR Subledger',
+        ai_suggestion: exc.ai_suggestion || undefined
+      };
+    });
+  };
+
+  const transformBankExceptions = (exceptions: any[]): ReconciliationException[] => {
+    return exceptions.map((exc, index) => ({
+      id: exc.id || exc.txn_id || `BANK-${index + 1}`,
+      account: exc.account || exc.bank_account || 'N/A',
+      description: exc.description || exc.reason,
+      amount: Math.abs(exc.amount || exc.diff_abs || exc.unmatched_amount || 0),
+      currency: exc.currency || 'USD',
+      type: (exc.reason && exc.reason.toLowerCase().includes('unmatched')) ? 'unmatched' : 'variance',
+      age_days: exc.age_days || 0,
+      entity: exc.entity || exc.company || 'N/A',
+      source: 'Bank Statement',
+      ai_suggestion: exc.ai_suggestion || undefined
     }));
   };
 
-  const getCurrentExceptions = () => {
-    const data = activeTab === 'ap' ? apExceptions : arExceptions;
-    return data.filter(item => {
-      if (filterType !== 'all' && item.type !== filterType) return false;
-      if (filterAge !== 'all') {
-        const ageThreshold = parseInt(filterAge);
-        if (item.age_days < ageThreshold) return false;
-      }
-      return true;
+  const transformICExceptions = (exceptions: any[]): ReconciliationException[] => {
+    return exceptions.map((exc, index) => {
+      const reason: string = exc.reason || '';
+      let type: ReconciliationException['type'] = 'variance';
+      if (reason.toLowerCase().includes('unmatched')) type = 'unmatched';
+      else if (reason.toLowerCase().includes('missing')) type = 'missing';
+      else if (reason.toLowerCase().includes('timing')) type = 'timing';
+
+      const entityLabel = `${exc.entity_src || 'N/A'}->${exc.entity_dst || 'N/A'}`;
+      const desc = exc.description || `IC ${exc.doc_id || `DOC-${index + 1}`}: ${reason || 'difference'}`;
+
+      return {
+        id: exc.doc_id || `IC-${index + 1}`,
+        account: exc.transaction_type || 'Intercompany',
+        description: desc,
+        amount: Math.abs(exc.diff_abs ?? exc.amount ?? 0),
+        currency: exc.currency || 'USD',
+        type,
+        age_days: exc.age_days || 0,
+        entity: entityLabel,
+        source: 'Intercompany',
+        ai_suggestion: exc.ai_suggestion || undefined
+      };
     });
+  };
+
+  const getCurrentExceptions = () => {
+    let exceptions: ReconciliationException[] = [];
+    if (activeTab === 'ap') exceptions = apExceptions;
+    if (activeTab === 'ar') exceptions = arExceptions;
+    if (activeTab === 'bank') exceptions = bankExceptions;
+    if (activeTab === 'ic') exceptions = icExceptions;
+
+    const filtered = exceptions.filter(exc => {
+      const typeMatch = filterType === 'all' || exc.type === filterType;
+      const ageMatch = filterAge === 'all' || exc.age_days >= parseInt(filterAge, 10);
+      return typeMatch && ageMatch;
+    });
+
+    return filtered;
   };
 
   const currentExceptions = getCurrentExceptions();
@@ -220,8 +287,8 @@ export const ReconciliationManagement: React.FC<ReconciliationManagementProps> =
   const tabs = [
     { key: 'ap', label: 'Accounts Payable', count: apExceptions.length },
     { key: 'ar', label: 'Accounts Receivable', count: arExceptions.length },
-    { key: 'bank', label: 'Bank Reconciliation', count: 0 },
-    { key: 'ic', label: 'Intercompany', count: 0 }
+    { key: 'bank', label: 'Bank Reconciliation', count: bankExceptions.length },
+    { key: 'ic', label: 'Intercompany', count: icExceptions.length }
   ];
 
   const getStatsForCurrentTab = () => {
@@ -400,6 +467,11 @@ export const ReconciliationManagement: React.FC<ReconciliationManagementProps> =
           <div className="p-8 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
             <p className="mt-2 text-sm text-gray-600">Loading reconciliation data...</p>
+          </div>
+        ) : currentExceptions.length === 0 ? (
+          <div className="p-8 text-center text-sm text-gray-600">
+            <p>No exceptions found for this tab.</p>
+            <p className="mt-1 text-gray-500">If you expected items, ensure the latest run produced exceptions and the correct period/entity is selected.</p>
           </div>
         ) : (
           <DenseDataTable

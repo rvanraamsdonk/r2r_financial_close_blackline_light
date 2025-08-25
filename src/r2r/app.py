@@ -50,9 +50,9 @@ def main(argv: list[str] | None = None) -> int:
 
     # Prepare run
     run_id = gen_run_id()
-    out_dir = Path(settings.out_path)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    audit = AuditLogger(out_dir, run_id)
+    run_dir = Path(settings.out_path) / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    audit = AuditLogger(run_dir, run_id)
 
     # Load datasets
     entities_df = load_entities(settings.data_path)
@@ -66,7 +66,7 @@ def main(argv: list[str] | None = None) -> int:
         entity=settings.entity,
         repo_root=settings.repo_root,
         data_path=settings.data_path,
-        out_path=settings.out_path,
+        out_path=str(run_dir),
         entities_df=entities_df,
         coa_df=coa_df,
         tb_df=tb_df,
@@ -101,7 +101,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # TB diagnostics summary (read from artifact)
     try:
-        tb_diag_path = Path(settings.out_path) / f"tb_diagnostics_{run_id}.json"
+        tb_diag_path = run_dir / f"tb_diagnostics_{run_id}.json"
         if tb_diag_path.exists():
             data = json.loads(tb_diag_path.read_text())
             diags = data.get("diagnostics", [])

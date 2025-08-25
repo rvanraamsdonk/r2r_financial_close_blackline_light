@@ -24,8 +24,8 @@ def now_iso_z() -> str:
 
 
 def run_id() -> str:
-    """Deterministic run_id format: YYYYMMDDTHHMMSSZ (UTC)"""
-    return now_utc().strftime("%Y%m%dT%H%M%SZ")
+    """Deterministic run_id format: run_YYYYMMDDTHHMMSSZ (UTC)"""
+    return "run_" + now_utc().strftime("%Y%m%dT%H%M%SZ")
 
 
 def set_time_override(dt_utc: Optional[datetime]) -> None:
