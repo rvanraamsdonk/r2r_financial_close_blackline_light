@@ -31,14 +31,19 @@ def validate_ingestion(state: R2RState, audit: AuditLogger) -> R2RState:
     ents = state.entities_df
 
     # Referential integrity: accounts exist
-    missing_accts = set(tb["account"].unique()) - set(coa["account"].unique())
+    # Convert to strings and filter out NaN values
+    tb_accounts = set(str(x) for x in tb["account"].dropna().unique() if pd.notna(x))
+    coa_accounts = set(str(x) for x in coa["account"].dropna().unique() if pd.notna(x))
+    missing_accts = tb_accounts - coa_accounts
     if missing_accts:
         msgs.append(f"[DET] Missing accounts in COA: {sorted(list(missing_accts))[:5]} ...")
     else:
         msgs.append("[DET] COA coverage OK: all TB accounts present")
 
     # Referential integrity: entities exist
-    missing_ents = set(tb["entity"].unique()) - set(ents["entity"].unique())
+    tb_entities = set(str(x) for x in tb["entity"].dropna().unique() if pd.notna(x))
+    ents_entities = set(str(x) for x in ents["entity"].dropna().unique() if pd.notna(x))
+    missing_ents = tb_entities - ents_entities
     if missing_ents:
         msgs.append(f"[DET] Missing entities in master: {sorted(list(missing_ents))}")
     else:

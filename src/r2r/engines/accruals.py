@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 from typing import Dict, Any, List
@@ -40,7 +40,18 @@ def accruals_check(state: R2RState, audit: AuditLogger) -> R2RState:
     - Flag rows missing or misaligned reversal_date for the next period
     - Export exceptions artifact and append audit/evidence
     """
-    data_fp = Path(state.data_path) / "supporting" / "accruals.csv"
+    # Try enhanced accruals first
+    candidates = [
+        Path(state.data_path) / "supporting" / "accruals_enhanced.csv",
+        Path(state.data_path) / "supporting" / "accruals.csv",
+    ]
+    data_fp = None
+    for c in candidates:
+        if c.exists():
+            data_fp = c
+            break
+    if data_fp is None:
+        data_fp = Path(state.data_path) / "supporting" / "accruals.csv"  # fallback
     msgs: List[str] = []
 
     if not data_fp.exists():
@@ -129,7 +140,7 @@ def accruals_check(state: R2RState, audit: AuditLogger) -> R2RState:
     run_id = Path(audit.log_path).stem.replace("audit_", "")
     out_path = Path(audit.out_dir) / f"accruals_{run_id}.json"
     payload = {
-        "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "period": period,
         "entity_scope": state.entity,
         "next_period": next_p,

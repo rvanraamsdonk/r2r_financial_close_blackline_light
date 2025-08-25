@@ -11,7 +11,7 @@ import os
 class Settings(BaseModel):
     # Policy and runtime
     ai_mode: Literal["off", "assist", "strict"] = Field(default="assist")
-    data_path: Path = Field(default=Path("data/lite"))
+    data_path: Path = Field(default=Path("data"))
     out_path: Path = Field(default=Path("out"))
     period: str = Field(default="2025-08")
     prior: Optional[str] = Field(default=None)
@@ -55,7 +55,7 @@ def load_settings_with_env(**overrides) -> Settings:
     # Read environment variables with sensible defaults
     settings = Settings(
         ai_mode=os.getenv("R2R_AI_MODE", overrides.get("ai_mode", "assist")),
-        data_path=Path(os.getenv("R2R_DATA_PATH", str(overrides.get("data_path", repo_root / "data/lite")))),
+        data_path=Path(os.getenv("R2R_DATA_PATH", str(overrides.get("data_path", repo_root / "data")))),
         out_path=Path(os.getenv("R2R_OUT_PATH", str(overrides.get("out_path", repo_root / "out")))),
         period=os.getenv("R2R_PERIOD", overrides.get("period", "2025-08")),
         prior=os.getenv("R2R_PRIOR", overrides.get("prior")),

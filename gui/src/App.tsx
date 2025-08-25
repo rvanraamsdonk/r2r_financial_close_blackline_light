@@ -13,6 +13,7 @@ import { VarianceAnalysis } from './components/VarianceAnalysis.js';
 import { EvidenceViewerSidebar } from './components/EvidenceViewerSidebar.js';
 import { KeyboardShortcutsHelp, useKeyboardShortcutsHelp } from './components/KeyboardShortcutsHelp.js';
 import { UserSettingsPanel, useUserSettingsPanel } from './components/UserSettingsPanel.js';
+import { RunSelector } from './components/RunSelector.js';
 import { useUserPreferencesStore, getThemeClasses } from './stores/userPreferencesStore.js';
 import { useEvidenceStore } from './stores/evidenceStore.js';
 import { renderCurrency, renderStatus, renderAIBadge } from './components/DenseDataTable.js';
@@ -227,6 +228,12 @@ function App() {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Run Selector */}
+            <RunSelector onRunChange={(timestamp) => {
+              console.log('Run changed to:', timestamp);
+              // All components will automatically refresh via artifact service
+            }} />
+            
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />

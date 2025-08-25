@@ -245,13 +245,6 @@ export const EvidenceViewerSidebar: React.FC = () => {
 
   return (
     <>
-      {/* Backdrop */}
-      {!isPinned && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-25 z-40"
-          onClick={closeEvidence}
-        />
-      )}
       
       {/* Sidebar */}
       <div

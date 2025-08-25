@@ -1,0 +1,76 @@
+period,entity,je_id,je_type,description,entry_date,amount_local,amount_usd,currency,approval_status,approver_level,approver_name,reversal_flagged,supporting_doc,account_dr,account_cr,manual_override_risk,period_end_manipulation,unauthorized_entry,segregation_violation
+2025-08,ENT101,JE095000,Tax,Tax provision adjustment,2025-08-26,65743.66,71003.15,EUR,Approved,CFO,Approver_04,False,DOC240814,5333,2891,False,False,False,False
+2025-08,ENT100,JE095001,Consolidation,Consolidation adjustment,2025-08-05,27962.47,27962.47,USD,Pending,CFO,Approver_09,False,DOC629959,9004,5114,False,False,False,True
+2025-08,ENT100,JE095002,Reversal,Accrual reversal entry,2025-08-21,42934.0,42934.0,USD,Approved,Manager,Approver_05,False,DOC768061,5291,3647,False,False,False,False
+2025-08,ENT102,JE095003,Adjustment,Management adjustment,2025-08-18,70861.08,89993.57,GBP,Approved,Manager,Approver_05,True,DOC672092,1590,7049,False,False,False,False
+2025-08,ENT102,JE095004,Consolidation,Consolidation adjustment,2025-08-05,43548.88,55307.08,GBP,Approved,CFO,Approver_02,False,DOC475190,4441,5088,False,False,False,False
+2025-08,ENT102,JE095005,Reversal,Accrual reversal entry,2025-08-12,78231.51,99354.02,GBP,Rejected,CEO,Approver_05,False,DOC348237,3662,3900,True,False,False,False
+2025-08,ENT101,JE095006,Accrual,Period-end accrual entry,2025-08-06,73919.88,79833.47,EUR,Approved,CEO,Approver_08,False,DOC379766,3608,2771,False,False,False,False
+2025-08,ENT101,JE095007,Accrual,Period-end accrual entry,2025-08-28,47598.31,51406.18,EUR,Approved,CEO,Approver_08,False,DOC333752,1387,4164,False,False,False,False
+2025-08,ENT101,JE095008,FX Revaluation,Foreign exchange revaluation,2025-08-09,86570.94,93496.62,EUR,Under Review,CFO,Approver_17,False,DOC519093,9785,6425,True,False,False,False
+2025-08,ENT100,JE095009,Reversal,Accrual reversal entry,2025-08-29,97069.66,97069.66,USD,Approved,CFO,Approver_20,True,DOC555673,6663,6139,False,False,False,True
+2025-08,ENT101,JE095010,Tax,Tax provision adjustment,2025-08-17,12448.93,13444.85,EUR,Rejected,Controller,Approver_14,False,DOC101773,9518,9821,True,False,False,False
+2025-08,ENT102,JE095011,Correction,Error correction entry,2025-08-12,43698.44,55497.02,GBP,Under Review,CFO,Approver_04,False,DOC854717,5920,9308,False,False,False,False
+2025-08,ENT101,JE095012,Provision,Bad debt provision,2025-08-11,40837.64,44104.65,EUR,Approved,Controller,Approver_13,False,DOC810219,3851,5930,False,False,False,False
+2025-08,ENT101,JE095013,Consolidation,Consolidation adjustment,2025-08-27,1040.19,1123.4,EUR,Approved,CEO,Approver_20,False,DOC786508,6279,8618,False,False,False,False
+2025-08,ENT101,JE095014,Adjustment,Management adjustment,2025-08-22,22156.44,23928.95,EUR,Approved,Controller,Approver_10,False,DOC640490,6491,2530,False,False,False,False
+2025-08,ENT100,JE095015,Depreciation,Monthly depreciation,2025-08-08,80849.73,80849.73,USD,Approved,Manager,Approver_16,False,DOC740967,2193,8461,True,False,False,False
+2025-08,ENT101,JE095016,Tax,Tax provision adjustment,2025-08-07,72116.25,77885.55,EUR,Approved,CEO,Approver_01,False,DOC887443,2746,7965,False,True,False,False
+2025-08,ENT100,JE095017,Reclassification,Account reclassification,2025-08-26,95838.64,95838.64,USD,Approved,Manager,Approver_04,False,DOC578634,3184,8612,False,False,False,False
+2025-08,ENT102,JE095018,Consolidation,Consolidation adjustment,2025-08-18,59949.78,76136.22,GBP,Under Review,CEO,Approver_17,False,DOC547470,9976,8305,False,False,False,False
+2025-08,ENT100,JE095019,Adjustment,Management adjustment,2025-08-15,26659.96,26659.96,USD,Approved,CFO,Approver_17,False,DOC608136,4919,5499,False,False,False,False
+2025-08,ENT101,JE095020,Reversal,Accrual reversal entry,2025-08-23,29287.09,31630.05,EUR,Approved,CFO,Approver_03,False,DOC245095,3471,4788,False,False,False,False
+2025-08,ENT101,JE095021,Reclassification,Account reclassification,2025-08-23,22181.33,23955.84,EUR,Approved,CFO,Approver_14,False,DOC165290,4388,7883,False,False,False,False
+2025-08,ENT101,JE095022,Tax,Tax provision adjustment,2025-08-31,69856.78,75445.32,EUR,Rejected,CEO,Approver_12,False,DOC413118,7389,7865,False,False,False,False
+2025-08,ENT102,JE095023,Consolidation,Consolidation adjustment,2025-08-26,60722.01,77116.95,GBP,Approved,Controller,Approver_16,False,DOC130434,7371,6507,False,False,False,False
+2025-08,ENT102,JE095024,Provision,Bad debt provision,2025-08-24,17339.43,22021.07,GBP,Approved,Controller,Approver_18,False,DOC128276,7455,1444,False,False,False,False
+2025-08,ENT100,JE095025,Provision,Bad debt provision,2025-08-05,86818.28,86818.28,USD,Approved,CFO,Approver_07,False,DOC576786,6355,6529,False,False,False,False
+2025-08,ENT101,JE095026,Depreciation,Monthly depreciation,2025-08-25,95169.21,102782.74,EUR,Approved,Manager,Approver_18,False,DOC154615,6733,4673,False,True,False,False
+2025-08,ENT102,JE095027,Reversal,Accrual reversal entry,2025-08-25,95771.27,121629.52,GBP,Approved,Manager,Approver_07,False,DOC979995,1333,3496,False,False,False,False
+2025-08,ENT100,JE095028,Reclassification,Account reclassification,2025-08-16,67276.43,67276.43,USD,Approved,Controller,Approver_09,False,DOC904150,7043,3749,False,False,False,False
+2025-08,ENT102,JE095029,Tax,Tax provision adjustment,2025-08-31,75044.64,95306.69,GBP,Approved,Controller,Approver_04,False,DOC706794,1420,6111,False,False,False,False
+2025-08,ENT102,JE095030,Provision,Bad debt provision,2025-08-13,94205.59,119641.1,GBP,Approved,Controller,Approver_10,True,DOC991597,2983,1672,True,True,False,False
+2025-08,ENT101,JE095031,Consolidation,Consolidation adjustment,2025-08-14,66490.61,71809.86,EUR,Approved,CFO,Approver_14,True,DOC962276,9031,2729,True,False,False,False
+2025-08,ENT101,JE095032,FX Revaluation,Foreign exchange revaluation,2025-08-21,89265.93,96407.2,EUR,Approved,Controller,Approver_17,False,DOC782054,5425,9817,False,False,False,False
+2025-08,ENT101,JE095033,Adjustment,Management adjustment,2025-08-14,82747.73,89367.54,EUR,Approved,CFO,Approver_03,False,DOC392477,8385,4995,True,True,False,False
+2025-08,ENT101,JE095034,Tax,Tax provision adjustment,2025-08-20,67150.66,72522.71,EUR,Approved,CEO,Approver_06,False,DOC611233,4475,6813,False,False,False,False
+2025-08,ENT101,JE095035,FX Revaluation,Foreign exchange revaluation,2025-08-09,88151.68,95203.81,EUR,Pending,CFO,Approver_17,False,DOC300337,2402,4954,False,False,False,False
+2025-08,ENT102,JE095036,Provision,Bad debt provision,2025-08-16,55962.44,71072.31,GBP,Approved,CEO,Approver_16,False,DOC569945,1282,2524,False,False,False,False
+2025-08,ENT101,JE095037,Correction,Error correction entry,2025-08-13,69486.93,75045.88,EUR,Approved,CFO,Approver_17,False,DOC460455,7971,6419,False,False,False,False
+2025-08,ENT101,JE095038,Adjustment,Management adjustment,2025-08-09,31355.68,33864.13,EUR,Approved,Controller,Approver_18,False,DOC899213,4033,4138,False,False,True,False
+2025-08,ENT100,JE095039,Adjustment,Management adjustment,2025-08-09,72733.92,72733.92,USD,Under Review,CFO,Approver_07,False,DOC410636,4727,6912,False,False,False,False
+2025-08,ENT100,JE095040,Depreciation,Monthly depreciation,2025-08-01,71093.83,71093.83,USD,Approved,Manager,Approver_18,False,DOC406327,3068,9042,True,True,False,True
+2025-08,ENT100,JE095041,Accrual,Period-end accrual entry,2025-08-19,29149.59,29149.59,USD,Approved,CFO,Approver_02,False,DOC364742,8827,2869,False,False,False,False
+2025-08,ENT100,JE095042,Provision,Bad debt provision,2025-08-16,8334.13,8334.13,USD,Pending,Manager,Approver_19,False,DOC418594,2395,5066,False,False,False,False
+2025-08,ENT100,JE095043,Consolidation,Consolidation adjustment,2025-08-25,42201.23,42201.23,USD,Approved,Controller,Approver_13,False,DOC572398,8253,5871,False,False,False,False
+2025-08,ENT102,JE095044,Provision,Bad debt provision,2025-08-10,57294.32,72763.78,GBP,Approved,Manager,Approver_07,False,DOC755900,4457,5335,False,False,False,False
+2025-08,ENT102,JE095045,Reversal,Accrual reversal entry,2025-08-06,24746.65,31428.25,GBP,Approved,Controller,Approver_15,True,DOC822858,8699,5771,False,False,False,False
+2025-08,ENT100,JE095046,Correction,Error correction entry,2025-08-10,70988.63,70988.63,USD,Pending,CEO,Approver_08,True,DOC377405,4241,7965,False,False,False,False
+2025-08,ENT100,JE095047,Consolidation,Consolidation adjustment,2025-08-08,65115.84,65115.84,USD,Under Review,Controller,Approver_06,True,DOC931131,6039,5728,False,False,False,False
+2025-08,ENT101,JE095048,Reversal,Accrual reversal entry,2025-08-15,69179.12,74713.45,EUR,Pending,CFO,Approver_16,False,DOC559023,2317,1653,False,False,False,False
+2025-08,ENT101,JE095049,FX Revaluation,Foreign exchange revaluation,2025-08-20,25786.42,27849.34,EUR,Approved,Manager,Approver_09,False,DOC704238,1659,3870,False,False,False,False
+2025-08,ENT101,JE095050,Consolidation,Consolidation adjustment,2025-08-21,44780.71,48363.17,EUR,Approved,CEO,Approver_16,False,DOC195674,8700,6700,False,True,False,False
+2025-08,ENT101,JE095051,FX Revaluation,Foreign exchange revaluation,2025-08-11,67343.22,72730.67,EUR,Rejected,CFO,Approver_16,False,DOC402218,7561,1601,True,False,False,False
+2025-08,ENT101,JE095052,Reversal,Accrual reversal entry,2025-08-11,25987.49,28066.49,EUR,Approved,CEO,Approver_01,False,DOC789606,9889,8569,False,False,False,False
+2025-08,ENT101,JE095053,Accrual,Period-end accrual entry,2025-08-07,52325.5,56511.54,EUR,Pending,CEO,Approver_02,False,DOC313446,5375,9998,True,False,False,False
+2025-08,ENT100,JE095054,Depreciation,Monthly depreciation,2025-08-15,88203.82,88203.82,USD,Approved,Manager,Approver_20,False,DOC938141,4920,3594,False,False,False,False
+2025-08,ENT101,JE095055,Consolidation,Consolidation adjustment,2025-08-01,55672.89,60126.72,EUR,Approved,Manager,Approver_04,False,DOC779172,3522,9165,False,False,False,False
+2025-08,ENT102,JE095056,Depreciation,Monthly depreciation,2025-08-17,70835.75,89961.4,GBP,Approved,CEO,Approver_08,False,DOC578975,3369,7284,False,False,False,False
+2025-08,ENT100,JE095057,Tax,Tax provision adjustment,2025-08-17,74882.96,74882.96,USD,Approved,Manager,Approver_14,False,DOC456385,9318,5377,False,False,False,False
+2025-08,ENT100,JE095058,Depreciation,Monthly depreciation,2025-08-24,30557.03,30557.03,USD,Approved,CEO,Approver_15,False,DOC664742,8935,6654,False,False,True,False
+2025-08,ENT101,JE095059,Consolidation,Consolidation adjustment,2025-08-25,54799.58,59183.54,EUR,Approved,CFO,Approver_08,False,DOC699573,7274,4826,False,False,False,False
+2025-08,ENT101,JE095060,Accrual,Period-end accrual entry,2025-08-11,74725.81,80703.87,EUR,Pending,CEO,Approver_05,False,DOC619389,1606,3068,False,False,False,False
+2025-08,ENT102,JE095061,Tax,Tax provision adjustment,2025-08-11,87100.33,110617.42,GBP,Rejected,CEO,Approver_15,True,DOC116093,3361,7717,False,False,False,False
+2025-08,ENT102,JE095062,Reclassification,Account reclassification,2025-08-03,47479.57,60299.05,GBP,Under Review,CFO,Approver_13,False,DOC781403,2315,6383,False,False,False,False
+2025-08,ENT102,JE095063,Consolidation,Consolidation adjustment,2025-08-13,95459.82,121233.97,GBP,Pending,CEO,Approver_02,False,DOC747453,2121,4846,False,False,False,False
+2025-08,ENT102,JE095064,Depreciation,Monthly depreciation,2025-08-08,74929.87,95160.94,GBP,Approved,Manager,Approver_04,False,DOC565230,3725,5906,False,False,False,False
+2025-08,ENT100,JE095065,Accrual,Period-end accrual entry,2025-08-11,79818.2,79818.2,USD,Approved,CFO,Approver_08,False,DOC656968,7751,3950,False,False,False,False
+2025-08,ENT100,JE095066,Reclassification,Account reclassification,2025-08-03,61339.69,61339.69,USD,Approved,Controller,Approver_19,False,DOC250069,4804,8555,True,False,False,False
+2025-08,ENT102,JE095067,Depreciation,Monthly depreciation,2025-08-15,26277.34,33372.23,GBP,Approved,CEO,Approver_18,False,DOC265649,2210,8237,False,False,False,False
+2025-08,ENT101,JE095068,Tax,Tax provision adjustment,2025-08-10,64254.93,69395.33,EUR,Approved,CFO,Approver_10,False,DOC308894,7302,8916,False,False,False,False
+2025-08,ENT100,JE095069,Correction,Error correction entry,2025-08-13,57620.35,57620.35,USD,Approved,CFO,Approver_13,True,DOC387813,1132,1803,False,False,False,False
+2025-08,ENT102,JE095070,Adjustment,Management adjustment,2025-08-27,90511.37,114949.44,GBP,Approved,Controller,Approver_12,False,DOC329642,4115,5106,False,False,False,False
+2025-08,ENT102,JE095071,Reclassification,Account reclassification,2025-08-21,10619.23,13486.42,GBP,Pending,Manager,Approver_15,False,DOC134985,6977,3153,False,False,False,False
+2025-08,ENT100,JE095072,Depreciation,Monthly depreciation,2025-08-11,75000.61,75000.61,USD,Approved,Controller,Approver_12,False,DOC656639,9221,5465,False,False,False,False
+2025-08,ENT100,JE095073,Depreciation,Monthly depreciation,2025-08-30,82644.29,82644.29,USD,Approved,CFO,Approver_11,False,DOC943298,2886,8673,False,False,False,False
+2025-08,ENT100,JE095074,Reclassification,Account reclassification,2025-08-25,96683.52,96683.52,USD,Rejected,CEO,Approver_18,False,DOC483542,2479,7464,False,False,False,False

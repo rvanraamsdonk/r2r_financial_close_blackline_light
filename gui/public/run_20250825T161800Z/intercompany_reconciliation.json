@@ -1,0 +1,244 @@
+{
+  "generated_at": "2025-08-25T16:18:08Z",
+  "period": "2025-08",
+  "rules": {
+    "mismatch_rule": "flag |amount_src-amount_dst| > max(materiality[src], materiality[dst])",
+    "default_floor_usd": 1000.0
+  },
+  "exceptions": [
+    {
+      "doc_id": "IC080000",
+      "entity_src": "ENT102",
+      "entity_dst": "ENT100",
+      "amount_src": 373359.74,
+      "amount_dst": 474166.88,
+      "currency": "GBP",
+      "transaction_type": "Shared Services",
+      "description": "Shared Services - ENT102 to ENT100",
+      "diff_abs": 100807.14,
+      "threshold": 87844.84,
+      "reason": "ic_amount_mismatch_above_threshold",
+      "ai_rationale": "[DET] IC doc IC080000 ENT102->ENT100: diff=100807.14 USD exceeds threshold 87844.84. Cites doc_id, entities, and computed threshold.",
+      "candidates": [
+        {
+          "doc_id": "IC080044",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 116718.68,
+          "det_score": 0.9269
+        },
+        {
+          "doc_id": "IC080032",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 126468.53,
+          "det_score": 0.8871
+        },
+        {
+          "doc_id": "IC080043",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 129811.05,
+          "det_score": 0.8742
+        }
+      ],
+      "assistive_hint": true,
+      "det_candidate_summary": "[DET] ENT102->ENT100 doc IC080000: 3 assistive candidate hint(s) by diff magnitude in GBP; no match claim."
+    },
+    {
+      "doc_id": "IC080012",
+      "entity_src": "ENT102",
+      "entity_dst": "ENT101",
+      "amount_src": 386473.65,
+      "amount_dst": 490821.54,
+      "currency": "GBP",
+      "transaction_type": "Management Fee",
+      "description": "Management Fee - ENT102 to ENT101",
+      "diff_abs": 104347.89,
+      "threshold": 93984.58,
+      "reason": "ic_amount_mismatch_above_threshold",
+      "ai_rationale": "[DET] IC doc IC080012 ENT102->ENT101: diff=104347.89 USD exceeds threshold 93984.58. Cites doc_id, entities, and computed threshold.",
+      "candidates": [],
+      "assistive_hint": true,
+      "det_candidate_summary": "[DET] ENT102->ENT101 doc IC080012: 0 assistive candidate hint(s) by diff magnitude in GBP; no match claim."
+    },
+    {
+      "doc_id": "IC080032",
+      "entity_src": "ENT102",
+      "entity_dst": "ENT100",
+      "amount_src": 468401.98,
+      "amount_dst": 594870.51,
+      "currency": "GBP",
+      "transaction_type": "Royalty",
+      "description": "Royalty - ENT102 to ENT100",
+      "diff_abs": 126468.53,
+      "threshold": 87844.84,
+      "reason": "ic_amount_mismatch_above_threshold",
+      "ai_rationale": "[DET] IC doc IC080032 ENT102->ENT100: diff=126468.53 USD exceeds threshold 87844.84. Cites doc_id, entities, and computed threshold.",
+      "candidates": [
+        {
+          "doc_id": "IC080043",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 129811.05,
+          "det_score": 0.987
+        },
+        {
+          "doc_id": "IC080044",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 116718.68,
+          "det_score": 0.9599
+        },
+        {
+          "doc_id": "IC080000",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 100807.14,
+          "det_score": 0.8871
+        }
+      ],
+      "assistive_hint": true,
+      "det_candidate_summary": "[DET] ENT102->ENT100 doc IC080032: 3 assistive candidate hint(s) by diff magnitude in GBP; no match claim."
+    },
+    {
+      "doc_id": "IC080043",
+      "entity_src": "ENT102",
+      "entity_dst": "ENT100",
+      "amount_src": 480781.66,
+      "amount_dst": 610592.71,
+      "currency": "GBP",
+      "transaction_type": "Management Fee",
+      "description": "Management Fee - ENT102 to ENT100",
+      "diff_abs": 129811.05,
+      "threshold": 87844.84,
+      "reason": "ic_amount_mismatch_above_threshold",
+      "ai_rationale": "[DET] IC doc IC080043 ENT102->ENT100: diff=129811.05 USD exceeds threshold 87844.84. Cites doc_id, entities, and computed threshold.",
+      "candidates": [
+        {
+          "doc_id": "IC080032",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 126468.53,
+          "det_score": 0.987
+        },
+        {
+          "doc_id": "IC080044",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 116718.68,
+          "det_score": 0.9469
+        },
+        {
+          "doc_id": "IC080000",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 100807.14,
+          "det_score": 0.8742
+        }
+      ],
+      "assistive_hint": true,
+      "det_candidate_summary": "[DET] ENT102->ENT100 doc IC080043: 3 assistive candidate hint(s) by diff magnitude in GBP; no match claim."
+    },
+    {
+      "doc_id": "IC080044",
+      "entity_src": "ENT102",
+      "entity_dst": "ENT100",
+      "amount_src": 432291.41,
+      "amount_dst": 549010.09,
+      "currency": "GBP",
+      "transaction_type": "Dividend",
+      "description": "Dividend - ENT102 to ENT100",
+      "diff_abs": 116718.68,
+      "threshold": 87844.84,
+      "reason": "ic_amount_mismatch_above_threshold",
+      "ai_rationale": "[DET] IC doc IC080044 ENT102->ENT100: diff=116718.68 USD exceeds threshold 87844.84. Cites doc_id, entities, and computed threshold.",
+      "candidates": [
+        {
+          "doc_id": "IC080032",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 126468.53,
+          "det_score": 0.9599
+        },
+        {
+          "doc_id": "IC080043",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 129811.05,
+          "det_score": 0.9469
+        },
+        {
+          "doc_id": "IC080000",
+          "entity_src": "ENT102",
+          "entity_dst": "ENT100",
+          "diff_abs": 100807.14,
+          "det_score": 0.9269
+        }
+      ],
+      "assistive_hint": true,
+      "det_candidate_summary": "[DET] ENT102->ENT100 doc IC080044: 3 assistive candidate hint(s) by diff magnitude in GBP; no match claim."
+    }
+  ],
+  "proposals": [
+    {
+      "proposal_type": "ic_true_up",
+      "doc_id": "IC080000",
+      "entity_src": "ENT102",
+      "entity_dst": "ENT100",
+      "adjustment_usd": -100807.14,
+      "simulated_dst_after": 373359.74,
+      "balanced_after": true,
+      "narrative": "Adjust destination entity to match source (delta -100807.14 USD)"
+    },
+    {
+      "proposal_type": "ic_true_up",
+      "doc_id": "IC080012",
+      "entity_src": "ENT102",
+      "entity_dst": "ENT101",
+      "adjustment_usd": -104347.89,
+      "simulated_dst_after": 386473.65,
+      "balanced_after": true,
+      "narrative": "Adjust destination entity to match source (delta -104347.89 USD)"
+    },
+    {
+      "proposal_type": "ic_true_up",
+      "doc_id": "IC080032",
+      "entity_src": "ENT102",
+      "entity_dst": "ENT100",
+      "adjustment_usd": -126468.53,
+      "simulated_dst_after": 468401.98,
+      "balanced_after": true,
+      "narrative": "Adjust destination entity to match source (delta -126468.53 USD)"
+    },
+    {
+      "proposal_type": "ic_true_up",
+      "doc_id": "IC080043",
+      "entity_src": "ENT102",
+      "entity_dst": "ENT100",
+      "adjustment_usd": -129811.05,
+      "simulated_dst_after": 480781.66,
+      "balanced_after": true,
+      "narrative": "Adjust destination entity to match source (delta -129811.05 USD)"
+    },
+    {
+      "proposal_type": "ic_true_up",
+      "doc_id": "IC080044",
+      "entity_src": "ENT102",
+      "entity_dst": "ENT100",
+      "adjustment_usd": -116718.68,
+      "simulated_dst_after": 432291.41,
+      "balanced_after": true,
+      "narrative": "Adjust destination entity to match source (delta -116718.68 USD)"
+    }
+  ],
+  "summary": {
+    "count": 5,
+    "total_diff_abs": 578153.29,
+    "by_pair_diff_abs": {
+      "ENT102->ENT100": 473805.4,
+      "ENT102->ENT101": 104347.89
+    },
+    "proposal_count": 5
+  }
+}

@@ -1,0 +1,57 @@
+entity,accrual_id,description,amount_local,amount_usd,currency,status,accrual_date,reversal_date,notes,earnings_management_risk,cookie_jar_reserve,big_bath_accounting,timing_manipulation
+ENT100,ACR-2025-08-ENT100-001,Professional Fees Accrual,29408.57,29408.57,USD,Should Reverse,2025-08-31,2025-09-01,Reversal failed - manual intervention required,False,False,False,False
+ENT100,ACR-2025-08-ENT100-002,Utilities Accrual,10457.84,10457.84,USD,Active,2025-08-31,2025-09-01,Automated utilities accrual,False,False,False,False
+ENT100,ACR-2025-08-ENT100-003,Rent Accrual,9092.13,9092.13,USD,Active,2025-08-31,2025-09-01,Automated rent accrual,False,False,False,False
+ENT100,ACR-2025-08-ENT100-004,Utilities Accrual,5699.82,5699.82,USD,Active,2025-08-31,2025-09-01,Automated utilities accrual,True,False,True,False
+ENT100,ACR-2025-08-ENT100-005,Bonus Accrual,125000.0,125000.0,USD,Should Reverse,2025-08-31,2025-09-01,Reversal failed - amount disputed,False,False,False,True
+ENT100,ACR-2025-08-ENT100-006,Commission Accrual,85000.0,85000.0,USD,Active,2025-08-31,2025-09-01,Sales commission accrual,False,False,False,True
+ENT100,ACR-2025-08-ENT100-007,Legal Fees Accrual,45000.0,45000.0,USD,Should Reverse,2025-08-31,2025-09-01,Reversal pending approval,False,False,False,False
+ENT100,ACR-2025-08-ENT100-008,Audit Fees Accrual,35000.0,35000.0,USD,Active,2025-08-31,2025-09-01,Annual audit accrual,False,False,False,False
+ENT100,ACR-2025-08-ENT100-009,Marketing Campaign Accrual,65000.0,65000.0,USD,Should Reverse,2025-08-31,2025-09-01,Campaign cancelled - reversal needed,False,False,False,False
+ENT100,ACR-2025-08-ENT100-010,Software License Accrual,28500.0,28500.0,USD,Active,2025-08-31,2025-09-01,Annual license renewal,False,False,False,False
+ENT100,ACR-2025-08-ENT100-011,Travel Expense Accrual,15750.0,15750.0,USD,Active,2025-08-31,2025-09-01,Q3 travel expenses,False,False,True,False
+ENT100,ACR-2025-08-ENT100-012,Training Costs Accrual,22000.0,22000.0,USD,Should Reverse,2025-08-31,2025-09-01,Training postponed - partial reversal,False,False,False,True
+ENT100,ACR-2025-08-ENT100-013,Warranty Reserve Accrual,95000.0,95000.0,USD,Active,2025-08-31,2025-09-01,Product warranty provision,False,False,False,False
+ENT100,ACR-2025-08-ENT100-014,Bad Debt Accrual,75000.0,75000.0,USD,Active,2025-08-31,2025-09-01,Customer default provision,False,False,False,False
+ENT100,ACR-2025-08-ENT100-015,Restructuring Accrual,185000.0,185000.0,USD,Should Reverse,2025-08-31,2025-09-01,Restructuring cancelled,False,False,False,False
+ENT100,ACR-2025-08-ENT100-016,Severance Accrual,125000.0,125000.0,USD,Active,2025-08-31,2025-09-01,Employee termination costs,False,False,False,False
+ENT100,ACR-2025-08-ENT100-017,Interest Expense Accrual,12500.0,12500.0,USD,Active,2025-08-31,2025-09-01,Loan interest accrual,False,False,False,False
+ENT100,ACR-2025-08-ENT100-018,Property Tax Accrual,18750.0,18750.0,USD,Active,2025-08-31,2025-09-01,Annual property tax,False,False,False,False
+ENT100,ACR-2025-08-ENT100-019,Equipment Maintenance Accrual,32500.0,32500.0,USD,Should Reverse,2025-08-31,2025-09-01,Maintenance contract disputed,False,False,False,False
+ENT100,ACR-2025-08-ENT100-020,Consulting Fees Accrual,58000.0,58000.0,USD,Active,2025-08-31,2025-09-01,Strategy consulting project,False,False,False,False
+ENT101,ACR-2025-08-ENT101-001,Rent Accrual,12207.81,13300.52,EUR,Active,2025-08-31,2025-09-01,Automated rent accrual,True,False,False,False
+ENT101,ACR-2025-08-ENT101-002,Utilities Accrual,5144.09,5607.46,EUR,Active,2025-08-31,2025-09-01,Automated utilities accrual,False,False,False,False
+ENT101,ACR-2025-08-ENT101-003,Consulting Services Accrual,22219.99,24240.19,EUR,Active,2025-08-31,2025-09-01,Automated consulting services accrual,False,False,False,False
+ENT101,ACR-2025-08-ENT101-004,Insurance Accrual,7274.03,7934.09,EUR,Active,2025-08-31,2025-09-01,Automated insurance accrual,False,False,False,False
+ENT101,ACR-2025-08-ENT101-005,VAT Accrual,45000.0,49050.0,EUR,Should Reverse,2025-08-31,2025-09-01,VAT calculation error - reversal needed,False,False,False,False
+ENT101,ACR-2025-08-ENT101-006,Payroll Tax Accrual,28500.0,31065.0,EUR,Active,2025-08-31,2025-09-01,Monthly payroll tax provision,False,False,False,False
+ENT101,ACR-2025-08-ENT101-007,Professional Services Accrual,65000.0,70850.0,EUR,Should Reverse,2025-08-31,2025-09-01,Service contract terminated,False,False,False,False
+ENT101,ACR-2025-08-ENT101-008,Marketing Accrual,38500.0,41965.0,EUR,Active,2025-08-31,2025-09-01,Digital marketing campaign,False,False,False,False
+ENT101,ACR-2025-08-ENT101-009,Legal Settlement Accrual,125000.0,136250.0,EUR,Should Reverse,2025-08-31,2025-09-01,Settlement amount reduced,False,False,False,False
+ENT101,ACR-2025-08-ENT101-010,Software Maintenance Accrual,22000.0,23980.0,EUR,Active,2025-08-31,2025-09-01,Annual maintenance contract,False,False,False,False
+ENT101,ACR-2025-08-ENT101-011,Travel Expense Accrual,18750.0,20437.5,EUR,Active,2025-08-31,2025-09-01,Business travel provision,False,True,False,False
+ENT101,ACR-2025-08-ENT101-012,Training Accrual,15500.0,16895.0,EUR,Should Reverse,2025-08-31,2025-09-01,Training program cancelled,False,False,False,False
+ENT101,ACR-2025-08-ENT101-013,Equipment Lease Accrual,42000.0,45780.0,EUR,Active,2025-08-31,2025-09-01,Monthly lease payment,False,True,False,True
+ENT101,ACR-2025-08-ENT101-014,Bonus Pool Accrual,95000.0,103550.0,EUR,Should Reverse,2025-08-31,2025-09-01,Bonus criteria not met,False,True,False,False
+ENT101,ACR-2025-08-ENT101-015,Warranty Provision Accrual,68000.0,74120.0,EUR,Active,2025-08-31,2025-09-01,Product warranty reserve,False,False,False,False
+ENT101,ACR-2025-08-ENT101-016,Interest Accrual,8750.0,9537.5,EUR,Active,2025-08-31,2025-09-01,Bank loan interest,False,False,False,False
+ENT101,ACR-2025-08-ENT101-017,Pension Contribution Accrual,32500.0,35425.0,EUR,Active,2025-08-31,2025-09-01,Employee pension provision,False,False,False,False
+ENT101,ACR-2025-08-ENT101-018,Environmental Provision Accrual,85000.0,92650.0,EUR,Should Reverse,2025-08-31,2025-09-01,Environmental assessment completed,True,False,False,False
+ENT102,ACR-2025-08-ENT102-001,Payroll Accrual,28042.42,35053.03,GBP,Active,2025-08-31,2025-09-01,Automated payroll accrual,False,False,False,False
+ENT102,ACR-2025-08-ENT102-002,Insurance Accrual,6042.4,7553.0,GBP,Active,2025-08-31,2025-09-01,Automated insurance accrual,False,False,False,False
+ENT102,ACR-2025-08-ENT102-003,National Insurance Accrual,18500.0,23125.0,GBP,Active,2025-08-31,2025-09-01,Employer NI contribution,False,False,False,False
+ENT102,ACR-2025-08-ENT102-004,Corporation Tax Accrual,125000.0,156250.0,GBP,Should Reverse,2025-08-31,2025-09-01,Tax calculation revised,False,False,False,False
+ENT102,ACR-2025-08-ENT102-005,Professional Fees Accrual,45000.0,56250.0,GBP,Active,2025-08-31,2025-09-01,Legal and accounting fees,False,False,False,False
+ENT102,ACR-2025-08-ENT102-006,Rent Accrual,32500.0,40625.0,GBP,Active,2025-08-31,2025-09-01,Office lease payment,False,False,False,False
+ENT102,ACR-2025-08-ENT102-007,Utilities Accrual,8750.0,10937.5,GBP,Active,2025-08-31,2025-09-01,Monthly utilities provision,False,False,False,False
+ENT102,ACR-2025-08-ENT102-008,Marketing Accrual,28000.0,35000.0,GBP,Should Reverse,2025-08-31,2025-09-01,Campaign budget reduced,False,False,False,False
+ENT102,ACR-2025-08-ENT102-009,Bonus Accrual,75000.0,93750.0,GBP,Active,2025-08-31,2025-09-01,Management bonus provision,False,False,False,False
+ENT102,ACR-2025-08-ENT102-010,Commission Accrual,42000.0,52500.0,GBP,Should Reverse,2025-08-31,2025-09-01,Sales targets not met,True,False,False,False
+ENT102,ACR-2025-08-ENT102-011,Travel Expense Accrual,15500.0,19375.0,GBP,Active,2025-08-31,2025-09-01,Business travel costs,False,False,False,False
+ENT102,ACR-2025-08-ENT102-012,Training Accrual,22000.0,27500.0,GBP,Should Reverse,2025-08-31,2025-09-01,Training provider changed,False,False,False,False
+ENT102,ACR-2025-08-ENT102-013,Equipment Maintenance Accrual,18750.0,23437.5,GBP,Active,2025-08-31,2025-09-01,Annual maintenance contract,False,False,False,False
+ENT102,ACR-2025-08-ENT102-014,Software License Accrual,35000.0,43750.0,GBP,Active,2025-08-31,2025-09-01,Enterprise software licenses,False,False,False,False
+ENT102,ACR-2025-08-ENT102-015,Legal Settlement Accrual,95000.0,118750.0,GBP,Should Reverse,2025-08-31,2025-09-01,Settlement reached for lower amount,True,False,False,False
+ENT102,ACR-2025-08-ENT102-016,Restructuring Accrual,125000.0,156250.0,GBP,Should Reverse,2025-08-31,2025-09-01,Restructuring plan cancelled,False,False,False,False
+ENT102,ACR-2025-08-ENT102-017,Bad Debt Provision Accrual,68000.0,85000.0,GBP,Active,2025-08-31,2025-09-01,Customer default provision,False,True,False,True
+ENT102,ACR-2025-08-ENT102-018,Interest Expense Accrual,12500.0,15625.0,GBP,Active,2025-08-31,2025-09-01,Bank facility interest,True,False,False,False

@@ -20,9 +20,12 @@ def load_coa(data_path: Path) -> pd.DataFrame:
 
 def _find_tb_file(data_path: Path, period: str) -> Path:
     candidates = [
+        Path(data_path) / f"trial_balance_{period}_enhanced.csv",  # prefer enhanced
         Path(data_path) / f"trial_balance_{period}.csv",
+        Path(data_path) / f"trial_balance_{period.replace('-', '_')}_enhanced.csv",  # prefer enhanced
         Path(data_path) / f"trial_balance_{period.replace('-', '_')}.csv",
-        Path(data_path) / "trial_balance_aug.csv",  # fallback sample
+        Path(data_path) / "trial_balance_aug_enhanced.csv",  # enhanced fallback
+        Path(data_path) / "trial_balance_aug.csv",  # original fallback
     ]
     for c in candidates:
         if c.exists():
@@ -44,9 +47,12 @@ def load_tb(data_path: Path, period: str, entity: Optional[str] = None) -> pd.Da
 def _find_ar_file(data_path: Path, period: str) -> Path:
     base = Path(data_path) / "subledgers"
     candidates = [
+        base / f"ar_detail_{period}_enhanced.csv",  # prefer enhanced
         base / f"ar_detail_{period}.csv",
+        base / f"ar_detail_{period.replace('-', '_')}_enhanced.csv",  # prefer enhanced
         base / f"ar_detail_{period.replace('-', '_')}.csv",
-        base / "ar_detail_aug.csv",
+        base / "ar_detail_aug_enhanced.csv",  # enhanced fallback
+        base / "ar_detail_aug.csv",  # original fallback
     ]
     for c in candidates:
         if c.exists():
@@ -81,9 +87,12 @@ def load_ar_detail(
 def _find_ap_file(data_path: Path, period: str) -> Path:
     base = Path(data_path) / "subledgers"
     candidates = [
+        base / f"ap_detail_{period}_enhanced.csv",  # prefer enhanced
         base / f"ap_detail_{period}.csv",
+        base / f"ap_detail_{period.replace('-', '_')}_enhanced.csv",  # prefer enhanced
         base / f"ap_detail_{period.replace('-', '_')}.csv",
-        base / "ap_detail_aug.csv",
+        base / "ap_detail_aug_enhanced.csv",  # enhanced fallback
+        base / "ap_detail_aug.csv",  # original fallback
     ]
     for c in candidates:
         if c.exists():
@@ -119,9 +128,12 @@ def load_ap_detail(
 def _find_bank_file(data_path: Path, period: str) -> Path:
     base = Path(data_path) / "subledgers" / "bank_statements"
     candidates = [
+        base / f"bank_transactions_{period}_enhanced.csv",  # prefer enhanced
         base / f"bank_transactions_{period}.csv",
+        base / f"bank_transactions_{period.replace('-', '_')}_enhanced.csv",  # prefer enhanced
         base / f"bank_transactions_{period.replace('-', '_')}.csv",
-        base / "bank_transactions_aug.csv",
+        base / "bank_transactions_aug_enhanced.csv",  # enhanced fallback
+        base / "bank_transactions_aug.csv",  # original fallback
     ]
     for c in candidates:
         if c.exists():
@@ -195,7 +207,18 @@ def load_intercompany(
 
 
 def load_fx(data_path: Path, period: str) -> pd.DataFrame:
-    fp = Path(data_path) / "fx_rates.csv"
+    # Try enhanced FX rates first
+    candidates = [
+        Path(data_path) / "fx_rates_enhanced.csv",
+        Path(data_path) / "fx_rates.csv",
+    ]
+    fp = None
+    for c in candidates:
+        if c.exists():
+            fp = c
+            break
+    if fp is None:
+        fp = Path(data_path) / "fx_rates.csv"  # fallback
     df = pd.read_csv(fp, dtype={"period": str, "currency": str})
     df = df[df["period"] == period]
     return df

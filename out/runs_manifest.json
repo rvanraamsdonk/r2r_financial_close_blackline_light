@@ -1,0 +1,85 @@
+{
+  "runs": [
+    {
+      "timestamp": "20250825T181452Z",
+      "label": "Aug 25, 2025 06:14 PM",
+      "status": "completed",
+      "entity": "ALL",
+      "period": "2025-08",
+      "created_at": "2025-08-25T18:14:52.170221Z",
+      "duration_seconds": 70,
+      "artifacts_count": 18
+    },
+    {
+      "timestamp": "20250825T180843Z",
+      "label": "Aug 25, 2025 06:08 PM",
+      "status": "completed",
+      "entity": "ALL",
+      "period": "2025-08",
+      "created_at": "2025-08-25T18:08:43.103405Z",
+      "duration_seconds": 60,
+      "artifacts_count": 18
+    },
+    {
+      "timestamp": "20250825T180411Z",
+      "label": "Aug 25, 2025 06:04 PM",
+      "status": "completed",
+      "entity": "ALL",
+      "period": "2025-08",
+      "created_at": "2025-08-25T18:04:11.961335Z",
+      "duration_seconds": 70,
+      "artifacts_count": 18
+    },
+    {
+      "timestamp": "20250825T180158Z",
+      "label": "Aug 25, 2025 06:01 PM",
+      "status": "completed",
+      "entity": "ALL",
+      "period": "2025-08",
+      "created_at": "2025-08-25T18:01:58.382007Z",
+      "duration_seconds": 70,
+      "artifacts_count": 18
+    },
+    {
+      "timestamp": "20250825T175434Z",
+      "label": "Aug 25, 2025 05:54 PM",
+      "status": "failed",
+      "entity": "ALL",
+      "period": "2025-08",
+      "created_at": "2025-08-25T17:54:34.133671Z",
+      "duration_seconds": 1,
+      "artifacts_count": 0
+    },
+    {
+      "timestamp": "20250825T174449Z",
+      "label": "Aug 25, 2025 05:44 PM",
+      "status": "failed",
+      "entity": "ALL",
+      "period": "2025-08",
+      "created_at": "2025-08-25T17:44:49.603001Z",
+      "duration_seconds": 5,
+      "artifacts_count": 0
+    },
+    {
+      "timestamp": "20250825T174442Z",
+      "label": "Aug 25, 2025 05:44 PM",
+      "status": "failed",
+      "entity": "ALL",
+      "period": "2025-08",
+      "created_at": "2025-08-25T17:44:42.954441Z",
+      "duration_seconds": 12,
+      "artifacts_count": 0
+    },
+    {
+      "timestamp": "20250825T173731Z",
+      "label": "Aug 25, 2025 05:37 PM",
+      "status": "failed",
+      "entity": "ALL",
+      "period": "2025-08",
+      "created_at": "2025-08-25T17:37:31.477389Z",
+      "duration_seconds": 7,
+      "artifacts_count": 0
+    }
+  ],
+  "latest": "20250825T181452Z"
+}

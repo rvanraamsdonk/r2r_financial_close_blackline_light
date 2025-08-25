@@ -67,6 +67,12 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
         return state
 
     # Duplicate detection signature
+    # Use amount_usd for consistent comparison across entities
+    if "amount_usd" in df.columns:
+        df["amount"] = df["amount_usd"]
+    elif "amount_local" in df.columns:
+        df["amount"] = df["amount_local"]
+    
     sig_cols = [
         "entity",
         "date",

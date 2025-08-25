@@ -44,7 +44,18 @@ def je_lifecycle(state: R2RState, audit: AuditLogger) -> R2RState:
     period = state.period
     entity_scope = state.entity
 
-    data_fp = Path(state.data_path) / "supporting" / "journal_entries.csv"
+    # Try enhanced journal entries first
+    candidates = [
+        Path(state.data_path) / "supporting" / "journal_entries_enhanced.csv",
+        Path(state.data_path) / "supporting" / "journal_entries.csv",
+    ]
+    data_fp = None
+    for c in candidates:
+        if c.exists():
+            data_fp = c
+            break
+    if data_fp is None:
+        data_fp = Path(state.data_path) / "supporting" / "journal_entries.csv"  # fallback
     msgs: List[str] = []
 
     if not data_fp.exists():

@@ -1,0 +1,230 @@
+{
+  "generated_at": "2025-08-25T16:18:12Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "rules": {
+    "flag_if_approval_not_approved": true,
+    "flag_manual_missing_support": true,
+    "flag_reversal": true
+  },
+  "exceptions": [
+    {
+      "je_id": "JE095001",
+      "entity": "ENT100",
+      "amount": 0.0,
+      "currency": "USD",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Pending",
+      "approver": null
+    },
+    {
+      "je_id": "JE095005",
+      "entity": "ENT102",
+      "amount": 0.0,
+      "currency": "GBP",
+      "source_system": null,
+      "reason": "approval_rejected",
+      "approval_status": "Rejected",
+      "approver": null
+    },
+    {
+      "je_id": "JE095008",
+      "entity": "ENT101",
+      "amount": 0.0,
+      "currency": "EUR",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Under Review",
+      "approver": null
+    },
+    {
+      "je_id": "JE095010",
+      "entity": "ENT101",
+      "amount": 0.0,
+      "currency": "EUR",
+      "source_system": null,
+      "reason": "approval_rejected",
+      "approval_status": "Rejected",
+      "approver": null
+    },
+    {
+      "je_id": "JE095011",
+      "entity": "ENT102",
+      "amount": 0.0,
+      "currency": "GBP",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Under Review",
+      "approver": null
+    },
+    {
+      "je_id": "JE095018",
+      "entity": "ENT102",
+      "amount": 0.0,
+      "currency": "GBP",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Under Review",
+      "approver": null
+    },
+    {
+      "je_id": "JE095022",
+      "entity": "ENT101",
+      "amount": 0.0,
+      "currency": "EUR",
+      "source_system": null,
+      "reason": "approval_rejected",
+      "approval_status": "Rejected",
+      "approver": null
+    },
+    {
+      "je_id": "JE095035",
+      "entity": "ENT101",
+      "amount": 0.0,
+      "currency": "EUR",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Pending",
+      "approver": null
+    },
+    {
+      "je_id": "JE095039",
+      "entity": "ENT100",
+      "amount": 0.0,
+      "currency": "USD",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Under Review",
+      "approver": null
+    },
+    {
+      "je_id": "JE095042",
+      "entity": "ENT100",
+      "amount": 0.0,
+      "currency": "USD",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Pending",
+      "approver": null
+    },
+    {
+      "je_id": "JE095046",
+      "entity": "ENT100",
+      "amount": 0.0,
+      "currency": "USD",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Pending",
+      "approver": null
+    },
+    {
+      "je_id": "JE095047",
+      "entity": "ENT100",
+      "amount": 0.0,
+      "currency": "USD",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Under Review",
+      "approver": null
+    },
+    {
+      "je_id": "JE095048",
+      "entity": "ENT101",
+      "amount": 0.0,
+      "currency": "EUR",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Pending",
+      "approver": null
+    },
+    {
+      "je_id": "JE095051",
+      "entity": "ENT101",
+      "amount": 0.0,
+      "currency": "EUR",
+      "source_system": null,
+      "reason": "approval_rejected",
+      "approval_status": "Rejected",
+      "approver": null
+    },
+    {
+      "je_id": "JE095053",
+      "entity": "ENT101",
+      "amount": 0.0,
+      "currency": "EUR",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Pending",
+      "approver": null
+    },
+    {
+      "je_id": "JE095060",
+      "entity": "ENT101",
+      "amount": 0.0,
+      "currency": "EUR",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Pending",
+      "approver": null
+    },
+    {
+      "je_id": "JE095061",
+      "entity": "ENT102",
+      "amount": 0.0,
+      "currency": "GBP",
+      "source_system": null,
+      "reason": "approval_rejected",
+      "approval_status": "Rejected",
+      "approver": null
+    },
+    {
+      "je_id": "JE095062",
+      "entity": "ENT102",
+      "amount": 0.0,
+      "currency": "GBP",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Under Review",
+      "approver": null
+    },
+    {
+      "je_id": "JE095063",
+      "entity": "ENT102",
+      "amount": 0.0,
+      "currency": "GBP",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Pending",
+      "approver": null
+    },
+    {
+      "je_id": "JE095071",
+      "entity": "ENT102",
+      "amount": 0.0,
+      "currency": "GBP",
+      "source_system": null,
+      "reason": "approval_pending",
+      "approval_status": "Pending",
+      "approver": null
+    },
+    {
+      "je_id": "JE095074",
+      "entity": "ENT100",
+      "amount": 0.0,
+      "currency": "USD",
+      "source_system": null,
+      "reason": "approval_rejected",
+      "approval_status": "Rejected",
+      "approver": null
+    }
+  ],
+  "summary": {
+    "count": 21,
+    "total_abs_amount": 0.0,
+    "by_reason": {
+      "approval_pending": 15,
+      "approval_rejected": 6
+    }
+  }
+}

@@ -66,21 +66,58 @@ export interface JELifecycle {
 }
 
 class ArtifactService {
-  private baseUrl = '/out'; // Will be proxied to file system
+  private baseUrl = 'http://localhost:5001'; // Backend API base
   private cache = new Map<string, any>();
   private listeners = new Set<(data: any) => void>();
+  private selectedRun: string = 'latest';
 
-  // Get latest close report
+  // Get available runs
+  async getAvailableRuns(): Promise<any> {
+    try {
+      const response = await fetch('http://localhost:5001/api/runs');
+      if (!response.ok) return { runs: [], latest: null };
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to fetch runs manifest:', error);
+      return { runs: [], latest: null };
+    }
+  }
+
+  // Set selected run
+  setSelectedRun(timestamp: string): void {
+    this.selectedRun = timestamp;
+    this.cache.clear(); // Clear cache when switching runs
+    this.notifyListeners({ runChanged: timestamp });
+  }
+
+  // Get current run timestamp
+  private async getCurrentRunTimestamp(): Promise<string> {
+    if (this.selectedRun === 'latest') {
+      const manifest = await this.getAvailableRuns();
+      // Prefer explicit latest, otherwise fall back to first run (newest) if available
+      const fallback = Array.isArray(manifest?.runs) && manifest.runs.length > 0
+        ? manifest.runs[0].timestamp
+        : '';
+      return manifest.latest || fallback;
+    }
+    return this.selectedRun;
+  }
+
+  // Build canonical artifact URL resolved by backend to timestamped file
+  private async buildArtifactUrl(canonicalPath: string): Promise<string> {
+    const timestamp = await this.getCurrentRunTimestamp();
+    return `${this.baseUrl}/api/runs/${timestamp}/artifact/${canonicalPath}`;
+  }
+
+  // Get close report for selected run
   async getLatestCloseReport(): Promise<CloseReport | null> {
     try {
-      // In a real implementation, this would watch the file system
-      // For now, we'll simulate with the latest timestamp
-      const response = await fetch(`${this.baseUrl}/close_report_20250823T194318Z.json`);
+      const url = await this.buildArtifactUrl('close_report.json');
+      const response = await fetch(url);
       if (!response.ok) return null;
       
       const data = await response.json();
       this.cache.set('close_report', data);
-      this.notifyListeners(data);
       return data;
     } catch (error) {
       console.error('Failed to fetch close report:', error);
@@ -88,10 +125,11 @@ class ArtifactService {
     }
   }
 
-  // Get JE lifecycle data
+  // Get JE lifecycle data for selected run
   async getJELifecycle(): Promise<JELifecycle | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/je_lifecycle_20250823T194318Z.json`);
+      const url = await this.buildArtifactUrl('je_lifecycle.json');
+      const response = await fetch(url);
       if (!response.ok) return null;
       
       const data = await response.json();
@@ -103,10 +141,11 @@ class ArtifactService {
     }
   }
 
-  // Get reconciliation data
+  // Get reconciliation data for selected run
   async getReconciliationData(type: 'ap' | 'ar' | 'bank' | 'intercompany'): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/${type}_reconciliation_20250823T194318Z.json`);
+      const url = await this.buildArtifactUrl(`${type}_reconciliation.json`);
+      const response = await fetch(url);
       if (!response.ok) return null;
       
       const data = await response.json();
@@ -118,10 +157,13 @@ class ArtifactService {
     }
   }
 
-  // Get flux analysis data
+  // Get flux analysis data for selected run
   async getFluxAnalysis(): Promise<any> {
     try {
-      const response = await fetch('/out/flux_analysis_20250823T194318Z.json');
+      const url = await this.buildArtifactUrl('flux_analysis.json');
+      const response = await fetch(url);
+      if (!response.ok) return { rows: [] };
+      
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch flux analysis:', error);
@@ -131,8 +173,13 @@ class ArtifactService {
 
   async getFluxAINarratives(): Promise<any> {
     try {
-      const response = await fetch('/out/ai_cache/flux_ai_narratives_20250823T194318Z_0e3698ae5460.json');
-      return await response.json();
+      const url = await this.buildArtifactUrl('ai_cache/flux_ai_narratives.json');
+      const response = await fetch(url);
+      if (response.ok) {
+        return await response.json();
+      }
+      
+      return { narratives: [] };
     } catch (error) {
       console.error('Failed to fetch flux AI narratives:', error);
       return { narratives: [] };
@@ -189,6 +236,7 @@ class ArtifactService {
     }
   }
 
+
   // Get AI cache data
   async getAICache(type: string): Promise<any> {
     try {
@@ -202,7 +250,6 @@ class ArtifactService {
       return null;
     }
   }
-
 
   // Subscribe to real-time updates
   subscribe(callback: (data: any) => void): () => void {

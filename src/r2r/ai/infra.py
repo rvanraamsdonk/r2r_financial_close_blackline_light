@@ -161,12 +161,16 @@ def call_openai_json(prompt: str, *, system: Optional[str] = None, model_env_var
 
 
 def default_rate_per_1k_from_env(env_var: str = "R2R_AI_RATE_PER_1K") -> float:
-    """Fetch a default $/1k token rate from environment; returns 0.0 if unset/invalid.
+    """Fetch a default $/1k token rate from environment; returns 0.01 if unset/invalid.
 
     Example: export R2R_AI_RATE_PER_1K=0.5
+    Default: 0.01 (reasonable rate for gpt-4o-mini)
     """
     try:
-        v = os.getenv(env_var, "0").strip()
-        return float(v or 0.0)
+        v = os.getenv(env_var, "").strip()
+        if v:
+            return float(v)
+        # Default to reasonable rate for gpt-4o-mini if not set
+        return 0.01
     except Exception:
-        return 0.0
+        return 0.01

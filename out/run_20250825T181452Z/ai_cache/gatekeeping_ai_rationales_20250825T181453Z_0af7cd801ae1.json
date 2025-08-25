@@ -1,0 +1,11 @@
+{
+  "generated_at": "2025-08-25T18:15:34Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "risk_level": "high",
+  "block_close": true,
+  "rationales": [],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250825T181452Z/gatekeeping_20250825T181453Z.json"
+  ]
+}
