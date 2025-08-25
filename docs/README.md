@@ -2,7 +2,7 @@
 
 This documentation describes a deterministic, policy-aligned financial close enhanced with visible AI assistance. All numbers are computed; AI assists with explanations, matching suggestions, and risk narratives. No hard-coded strings; all outputs are derived from the real data in `data/lite/`.
 
-- Quickstart (venv-friendly)
+## Quick Start
 
 ```bash
 python3 -m venv .venv
@@ -16,25 +16,57 @@ python3 -m venv .venv
 .venv/bin/python scripts/smoke_test.py
 ```
 
-- CLI flags summary
-  - `--period` YYYY-MM
-  - `--prior` prior period YYYY-MM (optional)
-  - `--entity` entity code or ALL
-  - `--ai-mode` off | assist | strict
-  - `--data` input data path (default `data/lite`)
-  - `--out` output path (default `out`)
-  - `--show-prompts` include prompts in evidence pack
-  - `--save-evidence` export provenance JSON and artifacts
+## Documentation Structure
 
-- Overview brief: `brief.md`
-- Functional modules (end-to-end sequence): `functional_modules.md`
-- AI transparency and labeling ([DET]/[AI]/[HYBRID]): `ai_transparency.md`
-- Provenance and evidence schema: `provenance_schema.md`
-- Email evidence engine and drill-through: `email_evidence.md`
-- Demo script (skeptic-proof): `demo_script.md`
-- Metrics and controls mapping: `metrics_and_controls.md`
-- Data dictionary (files and semantics): `data_dictionary.md`
-- Runbook & CLI usage: `runbook_cli.md`
-- Architecture overview: `architecture.md`
+### 📖 **User Guides** (`/user/`)
+- **Getting Started**: `user/getting-started.md`
+- **CLI Reference**: `user/cli-reference.md`
+- **Demo Script**: `user/demo-script.md`
+- **Runbook**: `user/runbook.md`
+
+### 🏗️ **Architecture** (`/architecture/`)
+- **System Overview**: `architecture/overview.md`
+- **Technical Design**: `architecture/technical-design.md`
+- **AI Strategy**: `architecture/ai-strategy.md`
+- **Data Model**: `architecture/data-model.md`
+
+### ⚙️ **Functional Modules** (`/modules/`)
+- **Core Workflow**: `modules/workflow.md`
+- **Individual Modules**: `modules/[module-name].md`
+- **Process Documentation**: `modules/processes/`
+
+### 🔧 **Development** (`/development/`)
+- **Testing**: `development/testing.md`
+- **API Reference**: `development/api-reference.md`
+- **Contributing**: `development/contributing.md`
+
+### 📊 **Reference** (`/reference/`)
+- **Data Dictionary**: `reference/data-dictionary.md`
+- **Configuration**: `reference/configuration.md`
+- **Troubleshooting**: `reference/troubleshooting.md`
+
+### 📋 **Evaluations** (`/evaluations/`)
+- **Big 4 Assessment**: `evaluations/big4-assessment.md`
+- **Test Architecture Review**: `evaluations/test-architecture-review.md`
+
+## CLI Reference
+
+### Core Flags
+- `--period` YYYY-MM (required)
+- `--prior` prior period YYYY-MM (optional)
+- `--entity` entity code or ALL
+- `--ai-mode` off | assist | strict
+- `--data` input data path (default `data/lite`)
+- `--out` output path (default `out`)
+- `--show-prompts` include prompts in evidence pack
+- `--save-evidence` export provenance JSON and artifacts
+
+## Key Concepts
+
+- **Deterministic Calculations**: All financial numbers computed algorithmically
+- **AI Assistance**: Explanations, suggestions, and narratives (never sets balances)
+- **Transparency**: All outputs labeled [DET]/[AI]/[HYBRID]
+- **Provenance**: Complete audit trail with evidence links
+- **Governance**: Configurable AI modes and approval workflows
 
 See the repository root `README.md` for project-level details.
