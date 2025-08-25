@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { ClosePhase, CloseTask } from '../types';
+import type { ClosePhase, CloseTask } from '../types.js';
 import { Calendar, Clock, CheckCircle, AlertCircle, Play, Pause } from 'lucide-react';
 
 interface CloseCalendarProps {

@@ -4,12 +4,19 @@
  * Implements "Trust but Verify" principle with complete drill-through capability
  */
 
-import React, { useState } from 'react';
-import { CloseCalendar } from './components/CloseCalendar';
-import { DenseDataTable } from './components/DenseDataTable';
-import { CompactAIBadge } from './components/AITransparency';
-import { renderCurrency, renderStatus, renderAIBadge } from './components/DenseDataTable';
-import { ClosePhase, CloseTask, JournalEntry, ColumnDefinition } from './types';
+import { useState } from 'react';
+import { CloseCalendar } from './components/CloseCalendar.js';
+import { DenseDataTable } from './components/DenseDataTable.js';
+import { JournalEntryWorkbench } from './components/JournalEntryWorkbench.js';
+import { ReconciliationManagement } from './components/ReconciliationManagement.js';
+import { VarianceAnalysis } from './components/VarianceAnalysis.js';
+import { EvidenceViewerSidebar } from './components/EvidenceViewerSidebar.js';
+import { KeyboardShortcutsHelp, useKeyboardShortcutsHelp } from './components/KeyboardShortcutsHelp.js';
+import { UserSettingsPanel, useUserSettingsPanel } from './components/UserSettingsPanel.js';
+import { useUserPreferencesStore, getThemeClasses } from './stores/userPreferencesStore.js';
+import { useEvidenceStore } from './stores/evidenceStore.js';
+import { renderCurrency, renderStatus, renderAIBadge } from './components/DenseDataTable.js';
+import type { ClosePhase, CloseTask, JournalEntry, ColumnDefinition } from './types.js';
 import { 
   BarChart3, 
   FileText, 
@@ -120,40 +127,45 @@ const jeColumns: ColumnDefinition[] = [
     label: 'Total Debit', 
     sortable: true, 
     width: '120px',
-    render: (value) => renderCurrency(value)
+    render: (value: number) => renderCurrency(value)
   },
   { 
     key: 'totalCredit', 
     label: 'Total Credit', 
     sortable: true, 
     width: '120px',
-    render: (value) => renderCurrency(value)
+    render: (value: number) => renderCurrency(value)
   },
   { 
     key: 'status', 
     label: 'Status', 
     sortable: true, 
     width: '100px',
-    render: (value) => renderStatus(value)
+    render: (value: string) => renderStatus(value)
   },
   { 
     key: 'aiContribution', 
     label: 'AI Method', 
     sortable: false, 
     width: '100px',
-    render: (value) => renderAIBadge(value)
+    render: (value: any) => renderAIBadge(value)
   }
 ];
 
 function App() {
   const [activeModule, setActiveModule] = useState('dashboard');
   const [selectedTask, setSelectedTask] = useState<CloseTask | null>(null);
+  const { isOpen: isHelpOpen, toggleHelp } = useKeyboardShortcutsHelp();
+  const { isOpen: isSettingsOpen, openSettings, closeSettings } = useUserSettingsPanel();
+  const { theme, corporateColors, corporateLogo } = useUserPreferencesStore();
+  const themeClasses = getThemeClasses(theme, corporateColors);
+  const { openEvidence } = useEvidenceStore();
 
   // Calculate totals for JE table
   const jeTableData = mockJournalEntries.map(je => ({
     ...je,
-    totalDebit: je.lines.reduce((sum, line) => sum + line.debit, 0),
-    totalCredit: je.lines.reduce((sum, line) => sum + line.credit, 0)
+    totalDebit: je.lines.reduce((sum: number, line: any) => sum + line.debit, 0),
+    totalCredit: je.lines.reduce((sum: number, line: any) => sum + line.credit, 0)
   }));
 
   const handleTaskClick = (task: CloseTask) => {
@@ -165,7 +177,21 @@ function App() {
   };
 
   const handleDrillThrough = (record: any) => {
-    console.log('Drill through:', record);
+    // Extract value and description from the record
+    const value = record.amount || record.actual_usd || record.var_vs_budget || record.totalDebit || record.totalCredit || 0;
+    const description = `${record.entity || record.account || record.description || 'Financial Item'}`;
+    const account = record.account || record.accountCode;
+    const entity = record.entity;
+    
+    openEvidence({
+      id: `${Date.now()}`,
+      value,
+      description,
+      account,
+      entity,
+      period: '2024-08',
+      source: 'drill_through'
+    });
   };
 
   const navigationItems = [
@@ -173,12 +199,13 @@ function App() {
     { id: 'calendar', label: 'Close Calendar', icon: Calendar },
     { id: 'journal-entries', label: 'Journal Entries', icon: FileText },
     { id: 'reconciliations', label: 'Reconciliations', icon: Calculator },
+    { id: 'variance', label: 'Variance Analysis', icon: BarChart3 },
     { id: 'exceptions', label: 'Exceptions', icon: AlertTriangle },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${themeClasses.bg} transition-colors duration-200`}>
       {/* Top Navigation Bar */}
       <header className="bg-white border-b border-gray-200">
         <div className="flex items-center justify-between px-4 py-3">
@@ -186,11 +213,16 @@ function App() {
             <button className="p-2 hover:bg-gray-100 rounded-lg">
               <Menu className="w-5 h-5 text-gray-600" />
             </button>
-            <div className="flex items-center gap-2">
+            <div className="flex justify-between items-center py-4">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">R2R</span>
               </div>
-              <h1 className="text-lg font-semibold text-gray-900">Financial Close</h1>
+              <div className="flex items-center space-x-3">
+                {corporateLogo && (
+                  <img src={corporateLogo} alt="Corporate Logo" className="h-8 w-auto" />
+                )}
+                <h1 className={`text-2xl font-bold ${themeClasses.text}`}>R2R Financial Close</h1>
+              </div>
             </div>
           </div>
 
@@ -212,7 +244,13 @@ function App() {
             </button>
 
             {/* User Menu */}
-            <button className="p-2 hover:bg-gray-100 rounded-lg">
+            <button 
+              onClick={openSettings}
+              className={`p-2 ${themeClasses.text} ${themeClasses.hover} rounded-md transition-colors`}
+            >
+              <Settings className="w-5 h-5" />
+            </button>
+            <button className={`p-2 ${themeClasses.text} ${themeClasses.hover} rounded-md transition-colors`}>
               <User className="w-5 h-5 text-gray-600" />
             </button>
           </div>
@@ -230,8 +268,8 @@ function App() {
                     onClick={() => setActiveModule(item.id)}
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       activeModule === item.id
-                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        ? `${themeClasses.accent} text-white`
+                        : `${themeClasses.text} ${themeClasses.hover}`
                     }`}
                   >
                     <item.icon className="w-4 h-4" />
@@ -306,7 +344,7 @@ function App() {
               </div>
 
               {/* Recent Journal Entries */}
-              <div className="bg-white rounded-lg border border-gray-200">
+              <div className={`${themeClasses.bg} shadow-sm border-b ${themeClasses.border}`}>
                 <div className="p-4 border-b border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900">Recent Journal Entries</h3>
                 </div>
@@ -321,24 +359,7 @@ function App() {
           )}
 
           {activeModule === 'journal-entries' && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">Journal Entry Workbench</h2>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                  Create JE
-                </button>
-              </div>
-              
-              <DenseDataTable
-                data={jeTableData}
-                columns={jeColumns}
-                drillThrough={handleDrillThrough}
-                bulkActions={[
-                  { key: 'approve', label: 'Approve Selected', action: (ids) => console.log('Approve:', ids) },
-                  { key: 'reject', label: 'Reject Selected', action: (ids) => console.log('Reject:', ids) }
-                ]}
-              />
-            </div>
+            <JournalEntryWorkbench onDrillThrough={handleDrillThrough} />
           )}
 
           {activeModule === 'calendar' && (
@@ -351,77 +372,63 @@ function App() {
               />
             </div>
           )}
+
+          {activeModule === 'reconciliations' && (
+            <ReconciliationManagement />
+          )}
+
+          {activeModule === 'variance' && (
+            <VarianceAnalysis className="p-6" />
+          )}
+
         </main>
       </div>
 
+      {/* Keyboard Shortcuts Help */}
+      <EvidenceViewerSidebar />
+      <KeyboardShortcutsHelp isOpen={isHelpOpen} onClose={toggleHelp} />
+      <UserSettingsPanel isOpen={isSettingsOpen} onClose={closeSettings} />
+
       {/* Task Detail Modal */}
       {selectedTask && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">{selectedTask.name}</h3>
-              <button
-                onClick={() => setSelectedTask(null)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className={`${themeClasses.bg} rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto`}>
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className={`text-lg font-semibold ${themeClasses.text}`}>{selectedTask.name}</h3>
+                <button
+                  onClick={() => setSelectedTask(null)}
+                  className={`${themeClasses.text} hover:opacity-70`}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Assignee</label>
-                  <p className="text-sm text-gray-900">{selectedTask.assignee}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-                  <p className="text-sm text-gray-900">{selectedTask.dueDate}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                  <span className={`text-sm font-medium ${themeClasses.text}`}>Status:</span>
+                  <span className={`ml-2 px-2 py-1 text-xs rounded-full ${
                     selectedTask.status === 'complete' ? 'bg-green-100 text-green-800' :
                     selectedTask.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
                     'bg-gray-100 text-gray-800'
                   }`}>
-                    {selectedTask.status}
+                    {selectedTask.status.replace('_', ' ').toUpperCase()}
                   </span>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">AI Method</label>
-                  <CompactAIBadge
-                    method={selectedTask.aiContribution.method}
-                    confidence={selectedTask.aiContribution.confidence}
-                  />
+                  <span className={`text-sm font-medium ${themeClasses.text}`}>Description:</span>
+                  <p className={`mt-1 text-sm ${themeClasses.text}`}>{selectedTask.name}</p>
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">AI Contribution</label>
-                <p className="text-sm text-gray-900 bg-blue-50 p-3 rounded border">
-                  {selectedTask.aiContribution.contribution}
-                </p>
-              </div>
-
-              {selectedTask.evidence.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Evidence</label>
-                  <div className="space-y-2">
-                    {selectedTask.evidence.map(evidence => (
-                      <div key={evidence.id} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
-                        <div>
-                          <p className="text-sm font-medium">{evidence.type}</p>
-                          <p className="text-xs text-gray-600">{evidence.timestamp}</p>
-                        </div>
-                        <button className="text-xs text-blue-600 hover:text-blue-800">
-                          View Evidence
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                  <span className={`text-sm font-medium ${themeClasses.text}`}>Due Date:</span>
+                  <p className={`mt-1 text-sm ${themeClasses.text}`}>{selectedTask.dueDate}</p>
                 </div>
-              )}
+                {selectedTask.assignee && (
+                  <div>
+                    <span className={`text-sm font-medium ${themeClasses.text}`}>Assignee:</span>
+                    <p className={`mt-1 text-sm ${themeClasses.text}`}>{selectedTask.assignee}</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
