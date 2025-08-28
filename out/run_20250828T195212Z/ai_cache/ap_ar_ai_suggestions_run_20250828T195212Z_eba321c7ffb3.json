@@ -1,0 +1,57 @@
+{
+  "generated_at": "2025-08-28T19:52:25Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "matches": [
+    {
+      "ap_bill_id": "AP050023",
+      "ar_invoice_id": "AR060025",
+      "confidence": 0.85,
+      "reason": "Both transactions occurred on 2025-08-17 (Sunday) with the same entity ENT102 and similar amounts.",
+      "support": {
+        "amount_delta": 124849.39,
+        "date_gap_days": 0,
+        "signals": [
+          "date_near",
+          "same_entity"
+        ]
+      }
+    },
+    {
+      "ap_bill_id": "AP050015",
+      "ar_invoice_id": "AR060016",
+      "confidence": 0.8,
+      "reason": "Both transactions occurred on 2025-08-10 (Sunday) with the same entity ENT101 and similar amounts.",
+      "support": {
+        "amount_delta": 206631.53,
+        "date_gap_days": 0,
+        "signals": [
+          "date_near",
+          "same_entity"
+        ]
+      }
+    },
+    {
+      "ap_bill_id": "AP050006",
+      "ar_invoice_id": "AR060007",
+      "confidence": 0.75,
+      "reason": "Both transactions occurred on a weekend with the same entity ENT100 and similar amounts.",
+      "support": {
+        "amount_delta": 321859.3,
+        "date_gap_days": 14,
+        "signals": [
+          "date_near",
+          "same_entity"
+        ]
+      }
+    }
+  ],
+  "unresolved_summary": {
+    "ap_exceptions": 19,
+    "ar_exceptions": 15
+  },
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T195212Z/ap_reconciliation_run_20250828T195212Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T195212Z/ar_reconciliation_run_20250828T195212Z.json"
+  ]
+}

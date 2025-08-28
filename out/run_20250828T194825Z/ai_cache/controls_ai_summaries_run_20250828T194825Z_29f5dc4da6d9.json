@@ -1,0 +1,65 @@
+{
+  "generated_at": "2025-08-28T19:50:03Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "owner_summaries": [
+    {
+      "owner_name": "John Doe",
+      "control_count": 3,
+      "risk_areas": [
+        "Financial Reporting",
+        "Cash Management"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "High number of reconciliation exceptions and entity-level TB imbalance",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Jane Smith",
+      "control_count": 2,
+      "risk_areas": [
+        "Revenue Recognition"
+      ],
+      "effectiveness_rating": "effective",
+      "key_concerns": "Accruals exceptions need monitoring",
+      "confidence": 0.85
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Entity-level TB balances not zero, indicating potential misstatements",
+      "severity": "high",
+      "affected_processes": [
+        "General Ledger"
+      ],
+      "mitigation_recommendations": "Review and adjust entity-level entries to ensure TB balances to zero",
+      "confidence": 0.9
+    },
+    {
+      "risk_category": "operational",
+      "description": "High number of flux analysis exceptions indicating potential operational inefficiencies",
+      "severity": "medium",
+      "affected_processes": [
+        "Financial Analysis"
+      ],
+      "mitigation_recommendations": "Conduct detailed variance analysis to identify root causes",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "compliance",
+      "description": "Bank reconciliation and AP/AR exceptions indicate potential compliance issues",
+      "severity": "medium",
+      "affected_processes": [
+        "AP",
+        "AR",
+        "Bank Reconciliation"
+      ],
+      "mitigation_recommendations": "Enhance reconciliation processes and implement stricter controls",
+      "confidence": 0.85
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/controls_mapping_run_20250828T194825Z.json"
+  ]
+}

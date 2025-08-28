@@ -1,0 +1,997 @@
+{
+  "generated_at": "2025-08-28T19:53:34.894343Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "items": [
+    {
+      "email_id": "EMAIL-001",
+      "subject": "System maintenance window - September 1st",
+      "from": "it.operations@techcorp.com",
+      "to": "finance.team@techcorp.com",
+      "timestamp": "2025-09-01T08:15:23Z",
+      "body": "Scheduled maintenance completed at 06:30. Some batch jobs may have been interrupted. Please verify all automated processes completed successfully. Contact IT if any reversals or postings appear incomplete.",
+      "summary": "IT maintenance notification affecting automated processes",
+      "priority": "Medium",
+      "category": "System Operations",
+      "requires_action": false,
+      "thread_id": "THREAD-001",
+      "attachments": [],
+      "read_status": "read",
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "AP050008",
+          "module": "ap_reconciliation",
+          "confidence": 0.75,
+          "match_reason": "Email mentions potential interruptions on 2025-09-01, close to transaction date 2025-08-31",
+          "forensic_relevance": "medium"
+        },
+        {
+          "transaction_id": "BNK070004",
+          "module": "bank_reconciliation",
+          "confidence": 0.8,
+          "match_reason": "Email suggests verification of postings, relevant to bank transaction on 2025-08-31",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [],
+        "vendors": [],
+        "dates": [
+          "2025-09-01"
+        ],
+        "transaction_types": [
+          "batch job",
+          "automated process"
+        ],
+        "keywords": [
+          "maintenance",
+          "interrupted",
+          "verify",
+          "reversals",
+          "postings",
+          "incomplete"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Potential incomplete postings due to maintenance",
+        "Verification needed for batch jobs",
+        "System maintenance affecting financial controls"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.78,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-002",
+      "subject": "Salesforce payment confirmation",
+      "from": "ap.clerk@techcorp.com",
+      "to": "ap.manager@techcorp.com",
+      "timestamp": "2025-08-16T14:32:17Z",
+      "body": "Hi Sarah, processed the Salesforce subscription renewal as requested. Wire transfer completed this morning for $12,500.00. I noticed when I was in the system there's another pending item for Salesforce from yesterday - same amount. Should I hold off on that one or is it for something different? The reference numbers are pretty similar. Let me know. Thanks, Mike",
+      "summary": "AP clerk inquiry about potential duplicate payment",
+      "priority": "Medium",
+      "category": "Payment Processing",
+      "requires_action": false,
+      "thread_id": "THREAD-002",
+      "attachments": [],
+      "read_status": "read",
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "BNK070031",
+          "module": "bank_reconciliation",
+          "confidence": 0.85,
+          "match_reason": "Email mentions wire transfer for $12,500 on 2025-08-16, similar to BNK070031 amount and date",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$12,500"
+        ],
+        "vendors": [
+          "Salesforce"
+        ],
+        "dates": [
+          "2025-08-16"
+        ],
+        "transaction_types": [
+          "wire transfer"
+        ],
+        "keywords": [
+          "duplicate",
+          "pending",
+          "processed"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Potential duplicate payment mentioned",
+        "Pending item for same amount",
+        "Reference numbers similarity"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.8,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-003",
+      "subject": "Late wire from Google",
+      "from": "treasury@techcorp.com",
+      "to": "accounting@techcorp.com",
+      "timestamp": "2025-09-01T09:45:12Z",
+      "body": "FYI - Google wire came in right at close of business yesterday. Bank timestamp shows 23:58 but our system posted it this morning. Might affect month-end numbers depending on cutoff policy. $45K amount.",
+      "summary": "Late Google payment affecting period cutoff",
+      "priority": "Medium",
+      "category": "Cash Management",
+      "requires_action": true,
+      "thread_id": "THREAD-003",
+      "attachments": [
+        "google_wire_receipt.pdf",
+        "system_posting_log.xlsx"
+      ],
+      "read_status": "read",
+      "resolution_status": "pending",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "BNK070004",
+          "module": "bank_reconciliation",
+          "confidence": 0.9,
+          "match_reason": "Email mentions Google wire $45,000 at month-end, matches BNK070004 closely",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$45,000"
+        ],
+        "vendors": [
+          "Google"
+        ],
+        "dates": [
+          "2025-08-31"
+        ],
+        "transaction_types": [
+          "wire transfer"
+        ],
+        "keywords": [
+          "late",
+          "cutoff policy",
+          "month-end numbers"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Late wire affecting month-end numbers",
+        "Potential cutoff policy issue"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.85,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-004",
+      "subject": "New vendor setup - Quick Loan Solutions",
+      "from": "procurement@techcorp.com",
+      "to": "ap.manager@techcorp.com",
+      "timestamp": "2025-08-15T16:20:45Z",
+      "body": "Please set up new vendor: Quick Loan Solutions. They'll be providing short-term financing services. First payment of $35K due next week. I've attached the vendor application and W-9. Thanks, Jennifer",
+      "summary": "New vendor setup request for financial services",
+      "priority": "Medium",
+      "category": "Vendor Management",
+      "requires_action": false,
+      "thread_id": "THREAD-004",
+      "attachments": [
+        "vendor_application.pdf"
+      ],
+      "read_status": "read",
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "BNK070031",
+          "module": "bank_reconciliation",
+          "confidence": 0.92,
+          "match_reason": "Email mentions Quick Loan Solutions payment $35,000 on 2025-08-15, matches BNK070031 exactly",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$35,000"
+        ],
+        "vendors": [
+          "Quick Loan Solutions"
+        ],
+        "dates": [
+          "2025-08-15"
+        ],
+        "transaction_types": [
+          "payment"
+        ],
+        "keywords": [
+          "vendor setup",
+          "short-term financing",
+          "first payment"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "New vendor setup with immediate payment",
+        "Potential control issue with vendor onboarding"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.9,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-005",
+      "subject": "Month-end cash positioning",
+      "from": "treasury.analyst@techcorp.com",
+      "to": "treasury.manager@techcorp.com",
+      "timestamp": "2025-08-31T18:30:12Z",
+      "body": "Completed several transfers today to optimize cash position before month-end. Moved funds between accounts to meet minimum balances and maximize interest earnings. Total activity around $155K across three transfers. All documented in cash management system.",
+      "summary": "Month-end cash optimization transfers",
+      "priority": "Low",
+      "category": "Cash Management",
+      "requires_action": false,
+      "thread_id": "THREAD-005",
+      "attachments": [],
+      "read_status": "read",
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "BNK070002",
+          "module": "bank_reconciliation",
+          "confidence": 0.85,
+          "match_reason": "Email mentions transfers on 2025-08-31, matches BNK070002 date and type",
+          "forensic_relevance": "medium"
+        },
+        {
+          "transaction_id": "BNK070004",
+          "module": "bank_reconciliation",
+          "confidence": 0.9,
+          "match_reason": "Email mentions transfers on 2025-08-31, matches BNK070004 date and type",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$155,000"
+        ],
+        "vendors": [],
+        "dates": [
+          "2025-08-31"
+        ],
+        "transaction_types": [
+          "transfer"
+        ],
+        "keywords": [
+          "optimize",
+          "cash position",
+          "interest earnings"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "End-of-month cash optimization",
+        "Multiple transfers for interest maximization"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.88,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-006",
+      "subject": "Intercompany settlement timing",
+      "from": "intercompany@techcorp.com",
+      "to": "treasury@techcorp.com",
+      "timestamp": "2025-08-30T20:15:33Z",
+      "body": "FYI - had to reverse and reprocess the intercompany settlement due to FX rate timing. Original transfer of $69,196 went out yesterday, but rate locked today so sent corrected amount of $69,200. Net difference is minimal but wanted to flag the back-to-back transfers.",
+      "summary": "Intercompany settlement correction due to FX timing",
+      "priority": "Low",
+      "category": "Intercompany",
+      "requires_action": false,
+      "thread_id": "THREAD-006",
+      "attachments": [],
+      "read_status": "read",
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "IC-014",
+          "module": "intercompany_reconciliation",
+          "confidence": 0.85,
+          "match_reason": "Email mentions intercompany settlement adjustment due to FX rate, matches IC-014 amount closely",
+          "forensic_relevance": "medium"
+        },
+        {
+          "transaction_id": "IC-017",
+          "module": "intercompany_reconciliation",
+          "confidence": 0.75,
+          "match_reason": "Email mentions back-to-back transfers, matches IC-017 closely in context",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$69,196",
+          "$69,200"
+        ],
+        "vendors": [],
+        "dates": [
+          "2025-08-29",
+          "2025-08-30"
+        ],
+        "transaction_types": [
+          "intercompany settlement"
+        ],
+        "keywords": [
+          "reverse",
+          "reprocess",
+          "FX rate",
+          "back-to-back transfers"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "FX rate timing issue causing reprocessing",
+        "Back-to-back transfers flagged",
+        "Minimal net difference but noted for control"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.8,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-007",
+      "subject": "Urgent payment request - Microsoft",
+      "from": "it.director@techcorp.com",
+      "to": "ap.manager@techcorp.com",
+      "timestamp": "2025-08-24T22:45:17Z",
+      "body": "Sarah, need to process Microsoft payment ASAP - their system goes down for maintenance Monday and we'll lose our license if payment doesn't clear. Can you run it through emergency processing? $15K amount. I'll handle the approval paperwork Monday morning. Thanks, David",
+      "summary": "Emergency weekend payment request due to vendor system maintenance",
+      "priority": "High",
+      "category": "Emergency Processing",
+      "requires_action": false,
+      "thread_id": "THREAD-007",
+      "attachments": [],
+      "read_status": "read",
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "AP050006",
+          "module": "ap_reconciliation",
+          "confidence": 0.9,
+          "match_reason": "Email mentions urgent Microsoft payment $15,000 on 2025-08-24, matches AP050006 closely",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$15,000"
+        ],
+        "vendors": [
+          "Microsoft"
+        ],
+        "dates": [
+          "2025-08-24"
+        ],
+        "transaction_types": [
+          "emergency processing"
+        ],
+        "keywords": [
+          "urgent",
+          "maintenance",
+          "license"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Urgent processing request",
+        "System maintenance affecting controls",
+        "Potential control bypass for emergency processing"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.85,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-008",
+      "subject": "Uber contract amendment - payment terms",
+      "from": "sales.director@techcorp.com",
+      "to": "contracts@techcorp.com",
+      "timestamp": "2025-08-29T14:20:45Z",
+      "body": "Uber requested extended payment terms (Net 90) for their Q4 order due to their own cash flow timing. Contract amendment attached. Large order of $243K but delivery is still scheduled for early September as planned. Revenue recognition should follow normal delivery schedule.",
+      "summary": "Contract amendment for extended payment terms",
+      "priority": "Medium",
+      "category": "Contract Management",
+      "requires_action": false,
+      "thread_id": "THREAD-008",
+      "attachments": [
+        "uber_contract_amendment.pdf"
+      ],
+      "read_status": "read",
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "AR060004",
+          "module": "ar_reconciliation",
+          "confidence": 0.98,
+          "match_reason": "Email mentions Uber order $243,000 on 2025-08-29, matches AR060004 exactly",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$243,000"
+        ],
+        "vendors": [
+          "Uber Inc"
+        ],
+        "dates": [
+          "2025-08-29"
+        ],
+        "transaction_types": [
+          "contract amendment",
+          "revenue recognition"
+        ],
+        "keywords": [
+          "extended payment terms",
+          "Net 90",
+          "cash flow timing"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Extended payment terms requested",
+        "Potential impact on cash flow and revenue recognition"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.95,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-009",
+      "subject": "Oracle payment breakdown",
+      "from": "ap.clerk@techcorp.com",
+      "to": "ap.manager@techcorp.com",
+      "timestamp": "2025-08-15T11:30:22Z",
+      "body": "Processing Oracle payments today - they sent separate invoices for different divisions: Database license ($15K), Cloud services ($8.5K), and Support renewal ($12.3K). Each has different cost centers so using different payment methods per their request. Total around $36K.",
+      "summary": "Multiple Oracle payments for different service divisions",
+      "priority": "Low",
+      "category": "Payment Processing",
+      "requires_action": false,
+      "thread_id": "THREAD-009",
+      "attachments": [
+        "oracle_payment_analysis.xlsx"
+      ],
+      "read_status": "read",
+      "resolution_status": "pending",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "BNK070031",
+          "module": "bank_reconciliation",
+          "confidence": 0.85,
+          "match_reason": "Email mentions total payment around $36,000 on 2025-08-15, matches BNK070031 closely",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$15,000",
+          "$8,500",
+          "$12,300",
+          "$36,000"
+        ],
+        "vendors": [
+          "Oracle"
+        ],
+        "dates": [
+          "2025-08-15"
+        ],
+        "transaction_types": [
+          "payment"
+        ],
+        "keywords": [
+          "separate invoices",
+          "different cost centers",
+          "different payment methods"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Separate invoices for divisions",
+        "Different payment methods requested",
+        "Potential control issue with cost center allocations"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.82,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-010",
+      "subject": "Intercompany transfers - August close",
+      "from": "ic.analyst@techcorp.com",
+      "to": "consolidation.manager@techcorp.com",
+      "timestamp": "2025-08-31T16:45:33Z",
+      "body": "Hi Lisa, processed several IC transfers today for month-end allocations: $25K for shared services, $30K for IT costs, and $20K for facilities. All approved by respective cost center managers. Documentation in the shared drive. Let me know if you need anything else for consolidation.",
+      "summary": "Multiple intercompany transfers for month-end cost allocations",
+      "priority": "Low",
+      "category": "Intercompany",
+      "requires_action": false,
+      "thread_id": "THREAD-010",
+      "attachments": [],
+      "read_status": "read",
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "IC-001",
+          "module": "intercompany_reconciliation",
+          "confidence": 0.85,
+          "match_reason": "Email mentions total intercompany transfers of $75,000, matches IC-001 exactly",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$25,000",
+          "$30,000",
+          "$20,000"
+        ],
+        "vendors": [
+          "Shared Services",
+          "IT Costs",
+          "Facilities"
+        ],
+        "dates": [
+          "2025-08-31"
+        ],
+        "transaction_types": [
+          "intercompany transfer"
+        ],
+        "keywords": [
+          "processed",
+          "approved",
+          "documentation"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Intercompany transfer approvals",
+        "Documentation in shared drive"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.82,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-011",
+      "subject": "August FX revaluation - EUR positions",
+      "from": "treasury@techcorp.com",
+      "to": "financial.reporting@techcorp.com",
+      "timestamp": "2025-08-31T16:20:45Z",
+      "body": "FYI - EUR strengthened nicely this month (1.085 to 1.092), so we're seeing about \u20ac850K gain on our EUR positions. Mostly from the ENT101 cash and receivables. I've prepared the standard revaluation entry JE-2025-08-FX-001 for month-end. Let me know if you need anything else.",
+      "summary": "Monthly FX revaluation entry for EUR positions",
+      "priority": "Medium",
+      "category": "FX Management",
+      "requires_action": false,
+      "thread_id": "THREAD-011",
+      "attachments": [
+        "fx_revaluation_calculation.xlsx"
+      ],
+      "read_status": "read",
+      "resolution_status": "completed",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "AR060004",
+          "module": "ar_reconciliation",
+          "confidence": 0.85,
+          "match_reason": "Email mentions EUR positions gain, matches AR060004 receivable transaction date closely",
+          "forensic_relevance": "medium"
+        },
+        {
+          "transaction_id": "BNK070004",
+          "module": "bank_reconciliation",
+          "confidence": 0.8,
+          "match_reason": "Email mentions EUR positions gain, matches BNK070004 bank transaction date closely",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "\u20ac850K"
+        ],
+        "vendors": [
+          "ENT101"
+        ],
+        "dates": [
+          "2025-08-31"
+        ],
+        "transaction_types": [
+          "revaluation entry"
+        ],
+        "keywords": [
+          "gain",
+          "EUR positions",
+          "revaluation"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Significant EUR gain noted",
+        "Revaluation entry prepared for month-end"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.82,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-012",
+      "subject": "New vendor setup - Express Financial",
+      "from": "procurement@techcorp.com",
+      "to": "ap.manager@techcorp.com",
+      "timestamp": "2025-08-25T13:15:28Z",
+      "body": "Hi Sarah, legal needs us to set up Express Financial as a vendor ASAP for the consulting engagement. They're requesting \u20ac45,678.90 payment by end of week. I know it's last minute but the contract was just signed yesterday. Can you expedite the vendor setup? Thanks, Jennifer",
+      "summary": "Urgent new vendor setup for consulting engagement",
+      "priority": "Medium",
+      "category": "Vendor Management",
+      "requires_action": false,
+      "thread_id": "THREAD-012",
+      "attachments": [],
+      "read_status": "read",
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "BNK070033",
+          "module": "bank_reconciliation",
+          "confidence": 0.98,
+          "match_reason": "Email requests \u20ac45,678.90 payment, matches BNK070033 amount and date",
+          "forensic_relevance": "high"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "\u20ac45,678.90"
+        ],
+        "vendors": [
+          "Express Financial"
+        ],
+        "dates": [
+          "2025-08-25"
+        ],
+        "transaction_types": [
+          "vendor setup",
+          "payment"
+        ],
+        "keywords": [
+          "ASAP",
+          "expedite",
+          "contract"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Urgent vendor setup request",
+        "Last-minute contract signing",
+        "Expedited payment request"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.92,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-013",
+      "subject": "Monthly service payments",
+      "from": "ap.clerk@techcorp.com",
+      "to": "ap.manager@techcorp.com",
+      "timestamp": "2025-08-30T10:20:15Z",
+      "body": "Processing the monthly service payments today: Amazon Web Services $25K, QuickPay subscription $35K, and Rapid delivery service $28.5K. All are standard monthly amounts per the service agreements. Invoices attached to the payment requests.",
+      "summary": "Monthly recurring service payments processing",
+      "priority": "Low",
+      "category": "Payment Processing",
+      "requires_action": false,
+      "thread_id": "THREAD-013",
+      "attachments": [],
+      "read_status": "read",
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "AP050003",
+          "module": "ap_reconciliation",
+          "confidence": 0.85,
+          "match_reason": "Email mentions Amazon Web Services payment $25,000, matches AP050003 vendor and amount",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$25,000",
+          "$35,000",
+          "$28,500"
+        ],
+        "vendors": [
+          "Amazon Web Services",
+          "QuickPay",
+          "Rapid delivery service"
+        ],
+        "dates": [
+          "2025-08-30"
+        ],
+        "transaction_types": [
+          "service payment"
+        ],
+        "keywords": [
+          "monthly",
+          "standard",
+          "invoices attached"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Standard monthly amounts",
+        "Invoices attached to payment requests"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.8,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-014",
+      "subject": "Subsidiary Holdings contract - board meeting prep",
+      "from": "legal.counsel@techcorp.com",
+      "to": "cfo@techcorp.com",
+      "timestamp": "2025-08-28T15:30:42Z",
+      "body": "John, the Subsidiary Holdings contract for $286,944.71 is ready for next week's board meeting. I've prepared the standard related party disclosures and market analysis per our usual process. Let me know if you need anything else before the meeting.",
+      "summary": "Board meeting preparation for subsidiary contract",
+      "priority": "Medium",
+      "category": "Legal",
+      "requires_action": false,
+      "thread_id": "THREAD-014",
+      "attachments": [
+        "board_presentation.pdf"
+      ],
+      "read_status": "read",
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "AR060001",
+          "module": "ar_reconciliation",
+          "confidence": 0.98,
+          "match_reason": "Email mentions Subsidiary Holdings contract for $286,944.71, matches AR060001 exactly",
+          "forensic_relevance": "high"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$286,944.71"
+        ],
+        "vendors": [
+          "Subsidiary Holdings"
+        ],
+        "dates": [
+          "2025-08-28"
+        ],
+        "transaction_types": [
+          "contract"
+        ],
+        "keywords": [
+          "board meeting",
+          "related party disclosures",
+          "market analysis"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Related party transaction",
+        "Board meeting preparation",
+        "Potential control issue with related party disclosures"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.95,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-015",
+      "subject": "Q3 campaign results",
+      "from": "sarah.chen@techcorp.com",
+      "to": "financial.reporting@techcorp.com",
+      "timestamp": "2025-08-31T17:45:22Z",
+      "body": "Hi team, great results on the Q3 Digital Acceleration campaign! We hit 8,750 conversions vs our 6,125 target - that's 43% above plan. ROI came in at 6.8x which is fantastic. This drove about $2.65M in incremental revenue. Customer feedback has been really positive too. Full report attached.",
+      "summary": "Q3 marketing campaign performance update",
+      "priority": "Medium",
+      "category": "Management Inquiry",
+      "requires_action": false,
+      "thread_id": "THREAD-015",
+      "attachments": [
+        "campaign_performance_report.pdf",
+        "customer_survey_results.xlsx"
+      ],
+      "read_status": "read",
+      "resolution_status": "completed",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "AR060004",
+          "module": "ar_reconciliation",
+          "confidence": 0.75,
+          "match_reason": "Email mentions $2.65M in incremental revenue, matches AR060004 in terms of revenue generation",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$2,650,000"
+        ],
+        "vendors": [
+          "TechCorp"
+        ],
+        "dates": [
+          "2025-08-31"
+        ],
+        "transaction_types": [
+          "revenue"
+        ],
+        "keywords": [
+          "campaign",
+          "conversions",
+          "ROI"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Significant variance in expected vs actual results",
+        "High ROI reported",
+        "Potential revenue recognition issue"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.78,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-016",
+      "subject": "Strong Q3 enterprise sales",
+      "from": "marcus.weber@techcorp.com",
+      "to": "sales.analytics@techcorp.com",
+      "timestamp": "2025-08-30T14:20:18Z",
+      "body": "Team, excellent quarter for enterprise sales! We picked up significant market share - about 15% growth from new enterprise clients. Many are coming from Oracle due to their delivery issues. Gartner's latest report confirms the supply chain problems they're having. This translated to roughly $1.75M in new business.",
+      "summary": "Enterprise sales growth from competitive displacement",
+      "priority": "Medium",
+      "category": "Management Inquiry",
+      "requires_action": false,
+      "thread_id": "THREAD-016",
+      "attachments": [
+        "gartner_report_excerpt.pdf",
+        "customer_migration_analysis.xlsx"
+      ],
+      "read_status": "read",
+      "resolution_status": "completed",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "AR060004",
+          "module": "ar_reconciliation",
+          "confidence": 0.85,
+          "match_reason": "Email mentions $1.75M in new business, AR060004 is a large transaction close to the date",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$1.75M"
+        ],
+        "vendors": [
+          "Oracle"
+        ],
+        "dates": [
+          "2025-08-30"
+        ],
+        "transaction_types": [
+          "new business"
+        ],
+        "keywords": [
+          "market share",
+          "growth",
+          "supply chain issues"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Significant market share growth",
+        "Competitor supply chain issues",
+        "Potential revenue recognition timing"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.82,
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "email_id": "EMAIL-017",
+      "subject": "SmartSync Mobile UK launch update",
+      "from": "james.thompson@techcorp.com",
+      "to": "product.management@techcorp.com",
+      "timestamp": "2025-08-31T16:15:35Z",
+      "body": "Great news on the SmartSync Mobile launch in the UK! We hit 1,790 units vs our 1,200 forecast - that's 49% above plan. Revenue came in at $1.42M vs $950K budget. SMB adoption has been really strong. The market penetration campaign really helped with the launch. ROI is tracking at 4.4x.",
+      "summary": "Successful UK product launch exceeding targets",
+      "priority": "Low",
+      "category": "Management Inquiry",
+      "requires_action": false,
+      "thread_id": "THREAD-017",
+      "attachments": [
+        "product_launch_metrics.pdf",
+        "uk_market_analysis.xlsx"
+      ],
+      "read_status": "read",
+      "resolution_status": "completed",
+      "ai_transaction_matches": [
+        {
+          "transaction_id": "AR060004",
+          "module": "ar_reconciliation",
+          "confidence": 0.75,
+          "match_reason": "Email mentions revenue of $1.42M, close to AR060004 amount of $243,023.93",
+          "forensic_relevance": "medium"
+        }
+      ],
+      "ai_extracted_info": {
+        "amounts": [
+          "$1,420,000"
+        ],
+        "vendors": [
+          "SmartSync Mobile"
+        ],
+        "dates": [
+          "2025-08-31"
+        ],
+        "transaction_types": [
+          "revenue"
+        ],
+        "keywords": [
+          "launch",
+          "forecast",
+          "ROI"
+        ]
+      },
+      "ai_forensic_indicators": [
+        "Revenue significantly above forecast",
+        "Strong market penetration campaign impact",
+        "High ROI reported"
+      ],
+      "ai_analysis": {
+        "status": "completed",
+        "confidence": 0.8,
+        "model": "gpt-4o-mini"
+      }
+    }
+  ],
+  "summary": {
+    "total": 17,
+    "relevant": 17,
+    "requires_action": 1,
+    "by_category": {
+      "Management Inquiry": 3,
+      "Payment Processing": 3,
+      "Cash Management": 2,
+      "Intercompany": 2,
+      "Vendor Management": 2,
+      "Contract Management": 1,
+      "Emergency Processing": 1,
+      "FX Management": 1,
+      "Legal": 1,
+      "System Operations": 1
+    }
+  }
+}

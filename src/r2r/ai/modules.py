@@ -170,6 +170,9 @@ def _invoke_ai(kind: str, template_name: str, context: Dict[str, Any], payload: 
             case "report":
                 if isinstance(resp.get("executive_summary"), str):
                     payload["executive_summary"] = resp["executive_summary"]
+            case "email_analysis":
+                # Return the full AI response for email analysis
+                return resp
             case _:
                 pass
     except Exception:

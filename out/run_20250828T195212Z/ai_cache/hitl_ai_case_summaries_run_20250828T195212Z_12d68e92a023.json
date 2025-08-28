@@ -1,0 +1,109 @@
+{
+  "generated_at": "2025-08-28T19:53:45Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "case_summaries": [
+    {
+      "case_id": "CASE-202508-BANK_DUPLICATES-001",
+      "summary": "Duplicate bank transactions detected, potentially leading to inaccurate cash balances and financial misstatements.",
+      "risk_level": "critical",
+      "business_impact": "Potential overstatement of cash by $500,000.",
+      "confidence": 0.9
+    },
+    {
+      "case_id": "CASE-202508-AP_EXCEPTIONS-002",
+      "summary": "Accounts payable discrepancies could result in delayed payments and supplier disputes.",
+      "risk_level": "high",
+      "business_impact": "Risk of $200,000 in late fees and damaged supplier relationships.",
+      "confidence": 0.85
+    },
+    {
+      "case_id": "CASE-202508-AR_EXCEPTIONS-003",
+      "summary": "Accounts receivable issues may lead to revenue recognition problems and cash flow disruptions.",
+      "risk_level": "high",
+      "business_impact": "Unrecognized revenue of $300,000 affecting cash flow projections.",
+      "confidence": 0.88
+    },
+    {
+      "case_id": "CASE-202508-IC_MISMATCHES-004",
+      "summary": "Intercompany mismatches could cause consolidation errors and misreporting.",
+      "risk_level": "high",
+      "business_impact": "Potential misstatement of intercompany balances by $150,000.",
+      "confidence": 0.87
+    },
+    {
+      "case_id": "CASE-202508-ACCRUALS_EXCEPTIONS-005",
+      "summary": "Accrual discrepancies may result in inaccurate expense reporting and budget variances.",
+      "risk_level": "high",
+      "business_impact": "Misstatement of accrued expenses by $100,000.",
+      "confidence": 0.86
+    },
+    {
+      "case_id": "CASE-202508-FLUX_EXCEPTIONS-006",
+      "summary": "Significant flux exceptions indicate potential errors in financial reporting and variance analysis.",
+      "risk_level": "critical",
+      "business_impact": "Unexplained variances totaling $1,000,000 affecting financial statement accuracy.",
+      "confidence": 0.92
+    }
+  ],
+  "next_actions": [
+    {
+      "action": "Investigate and resolve duplicate bank transactions to ensure accurate cash balances.",
+      "priority": "critical",
+      "owner": "Bank Reconciliation Team",
+      "estimated_effort": "2 days",
+      "dependencies": [
+        "Access to bank statements"
+      ]
+    },
+    {
+      "action": "Review and correct accounts payable discrepancies to avoid late fees and maintain supplier relationships.",
+      "priority": "high",
+      "owner": "Accounts Payable Team",
+      "estimated_effort": "3 days",
+      "dependencies": [
+        "Supplier invoices and payment records"
+      ]
+    },
+    {
+      "action": "Address accounts receivable exceptions to ensure proper revenue recognition and cash flow management.",
+      "priority": "high",
+      "owner": "Accounts Receivable Team",
+      "estimated_effort": "4 days",
+      "dependencies": [
+        "Customer invoices and payment receipts"
+      ]
+    },
+    {
+      "action": "Reconcile intercompany mismatches to prevent consolidation errors.",
+      "priority": "high",
+      "owner": "Intercompany Accounting Team",
+      "estimated_effort": "3 days",
+      "dependencies": [
+        "Intercompany transaction records"
+      ]
+    },
+    {
+      "action": "Adjust accrual entries to reflect accurate expense reporting.",
+      "priority": "high",
+      "owner": "Financial Reporting Team",
+      "estimated_effort": "2 days",
+      "dependencies": [
+        "Expense reports and accrual schedules"
+      ]
+    },
+    {
+      "action": "Analyze and explain flux exceptions to ensure accurate variance analysis.",
+      "priority": "critical",
+      "owner": "Financial Analysis Team",
+      "estimated_effort": "5 days",
+      "dependencies": [
+        "Access to financial reports and variance analysis tools"
+      ]
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T195212Z/cases_run_20250828T195212Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T195212Z/cases_manifest_run_20250828T195212Z.json"
+  ]
+}

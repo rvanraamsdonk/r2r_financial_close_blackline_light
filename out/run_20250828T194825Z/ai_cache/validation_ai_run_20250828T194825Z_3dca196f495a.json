@@ -1,0 +1,53 @@
+{
+  "generated_at": "2025-08-28T19:49:50Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "summary": {
+    "schema_issues": 0,
+    "duplicate_rows": 0,
+    "fx_coverage_ok": null
+  },
+  "root_causes": [
+    {
+      "issue_type": "data_quality",
+      "description": "High volume of AR exceptions indicates potential data entry errors or system integration issues leading to inaccurate accounts receivable records.",
+      "severity": "critical",
+      "affected_categories": [
+        "ar_exceptions"
+      ],
+      "financial_impact": "$2.6M AR exceptions exceed materiality thresholds",
+      "confidence": 0.9
+    },
+    {
+      "issue_type": "process_control",
+      "description": "Bank duplicates suggest inadequate reconciliation processes, leading to duplicate entries in financial records.",
+      "severity": "high",
+      "affected_categories": [
+        "bank_duplicates"
+      ],
+      "financial_impact": "Potential misstatement of cash balances",
+      "confidence": 0.85
+    }
+  ],
+  "remediations": [
+    {
+      "issue_type": "data_quality",
+      "action": "Implement enhanced validation rules for AR data entry and conduct regular audits to ensure accuracy.",
+      "priority": "critical",
+      "estimated_effort": "2 weeks of dedicated data quality team effort",
+      "success_criteria": "Reduction in AR exceptions by 80% within the next quarter."
+    },
+    {
+      "issue_type": "process_control",
+      "action": "Revise bank reconciliation processes to include duplicate detection mechanisms and regular review cycles.",
+      "priority": "high",
+      "estimated_effort": "1 month of process improvement team effort",
+      "success_criteria": "Elimination of duplicate entries in bank reconciliations within two months."
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/bank_reconciliation_run_20250828T194825Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ap_reconciliation_run_20250828T194825Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ar_reconciliation_run_20250828T194825Z.json"
+  ]
+}

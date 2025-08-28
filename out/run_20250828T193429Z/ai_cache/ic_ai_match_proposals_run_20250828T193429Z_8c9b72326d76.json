@@ -1,0 +1,72 @@
+{
+  "generated_at": "2025-08-28T19:35:04Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "candidate_pairs": [
+    {
+      "source_doc_id": "IC-001",
+      "target_doc_id": "IC-017",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT101",
+      "match_confidence": 0.95,
+      "match_rationale": "Exact amount match with same counterparties and date proximity",
+      "amount_difference": 0.0,
+      "recommended_action": "Automatic elimination entry"
+    },
+    {
+      "source_doc_id": "IC-003",
+      "target_doc_id": "IC-018",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT102",
+      "match_confidence": 0.9,
+      "match_rationale": "Exact amount match with same counterparties and date proximity",
+      "amount_difference": 0.0,
+      "recommended_action": "Automatic elimination entry"
+    },
+    {
+      "source_doc_id": "IC-014",
+      "target_doc_id": "IC-019",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT102",
+      "match_confidence": 0.9,
+      "match_rationale": "Exact amount match with same counterparties and date proximity",
+      "amount_difference": 0.0,
+      "recommended_action": "Automatic elimination entry"
+    }
+  ],
+  "je_proposals": [
+    {
+      "proposal_id": "JE-IC-001",
+      "entity": "ENT100",
+      "description": "Eliminate intercompany receivable/payable mismatch",
+      "debit_account": "2100 - Intercompany Payable",
+      "credit_account": "1200 - Intercompany Receivable",
+      "amount": 75000.0,
+      "rationale": "Eliminate confirmed intercompany balance per reconciliation",
+      "confidence": 0.9
+    },
+    {
+      "proposal_id": "JE-IC-002",
+      "entity": "ENT100",
+      "description": "Eliminate intercompany receivable/payable mismatch",
+      "debit_account": "2100 - Intercompany Payable",
+      "credit_account": "1200 - Intercompany Receivable",
+      "amount": 80000.0,
+      "rationale": "Eliminate confirmed intercompany balance per reconciliation",
+      "confidence": 0.9
+    },
+    {
+      "proposal_id": "JE-IC-003",
+      "entity": "ENT100",
+      "description": "Eliminate intercompany receivable/payable mismatch",
+      "debit_account": "2100 - Intercompany Payable",
+      "credit_account": "1200 - Intercompany Receivable",
+      "amount": 60000.0,
+      "rationale": "Eliminate confirmed intercompany balance per reconciliation",
+      "confidence": 0.9
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T193429Z/intercompany_reconciliation_run_20250828T193429Z.json"
+  ]
+}

@@ -1,0 +1,123 @@
+[
+  {
+    "id": "CASE-202508-BANK_DUPLICATES-001",
+    "created_at": "2025-08-28T19:49:54.201710Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "bank_duplicates",
+    "severity": "high",
+    "title": "Bank Duplicates: 13 items",
+    "description": "Automated detection opened this HITL case for category 'bank_duplicates' with 13 exception items in period 2025-08.",
+    "evidence_uris": [
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/bank_reconciliation_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/bank_ai_rationales_run_20250828T194825Z_c7f75ef290bd.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-AP_EXCEPTIONS-002",
+    "created_at": "2025-08-28T19:49:54.201710Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "ap_exceptions",
+    "severity": "high",
+    "title": "Ap Exceptions: 19 items",
+    "description": "Automated detection opened this HITL case for category 'ap_exceptions' with 19 exception items in period 2025-08.",
+    "evidence_uris": [
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ap_reconciliation_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/ap_ar_ai_suggestions_run_20250828T194825Z_7c6fb186d334.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-AR_EXCEPTIONS-003",
+    "created_at": "2025-08-28T19:49:54.201710Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "ar_exceptions",
+    "severity": "high",
+    "title": "Ar Exceptions: 15 items",
+    "description": "Automated detection opened this HITL case for category 'ar_exceptions' with 15 exception items in period 2025-08.",
+    "evidence_uris": [
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/period_init_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/fx_translation_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/bank_reconciliation_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/bank_ai_rationales_run_20250828T194825Z_c7f75ef290bd.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ap_reconciliation_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ar_reconciliation_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/ap_ar_ai_suggestions_run_20250828T194825Z_7c6fb186d334.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/intercompany_reconciliation_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/ic_ai_match_proposals_run_20250828T194825Z_be9952bb6cd1.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/accruals_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/accruals_ai_narratives_run_20250828T194825Z_7afd74cbb2cb.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/flux_analysis_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/flux_ai_narratives_run_20250828T194825Z_40dfc2c55801.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/gatekeeping_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/gatekeeping_ai_rationales_run_20250828T194825Z_9b30bf551c37.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/validation_ai_run_20250828T194825Z_3dca196f495a.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-IC_MISMATCHES-004",
+    "created_at": "2025-08-28T19:49:54.201710Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "ic_mismatches",
+    "severity": "high",
+    "title": "Ic Mismatches: 6 items",
+    "description": "Automated detection opened this HITL case for category 'ic_mismatches' with 6 exception items in period 2025-08.",
+    "evidence_uris": [
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/ic_ai_match_proposals_run_20250828T194825Z_be9952bb6cd1.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-ACCRUALS_EXCEPTIONS-005",
+    "created_at": "2025-08-28T19:49:54.201710Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "accruals_exceptions",
+    "severity": "high",
+    "title": "Accruals Exceptions: 9 items",
+    "description": "Automated detection opened this HITL case for category 'accruals_exceptions' with 9 exception items in period 2025-08.",
+    "evidence_uris": [
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/accruals_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/accruals_ai_narratives_run_20250828T194825Z_7afd74cbb2cb.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-FLUX_EXCEPTIONS-006",
+    "created_at": "2025-08-28T19:49:54.201710Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "flux_exceptions",
+    "severity": "high",
+    "title": "Flux Exceptions: 47 items",
+    "description": "Automated detection opened this HITL case for category 'flux_exceptions' with 47 exception items in period 2025-08.",
+    "evidence_uris": [
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/flux_analysis_run_20250828T194825Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T194825Z/ai_cache/flux_ai_narratives_run_20250828T194825Z_40dfc2c55801.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  }
+]

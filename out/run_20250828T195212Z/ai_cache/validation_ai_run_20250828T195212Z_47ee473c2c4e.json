@@ -1,0 +1,53 @@
+{
+  "generated_at": "2025-08-28T19:53:39Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "summary": {
+    "schema_issues": 0,
+    "duplicate_rows": 0,
+    "fx_coverage_ok": null
+  },
+  "root_causes": [
+    {
+      "issue_type": "data_quality",
+      "description": "High volume of AR exceptions indicating potential data entry errors or system integration issues",
+      "severity": "critical",
+      "affected_categories": [
+        "ar_exceptions"
+      ],
+      "financial_impact": "$2.6M AR exceptions exceed materiality thresholds",
+      "confidence": 0.9
+    },
+    {
+      "issue_type": "process_control",
+      "description": "Bank duplicates suggest inadequate reconciliation processes",
+      "severity": "high",
+      "affected_categories": [
+        "bank_duplicates"
+      ],
+      "financial_impact": "Potential misstatement risk due to duplicate records",
+      "confidence": 0.85
+    }
+  ],
+  "remediations": [
+    {
+      "issue_type": "data_quality",
+      "action": "Implement enhanced validation checks for AR entries and improve system integration protocols",
+      "priority": "critical",
+      "estimated_effort": "2-3 weeks with dedicated team",
+      "success_criteria": "Reduction in AR exceptions by 75% in next period"
+    },
+    {
+      "issue_type": "process_control",
+      "action": "Revise bank reconciliation procedures to include duplicate detection mechanisms",
+      "priority": "high",
+      "estimated_effort": "1-2 weeks with process improvement team",
+      "success_criteria": "Elimination of duplicate records in bank reconciliations"
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T195212Z/bank_reconciliation_run_20250828T195212Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T195212Z/ap_reconciliation_run_20250828T195212Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T195212Z/ar_reconciliation_run_20250828T195212Z.json"
+  ]
+}

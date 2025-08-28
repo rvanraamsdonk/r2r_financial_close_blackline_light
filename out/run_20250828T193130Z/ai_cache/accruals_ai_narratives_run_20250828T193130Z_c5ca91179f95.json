@@ -1,0 +1,53 @@
+{
+  "generated_at": "2025-08-28T19:32:28Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "narratives": [
+    {
+      "accrual_id": "ACR-2025-08-ENT102-004",
+      "narrative": "The accrual for ENT102 amounting to $156,250 was expected to reverse on 2025-09-01 but failed to do so. This indicates a potential oversight in the reversal process, which could lead to misstated financials if not corrected promptly.",
+      "confidence": 0.85,
+      "risk_level": "high",
+      "business_impact": "Potential overstatement of liabilities and understated net income."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT101-008",
+      "narrative": "The accrual for ENT101 of $136,250 was not reversed as scheduled. This could suggest a breakdown in the accrual management process, necessitating immediate review to prevent financial discrepancies.",
+      "confidence": 0.8,
+      "risk_level": "medium",
+      "business_impact": "Could lead to inaccurate financial reporting and affect decision-making."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT100-004",
+      "narrative": "ENT100's accrual of $125,000 was not reversed, indicating a potential lapse in internal controls over financial reporting.",
+      "confidence": 0.82,
+      "risk_level": "medium",
+      "business_impact": "May result in financial statement inaccuracies and compliance issues."
+    }
+  ],
+  "je_rationales": [
+    {
+      "proposal_id": "ACR-2025-08-ENT102-004",
+      "rationale": "The reversal of the accrual for ENT102 should be processed to correct the liability overstatement. This ensures the financial statements reflect accurate liabilities.",
+      "accounting_treatment": "Debit Accrued Liabilities and Credit Expense to reverse the accrual.",
+      "confidence": 0.9
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT101-008",
+      "rationale": "To address the failed reversal for ENT101, the accrual should be reversed to align with the actual financial position.",
+      "accounting_treatment": "Debit Accrued Liabilities and Credit Expense to reverse the accrual.",
+      "confidence": 0.88
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT100-004",
+      "rationale": "Reversing the accrual for ENT100 is necessary to prevent liability overstatement and ensure compliance with accounting standards.",
+      "accounting_treatment": "Debit Accrued Liabilities and Credit Expense to reverse the accrual.",
+      "confidence": 0.87
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T193130Z/accruals_run_20250828T193130Z.json",
+    null,
+    null
+  ]
+}

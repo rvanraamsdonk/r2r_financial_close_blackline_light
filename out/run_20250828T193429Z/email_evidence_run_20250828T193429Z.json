@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-08-28T20:50:00Z",
+  "generated_at": "2025-08-28T19:35:33.854445Z",
   "period": "2025-08",
   "entity_scope": "ALL",
   "items": [
@@ -17,7 +17,12 @@
       "thread_id": "THREAD-001",
       "attachments": [],
       "read_status": "read",
-      "resolution_status": "resolved"
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-002",
@@ -33,7 +38,12 @@
       "thread_id": "THREAD-002",
       "attachments": [],
       "read_status": "read",
-      "resolution_status": "resolved"
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-003",
@@ -47,9 +57,17 @@
       "category": "Cash Management",
       "requires_action": true,
       "thread_id": "THREAD-003",
-      "attachments": ["google_wire_receipt.pdf", "system_posting_log.xlsx"],
+      "attachments": [
+        "google_wire_receipt.pdf",
+        "system_posting_log.xlsx"
+      ],
       "read_status": "read",
-      "resolution_status": "pending"
+      "resolution_status": "pending",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-004",
@@ -63,9 +81,16 @@
       "category": "Vendor Management",
       "requires_action": false,
       "thread_id": "THREAD-004",
-      "attachments": ["vendor_application.pdf"],
+      "attachments": [
+        "vendor_application.pdf"
+      ],
       "read_status": "read",
-      "resolution_status": "resolved"
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-005",
@@ -81,7 +106,12 @@
       "thread_id": "THREAD-005",
       "attachments": [],
       "read_status": "read",
-      "resolution_status": "resolved"
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-006",
@@ -97,7 +127,12 @@
       "thread_id": "THREAD-006",
       "attachments": [],
       "read_status": "read",
-      "resolution_status": "resolved"
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-007",
@@ -113,7 +148,12 @@
       "thread_id": "THREAD-007",
       "attachments": [],
       "read_status": "read",
-      "resolution_status": "resolved"
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-008",
@@ -127,9 +167,16 @@
       "category": "Contract Management",
       "requires_action": false,
       "thread_id": "THREAD-008",
-      "attachments": ["uber_contract_amendment.pdf"],
+      "attachments": [
+        "uber_contract_amendment.pdf"
+      ],
       "read_status": "read",
-      "resolution_status": "resolved"
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-009",
@@ -143,9 +190,16 @@
       "category": "Payment Processing",
       "requires_action": false,
       "thread_id": "THREAD-009",
-      "attachments": ["oracle_payment_analysis.xlsx"],
+      "attachments": [
+        "oracle_payment_analysis.xlsx"
+      ],
       "read_status": "read",
-      "resolution_status": "pending"
+      "resolution_status": "pending",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-010",
@@ -161,7 +215,12 @@
       "thread_id": "THREAD-010",
       "attachments": [],
       "read_status": "read",
-      "resolution_status": "resolved"
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-011",
@@ -169,15 +228,22 @@
       "from": "treasury@techcorp.com",
       "to": "financial.reporting@techcorp.com",
       "timestamp": "2025-08-31T16:20:45Z",
-      "body": "FYI - EUR strengthened nicely this month (1.085 to 1.092), so we're seeing about €850K gain on our EUR positions. Mostly from the ENT101 cash and receivables. I've prepared the standard revaluation entry JE-2025-08-FX-001 for month-end. Let me know if you need anything else.",
+      "body": "FYI - EUR strengthened nicely this month (1.085 to 1.092), so we're seeing about \u20ac850K gain on our EUR positions. Mostly from the ENT101 cash and receivables. I've prepared the standard revaluation entry JE-2025-08-FX-001 for month-end. Let me know if you need anything else.",
       "summary": "Monthly FX revaluation entry for EUR positions",
       "priority": "Medium",
       "category": "FX Management",
       "requires_action": false,
       "thread_id": "THREAD-011",
-      "attachments": ["fx_revaluation_calculation.xlsx"],
+      "attachments": [
+        "fx_revaluation_calculation.xlsx"
+      ],
       "read_status": "read",
-      "resolution_status": "completed"
+      "resolution_status": "completed",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-012",
@@ -185,7 +251,7 @@
       "from": "procurement@techcorp.com",
       "to": "ap.manager@techcorp.com",
       "timestamp": "2025-08-25T13:15:28Z",
-      "body": "Hi Sarah, legal needs us to set up Express Financial as a vendor ASAP for the consulting engagement. They're requesting €45,678.90 payment by end of week. I know it's last minute but the contract was just signed yesterday. Can you expedite the vendor setup? Thanks, Jennifer",
+      "body": "Hi Sarah, legal needs us to set up Express Financial as a vendor ASAP for the consulting engagement. They're requesting \u20ac45,678.90 payment by end of week. I know it's last minute but the contract was just signed yesterday. Can you expedite the vendor setup? Thanks, Jennifer",
       "summary": "Urgent new vendor setup for consulting engagement",
       "priority": "Medium",
       "category": "Vendor Management",
@@ -193,7 +259,12 @@
       "thread_id": "THREAD-012",
       "attachments": [],
       "read_status": "read",
-      "resolution_status": "resolved"
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-013",
@@ -209,7 +280,12 @@
       "thread_id": "THREAD-013",
       "attachments": [],
       "read_status": "read",
-      "resolution_status": "resolved"
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-014",
@@ -227,7 +303,12 @@
         "board_presentation.pdf"
       ],
       "read_status": "read",
-      "resolution_status": "resolved"
+      "resolution_status": "resolved",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-015",
@@ -241,9 +322,17 @@
       "category": "Management Inquiry",
       "requires_action": false,
       "thread_id": "THREAD-015",
-      "attachments": ["campaign_performance_report.pdf", "customer_survey_results.xlsx"],
+      "attachments": [
+        "campaign_performance_report.pdf",
+        "customer_survey_results.xlsx"
+      ],
       "read_status": "read",
-      "resolution_status": "completed"
+      "resolution_status": "completed",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-016",
@@ -257,9 +346,17 @@
       "category": "Management Inquiry",
       "requires_action": false,
       "thread_id": "THREAD-016",
-      "attachments": ["gartner_report_excerpt.pdf", "customer_migration_analysis.xlsx"],
+      "attachments": [
+        "gartner_report_excerpt.pdf",
+        "customer_migration_analysis.xlsx"
+      ],
       "read_status": "read",
-      "resolution_status": "completed"
+      "resolution_status": "completed",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     },
     {
       "email_id": "EMAIL-017",
@@ -273,43 +370,34 @@
       "category": "Management Inquiry",
       "requires_action": false,
       "thread_id": "THREAD-017",
-      "attachments": ["product_launch_metrics.pdf", "uk_market_analysis.xlsx"],
+      "attachments": [
+        "product_launch_metrics.pdf",
+        "uk_market_analysis.xlsx"
+      ],
       "read_status": "read",
-      "resolution_status": "completed"
+      "resolution_status": "completed",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "ai_error: _invoke_ai() got an unexpected keyword argument 'template_path'. Did you mean 'template_name'?",
+        "confidence": 0.0
+      }
     }
   ],
   "summary": {
     "total": 17,
     "relevant": 17,
-    "requires_action": 12,
+    "requires_action": 1,
     "by_category": {
-      "Accrual Management": 1,
-      "Payment Processing": 1,
-      "Cutoff Procedures": 1,
-      "Fraud Prevention": 1,
-      "Transaction Monitoring": 1,
-      "Financial Crime": 1,
-      "Controls Compliance": 1,
-      "Revenue Recognition": 1,
-      "Procurement Controls": 1,
-      "Intercompany Controls": 1,
+      "Management Inquiry": 3,
+      "Payment Processing": 3,
+      "Cash Management": 2,
+      "Intercompany": 2,
+      "Vendor Management": 2,
+      "Contract Management": 1,
+      "Emergency Processing": 1,
       "FX Management": 1,
-      "Vendor Management": 1,
-      "Transaction Analytics": 1,
-      "Related Party": 1,
-      "Management Inquiry": 3
-    },
-    "by_priority": {
-      "Critical": 2,
-      "High": 6,
-      "Medium": 8,
-      "Low": 1
-    },
-    "by_resolution_status": {
-      "pending": 8,
-      "in_progress": 2,
-      "escalated": 2,
-      "completed": 5
+      "Legal": 1,
+      "System Operations": 1
     }
   }
 }

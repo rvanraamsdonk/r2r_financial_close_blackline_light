@@ -1,0 +1,109 @@
+{
+  "generated_at": "2025-08-28T19:35:45Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "case_summaries": [
+    {
+      "case_id": "CASE-202508-BANK_DUPLICATES-001",
+      "summary": "Duplicate bank transactions detected, potentially leading to inaccurate cash balances and financial misstatements.",
+      "risk_level": "critical",
+      "business_impact": "Potential overstatement of cash by $500,000.",
+      "confidence": 0.9
+    },
+    {
+      "case_id": "CASE-202508-AP_EXCEPTIONS-002",
+      "summary": "Accounts payable discrepancies found, risking incorrect liability reporting and supplier payment delays.",
+      "risk_level": "high",
+      "business_impact": "Possible understatement of liabilities by $300,000.",
+      "confidence": 0.85
+    },
+    {
+      "case_id": "CASE-202508-AR_EXCEPTIONS-003",
+      "summary": "Accounts receivable exceptions could result in misstated revenue and cash flow issues.",
+      "risk_level": "high",
+      "business_impact": "Potential revenue overstatement by $250,000.",
+      "confidence": 0.8
+    },
+    {
+      "case_id": "CASE-202508-IC_MISMATCHES-004",
+      "summary": "Intercompany mismatches identified, affecting consolidation accuracy and financial reporting.",
+      "risk_level": "high",
+      "business_impact": "Discrepancies totaling $150,000 across entities.",
+      "confidence": 0.75
+    },
+    {
+      "case_id": "CASE-202508-ACCRUALS_EXCEPTIONS-005",
+      "summary": "Accruals exceptions may lead to incorrect expense recognition and financial statement errors.",
+      "risk_level": "high",
+      "business_impact": "Possible expense understatement by $200,000.",
+      "confidence": 0.8
+    },
+    {
+      "case_id": "CASE-202508-FLUX_EXCEPTIONS-006",
+      "summary": "Significant flux exceptions detected, indicating potential anomalies in financial trends and variances.",
+      "risk_level": "critical",
+      "business_impact": "Unexplained variances totaling $1,000,000.",
+      "confidence": 0.9
+    }
+  ],
+  "next_actions": [
+    {
+      "action": "Investigate and resolve bank duplicate transactions to ensure accurate cash balances.",
+      "priority": "critical",
+      "owner": "Treasury Team",
+      "estimated_effort": "2 days",
+      "dependencies": [
+        "Access to bank statements"
+      ]
+    },
+    {
+      "action": "Review and correct accounts payable exceptions to ensure accurate liability reporting.",
+      "priority": "high",
+      "owner": "Accounts Payable Team",
+      "estimated_effort": "3 days",
+      "dependencies": [
+        "Supplier invoice verification"
+      ]
+    },
+    {
+      "action": "Analyze and rectify accounts receivable exceptions to prevent revenue misstatements.",
+      "priority": "high",
+      "owner": "Accounts Receivable Team",
+      "estimated_effort": "3 days",
+      "dependencies": [
+        "Customer payment confirmations"
+      ]
+    },
+    {
+      "action": "Address intercompany mismatches to ensure accurate consolidation and reporting.",
+      "priority": "high",
+      "owner": "Intercompany Accounting Team",
+      "estimated_effort": "2 days",
+      "dependencies": [
+        "Intercompany transaction records"
+      ]
+    },
+    {
+      "action": "Investigate accruals exceptions to ensure proper expense recognition.",
+      "priority": "high",
+      "owner": "Financial Reporting Team",
+      "estimated_effort": "2 days",
+      "dependencies": [
+        "Expense documentation"
+      ]
+    },
+    {
+      "action": "Analyze flux exceptions to identify and explain significant financial variances.",
+      "priority": "critical",
+      "owner": "Financial Analysis Team",
+      "estimated_effort": "4 days",
+      "dependencies": [
+        "Access to variance analysis reports"
+      ]
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T193429Z/cases_run_20250828T193429Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T193429Z/cases_manifest_run_20250828T193429Z.json"
+  ]
+}
