@@ -1,0 +1,58 @@
+{
+  "generated_at": "2025-08-28T20:00:37Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "matches": [
+    {
+      "ap_bill_id": "AP050023",
+      "ar_invoice_id": "AR060025",
+      "confidence": 0.85,
+      "reason": "Matching weekend entry with same date and entity, amount close",
+      "support": {
+        "amount_delta": 124848.61,
+        "date_gap_days": 0,
+        "signals": [
+          "amount_close",
+          "date_near",
+          "same_entity"
+        ]
+      }
+    },
+    {
+      "ap_bill_id": "AP050015",
+      "ar_invoice_id": "AR060016",
+      "confidence": 0.9,
+      "reason": "Matching weekend entry with same date and entity, amount close",
+      "support": {
+        "amount_delta": 20631.53,
+        "date_gap_days": 0,
+        "signals": [
+          "amount_close",
+          "date_near",
+          "same_entity"
+        ]
+      }
+    },
+    {
+      "ap_bill_id": "AP050031",
+      "ar_invoice_id": "AR060001",
+      "confidence": 0.75,
+      "reason": "Suspicious vendor pattern and related party transaction, same entity",
+      "support": {
+        "amount_delta": 241265.81,
+        "date_gap_days": 4,
+        "signals": [
+          "same_entity"
+        ]
+      }
+    }
+  ],
+  "unresolved_summary": {
+    "ap_exceptions": 19,
+    "ar_exceptions": 15
+  },
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T200024Z/ap_reconciliation_run_20250828T200024Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T200024Z/ar_reconciliation_run_20250828T200024Z.json"
+  ]
+}
