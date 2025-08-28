@@ -127,9 +127,8 @@ def _invoke_ai(kind: str, template_name: str, context: Dict[str, Any], payload: 
         return payload
     prompt = render_template(template_name, context)
     system = (
-        "You are a finance assistant. Return ONLY JSON strictly following the schema for '"
-        + kind
-        + "' with keys present. Do not include markdown or prose."
+        "You are a finance assistant. Return ONLY valid JSON with the required keys for the requested analysis. "
+        "Do not include markdown, prose, or explanatory text outside the JSON response."
     )
     resp = call_openai_json(prompt, system=system)
     # Shallow merge for known top-level fields

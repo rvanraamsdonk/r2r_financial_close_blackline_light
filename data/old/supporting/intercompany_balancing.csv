@@ -1,6 +1,0 @@
-entity_pair,src_entity,dst_entity,transaction_id,src_amount,dst_amount,currency,net_exposure,balancing_status,elimination_required,netting_agreement,reconciliation_status,variance_amount
-ENT100-ENT101,ENT100,ENT101,IC-ENT100-ENT101-001,485000.00,-500000.00,USD,-15000.00,Unbalanced,Yes,Standard,Pending,-15000.00
-ENT100-ENT102,ENT100,ENT102,IC-ENT100-ENT102-001,275000.00,-275000.00,USD,0.00,Balanced,Yes,Standard,Complete,0.00
-ENT101-ENT102,ENT101,ENT102,IC-ENT101-ENT102-001,180000.00,-180000.00,EUR,0.00,Balanced,Yes,Standard,Complete,0.00
-ENT100-ENT101,ENT100,ENT101,IC-ENT100-ENT101-002,125000.00,-125000.00,USD,0.00,Balanced,Yes,Standard,Complete,0.00
-ENT101-ENT100,ENT101,ENT100,IC-ENT101-ENT100-001,95000.00,-95000.00,EUR,0.00,Balanced,Yes,Standard,Complete,0.00

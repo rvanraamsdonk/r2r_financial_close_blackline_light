@@ -1,14 +1,16 @@
-# Close Report AI Prompt Template
+Generate an executive summary for the financial close report for period {{ period }}.
 
-Objective: Create an executive summary with citations.
+Based on the close data, provide a concise executive summary covering:
+- Overall close status and key metrics  
+- Material exceptions and their business impact
+- Risk assessment and recommendations
+- Next steps for period closure
 
-Inputs:
-
-- period: {{ period }}
-- entity: {{ entity }}
-- citations: {{ citations | tojson }}
-- highlights: {{ highlights | tojson }}
-
-Output schema: ReportAI (see src/r2r/ai/schemas.py)
-
-Return ONLY strict JSON conforming to ReportAI. No prose or markdown.
+Required JSON output format:
+{
+  "generated_at": "{{ generated_at }}",
+  "period": "{{ period }}",
+  "entity_scope": "{{ entity }}",
+  "executive_summary": "The {{ period }} financial close identified 47 flux exceptions totaling $X across 3 entities. Key findings include...",
+  "citations": {{ citations | tojson }}
+}

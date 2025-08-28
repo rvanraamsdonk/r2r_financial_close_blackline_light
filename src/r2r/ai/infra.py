@@ -132,7 +132,9 @@ def call_openai_json(prompt: str, *, system: Optional[str] = None, model_env_var
     messages = []
     if system:
         messages.append({"role": "system", "content": system})
-    messages.append({"role": "user", "content": prompt})
+    # Ensure prompt mentions JSON for OpenAI's json_object mode requirement
+    json_prompt = f"{prompt}\n\nPlease respond with valid JSON."
+    messages.append({"role": "user", "content": json_prompt})
     # Use responses API with JSON mode if available; fall back to chat.completions
     try:
         resp = client.chat.completions.create(
@@ -142,7 +144,9 @@ def call_openai_json(prompt: str, *, system: Optional[str] = None, model_env_var
             response_format={"type": "json_object"},
         )
         content = resp.choices[0].message.content or "{}"
-    except Exception:
+    except Exception as e:
+        # Log the actual error for debugging
+        print(f"OpenAI API error: {e}")
         # Fallback to an empty JSON to avoid crashes if provider unavailable
         content = "{}"
     try:

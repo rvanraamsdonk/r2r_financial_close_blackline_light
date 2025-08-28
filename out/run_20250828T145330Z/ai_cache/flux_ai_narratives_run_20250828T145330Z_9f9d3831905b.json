@@ -1,0 +1,10 @@
+{
+  "generated_at": "2025-08-28T14:53:45Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "narratives": [],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T145330Z/flux_analysis_run_20250828T145330Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T145330Z/period_init_run_20250828T145330Z.json"
+  ]
+}

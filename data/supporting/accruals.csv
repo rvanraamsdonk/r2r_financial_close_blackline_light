@@ -1,3 +1,27 @@
-accrual_id,description,amount,status
-ACC-001,Unbilled legal services,15000,Pending
-ACC-002,Q3 Bonus Accrual,120000,Pending
+entity,accrual_id,description,amount_local,amount_usd,currency,status,accrual_date,reversal_date,notes
+ENT100,ACR-2025-08-ENT100-001,Professional Fees Accrual,29408.57,29408.57,USD,Should Reverse,2025-08-31,2025-09-01,Reversal failed - manual intervention required
+ENT100,ACR-2025-08-ENT100-002,Utilities Accrual,10457.84,10457.84,USD,Active,2025-08-31,2025-09-01,Automated utilities accrual
+ENT100,ACR-2025-08-ENT100-003,Rent Accrual,9092.13,9092.13,USD,Active,2025-08-31,2025-09-01,Automated rent accrual
+ENT100,ACR-2025-08-ENT100-004,Bonus Accrual,125000.0,125000.0,USD,Should Reverse,2025-08-31,2025-09-01,Reversal failed - amount disputed
+ENT100,ACR-2025-08-ENT100-005,Commission Accrual,85000.0,85000.0,USD,Active,2025-08-31,2025-09-01,Sales commission accrual
+ENT100,ACR-2025-08-ENT100-006,Legal Fees Accrual,45000.0,45000.0,USD,Should Reverse,2025-08-31,2025-09-01,Reversal pending approval
+ENT100,ACR-2025-08-ENT100-007,Audit Fees Accrual,35000.0,35000.0,USD,Active,2025-08-31,2025-09-01,Annual audit accrual
+ENT100,ACR-2025-08-ENT100-008,Marketing Campaign Accrual,65000.0,65000.0,USD,Should Reverse,2025-08-31,2025-09-01,Campaign cancelled - reversal needed
+ENT100,ACR-2025-08-ENT100-009,Software License Accrual,28500.0,28500.0,USD,Active,2025-08-31,2025-09-01,Annual license renewal
+ENT100,ACR-2025-08-ENT100-010,Travel Expense Accrual,15750.0,15750.0,USD,Active,2025-08-31,2025-09-01,Q3 travel expenses
+ENT101,ACR-2025-08-ENT101-001,Rent Accrual,12207.81,13300.52,EUR,Active,2025-08-31,2025-09-01,Automated rent accrual
+ENT101,ACR-2025-08-ENT101-002,Utilities Accrual,5144.09,5607.46,EUR,Active,2025-08-31,2025-09-01,Automated utilities accrual
+ENT101,ACR-2025-08-ENT101-003,Consulting Services Accrual,22219.99,24240.19,EUR,Active,2025-08-31,2025-09-01,Automated consulting services accrual
+ENT101,ACR-2025-08-ENT101-004,VAT Accrual,45000.0,49050.0,EUR,Should Reverse,2025-08-31,2025-09-01,VAT calculation error - reversal needed
+ENT101,ACR-2025-08-ENT101-005,Payroll Tax Accrual,28500.0,31065.0,EUR,Active,2025-08-31,2025-09-01,Monthly payroll tax provision
+ENT101,ACR-2025-08-ENT101-006,Professional Services Accrual,65000.0,70850.0,EUR,Should Reverse,2025-08-31,2025-09-01,Service contract terminated
+ENT101,ACR-2025-08-ENT101-007,Marketing Accrual,38500.0,41965.0,EUR,Active,2025-08-31,2025-09-01,Digital marketing campaign
+ENT101,ACR-2025-08-ENT101-008,Legal Settlement Accrual,125000.0,136250.0,EUR,Should Reverse,2025-08-31,2025-09-01,Settlement amount reduced
+ENT102,ACR-2025-08-ENT102-001,Payroll Accrual,28042.42,35053.03,GBP,Active,2025-08-31,2025-09-01,Automated payroll accrual
+ENT102,ACR-2025-08-ENT102-002,Insurance Accrual,6042.4,7553.0,GBP,Active,2025-08-31,2025-09-01,Automated insurance accrual
+ENT102,ACR-2025-08-ENT102-003,National Insurance Accrual,18500.0,23125.0,GBP,Active,2025-08-31,2025-09-01,Employer NI contribution
+ENT102,ACR-2025-08-ENT102-004,Corporation Tax Accrual,125000.0,156250.0,GBP,Should Reverse,2025-08-31,2025-09-01,Tax calculation revised
+ENT102,ACR-2025-08-ENT102-005,Professional Fees Accrual,45000.0,56250.0,GBP,Active,2025-08-31,2025-09-01,Legal and accounting fees
+ENT102,ACR-2025-08-ENT102-006,Rent Accrual,32500.0,40625.0,GBP,Active,2025-08-31,2025-09-01,Office lease payment
+ENT102,ACR-2025-08-ENT102-007,Utilities Accrual,8750.0,10937.5,GBP,Active,2025-08-31,2025-09-01,Monthly utilities provision
+ENT102,ACR-2025-08-ENT102-008,Marketing Accrual,28000.0,35000.0,GBP,Should Reverse,2025-08-31,2025-09-01,Campaign budget reduced

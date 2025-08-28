@@ -1,0 +1,74 @@
+{
+  "generated_at": "2025-08-28T15:00:50Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "narratives": [
+    {
+      "entity": "ENT100",
+      "account": "4000",
+      "narrative": "Account 4000 shows a budget variance of -$2,111,111.01 due to higher than anticipated operational costs and increased material prices affecting overall profitability.",
+      "confidence": "high",
+      "root_cause": "increased_operational_costs"
+    },
+    {
+      "entity": "ENT101",
+      "account": "4000",
+      "narrative": "Account 4000 has a budget variance of -$1,771,975.42 primarily driven by unexpected labor costs and overtime expenses that exceeded the initial budget estimates.",
+      "confidence": "high",
+      "root_cause": "unexpected_labor_costs"
+    },
+    {
+      "entity": "ENT102",
+      "account": "4000",
+      "narrative": "Account 4000 reflects a budget variance of -$1,417,655.56 due to delays in project timelines leading to increased costs and resource allocation beyond budgeted amounts.",
+      "confidence": "high",
+      "root_cause": "project_delays"
+    },
+    {
+      "entity": "ENT100",
+      "account": "5000",
+      "narrative": "Account 5000 shows a budget variance of $1,234,567.89 attributed to higher than expected sales revenue from new product launches exceeding forecasts.",
+      "confidence": "high",
+      "root_cause": "increased_sales_revenue"
+    },
+    {
+      "entity": "ENT100",
+      "account": "1400",
+      "narrative": "Account 1400 has a budget variance of $1,074,982.99 due to effective cost management strategies that reduced expenses significantly compared to the budget.",
+      "confidence": "high",
+      "root_cause": "cost_management_efforts"
+    },
+    {
+      "entity": "ENT101",
+      "account": "5000",
+      "narrative": "Account 5000 reflects a budget variance of $1,023,456.78 driven by increased demand for services that surpassed initial projections.",
+      "confidence": "high",
+      "root_cause": "increased_demand"
+    },
+    {
+      "entity": "ENT101",
+      "account": "1400",
+      "narrative": "Account 1400 shows a budget variance of $941,976.42 due to successful marketing campaigns that led to higher customer acquisition rates.",
+      "confidence": "high",
+      "root_cause": "successful_marketing_campaigns"
+    },
+    {
+      "entity": "ENT102",
+      "account": "5000",
+      "narrative": "Account 5000 has a budget variance of $823,456.78 resulting from new client contracts that were secured, leading to increased revenue.",
+      "confidence": "high",
+      "root_cause": "new_client_contracts"
+    },
+    {
+      "entity": "ENT102",
+      "account": "1400",
+      "narrative": "Account 1400 reflects a budget variance of $780,888.89 due to operational efficiencies that reduced costs significantly.",
+      "confidence": "high",
+      "root_cause": "operational_efficiencies"
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T150037Z/flux_analysis_run_20250828T150037Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T150037Z/period_init_run_20250828T150037Z.json"
+  ]
+}

@@ -2,6 +2,9 @@
 
 This documentation describes a deterministic, policy-aligned financial close enhanced with visible AI assistance. All numbers are computed; AI assists with explanations, matching suggestions, and risk narratives. No hard-coded strings; all outputs are derived from the real data in `data/lite/`.
 
+## Master Plan (single source of truth)
+See `docs/briefs/master-plan-consolidated-2025-08-28.md`. All roadmap decisions, AI vs deterministic balance, forensic patterns (pattern-based v2), and UI priorities are maintained there.
+
 ## Quick Start
 
 ```bash
