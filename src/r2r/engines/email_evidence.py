@@ -31,7 +31,8 @@ def email_evidence_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
         state.tags.append(OutputTag(method_type=MethodType.DET, rationale="Email evidence (skipped)"))
         return state
 
-    emails: List[Dict[str, Any]] = json.loads(data_fp.read_text(encoding="utf-8"))
+    email_data = json.loads(data_fp.read_text(encoding="utf-8"))
+    emails: List[Dict[str, Any]] = email_data.get("items", [])
 
     period = state.period  # YYYY-MM
 

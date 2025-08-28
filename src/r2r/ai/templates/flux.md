@@ -4,7 +4,7 @@ VARIANCE ANALYSIS REQUIREMENTS:
 {% for variance in top_variances %}
 - {{ variance.entity }}/{{ variance.account }}: Budget variance {{ variance.var_vs_budget }} USD ({{ variance.band_vs_budget }})
   Materiality threshold: {{ variance.threshold_usd }} USD
-  Percentage variance: {{ (variance.pct_vs_budget * 100) | round(1) }}%
+  Percentage variance: {{ ((variance.pct_vs_budget or 0) * 100) | round(1) }}%
 {% endfor %}
 
 SUPPORTING EVIDENCE AVAILABLE:

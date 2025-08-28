@@ -1,0 +1,54 @@
+{
+  "generated_at": "2025-08-28T19:01:05Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "owner_summaries": [
+    {
+      "owner_name": "John Doe",
+      "control_count": 3,
+      "risk_areas": [
+        "Financial Reporting",
+        "Cash Management"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "Entity-level TB balances not zeroed, high flux analysis exceptions",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Jane Smith",
+      "control_count": 2,
+      "risk_areas": [
+        "Revenue Recognition",
+        "Intercompany Transactions"
+      ],
+      "effectiveness_rating": "effective",
+      "key_concerns": "Intercompany mismatches require monitoring",
+      "confidence": 0.9
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "High number of flux analysis exceptions indicating potential reporting inaccuracies",
+      "severity": "high",
+      "affected_processes": [
+        "Flux Analysis"
+      ],
+      "mitigation_recommendations": "Implement tighter variance thresholds and enhance review procedures",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "operational",
+      "description": "Bank duplicate detection exceptions indicate potential cash management inefficiencies",
+      "severity": "medium",
+      "affected_processes": [
+        "Bank Reconciliation"
+      ],
+      "mitigation_recommendations": "Enhance duplicate detection algorithms and conduct regular audits",
+      "confidence": 0.85
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T190003Z/controls_mapping_run_20250828T190003Z.json"
+  ]
+}

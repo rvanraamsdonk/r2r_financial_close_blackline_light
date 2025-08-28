@@ -1,0 +1,49 @@
+{
+  "generated_at": "2025-08-28T19:00:36Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "narratives": [
+    {
+      "entity": "ENT100",
+      "account": "4000",
+      "variance_usd": -2111111.01,
+      "variance_pct": 900.0,
+      "narrative": "Revenue exceeded budget by $2.11M (900%) driven by Q3 Digital Acceleration campaign performance. Campaign generated $2.65M incremental revenue against $387K spend (ROI: 6.8x). Management inquiry MGT-INQ-2025-08-001 confirms attribution with VP Sales Sarah Chen citing 43% target overperformance.",
+      "business_driver": "Digital marketing campaign exceeded conversion targets by 43% (8,750 vs 6,125 forecast conversions)",
+      "management_response": "Sarah Chen (VP Sales): Q3 digital campaign exceeded targets by 43% driving $2.65M incremental revenue",
+      "supporting_evidence": [
+        "MKT-2025-08-001: Campaign performance metrics showing $2.65M attributed revenue",
+        "CS-2025-08-20: Customer survey validating increased demand",
+        "OPS-2025-08-004: CRM system showing 156 new customers (41% above budget)"
+      ],
+      "analytical_procedures": "Revenue per conversion: $303 vs industry benchmark $275 (+10% premium)",
+      "risk_assessment": "Low risk - corroborated by multiple independent sources and operational metrics",
+      "confidence": "high",
+      "root_cause": "marketing_campaign_performance_verified",
+      "follow_up_required": false
+    },
+    {
+      "entity": "ENT101",
+      "account": "4000",
+      "variance_usd": -1771975.42,
+      "variance_pct": 821.6,
+      "narrative": "Unexpected demand surge in Q3 led to $1.77M revenue above budget. Management inquiry MGT-INQ-2025-08-002 with CFO John Doe confirms increased market share due to competitor exit.",
+      "business_driver": "Market share increased by 15% following competitor exit",
+      "management_response": "John Doe (CFO): Competitor exit resulted in 15% market share gain, driving $1.77M additional revenue",
+      "supporting_evidence": [
+        "MKT-2025-08-002: Market analysis report showing competitor exit impact",
+        "FIN-2025-08-003: Financial statements reflecting revenue increase",
+        "OPS-2025-08-005: Sales system data showing 20% increase in orders"
+      ],
+      "analytical_procedures": "Revenue growth of 20% vs industry average of 5%",
+      "risk_assessment": "Moderate risk - dependent on sustained market conditions",
+      "confidence": "medium",
+      "root_cause": "competitor_exit_market_share_gain",
+      "follow_up_required": true
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T190003Z/flux_analysis_run_20250828T190003Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T190003Z/period_init_run_20250828T190003Z.json"
+  ]
+}
