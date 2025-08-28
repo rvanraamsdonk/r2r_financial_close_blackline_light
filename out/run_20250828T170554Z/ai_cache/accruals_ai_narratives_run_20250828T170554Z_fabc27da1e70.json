@@ -1,0 +1,51 @@
+{
+  "generated_at": "2025-08-28T17:06:26Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "narratives": [
+    {
+      "accrual_id": "ACR-2025-08-ENT102-004",
+      "narrative": "The accrual for ENT102 amounting to $156,250 was expected to reverse on 2025-09-01 but failed to do so. This indicates a potential oversight in the reversal process, which could lead to misstated financials if not corrected. The entity should investigate the root cause of this failure to ensure compliance with financial reporting standards.",
+      "confidence": 0.88,
+      "risk_level": "high",
+      "business_impact": "Potential misstatement of financials leading to inaccurate reporting."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT101-008",
+      "narrative": "ENT101's accrual of $136,250 was not reversed as scheduled, suggesting a lapse in the accounting process. This could result in financial discrepancies and affect the entity's financial health perception.",
+      "confidence": 0.85,
+      "risk_level": "medium",
+      "business_impact": "Inaccurate financial representation and potential audit issues."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT100-004",
+      "narrative": "The failure to reverse the $125,000 accrual for ENT100 may indicate a systemic issue in the accrual management process, requiring immediate attention to prevent future occurrences.",
+      "confidence": 0.87,
+      "risk_level": "medium",
+      "business_impact": "Risk of ongoing financial inaccuracies and potential regulatory scrutiny."
+    }
+  ],
+  "je_rationales": [
+    {
+      "proposal_id": "ACR-2025-08-ENT102-004",
+      "rationale": "Reversing the accrual of $156,250 for ENT102 is necessary to correct the financial records and align with the accrual accounting principles.",
+      "accounting_treatment": "Debit accrued liabilities and credit expense to reverse the initial accrual entry.",
+      "confidence": 0.92
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT101-008",
+      "rationale": "The proposed reversal of $136,250 for ENT101 should be executed to ensure the financial statements reflect accurate liabilities.",
+      "accounting_treatment": "Debit accrued liabilities and credit expense to negate the accrual.",
+      "confidence": 0.9
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT100-004",
+      "rationale": "To maintain accurate financial reporting, the $125,000 accrual for ENT100 must be reversed as proposed.",
+      "accounting_treatment": "Debit accrued liabilities and credit expense, effectively reversing the accrual.",
+      "confidence": 0.91
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170554Z/accruals_run_20250828T170554Z.json"
+  ]
+}

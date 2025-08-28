@@ -1,0 +1,6 @@
+launch_id,entity,period,product_name,launch_date,forecast_revenue,actual_revenue,units_forecast,units_actual,market_segment,investment_usd,roi_actual
+PRD-2025-08-001,ENT100,2025-08,TechCorp Analytics Pro,2025-08-15,1850000,2450000,750,980,Enterprise,650000,3.77
+PRD-2025-08-002,ENT101,2025-08,DataFlow Enterprise,2025-08-01,1250000,1680000,500,672,Mid-Market,425000,3.95
+PRD-2025-08-003,ENT102,2025-08,SmartSync Mobile,2025-08-10,950000,1420000,1200,1790,SMB,320000,4.44
+PRD-2025-07-001,ENT100,2025-07,TechCorp Lite,2025-07-01,850000,920000,1000,1080,SMB,285000,3.23
+PRD-2025-07-002,ENT101,2025-07,DataFlow Standard,2025-07-15,650000,580000,400,348,Mid-Market,195000,2.97

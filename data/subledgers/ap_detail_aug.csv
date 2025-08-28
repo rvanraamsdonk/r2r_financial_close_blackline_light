@@ -1,11 +1,12 @@
 period,entity,bill_id,vendor_name,bill_date,due_date,amount_local,amount_usd,currency,status,notes
-2025-08,ENT100,AP050001,Google Corporation,2025-08-30,2025-09-29,76588.72,76588.72,USD,Outstanding,Google - Professional Services
-2025-08,ENT100,AP050002,IBM Corporation,2025-08-16,2025-09-15,50729.05,50729.05,USD,Paid,IBM - Professional Services
+2025-08,ENT100,AP050001,Google Corporation,2025-08-30,2025-09-29,25000.00,25000.00,USD,Outstanding,Google - Professional Services
+2025-08,ENT100,AP050002,Google Corporation,2025-08-28,2025-09-27,25030.00,25030.00,USD,Paid,Google - Professional Services
 2025-08,ENT100,AP050003,Amazon Corporation,2025-08-13,2025-09-12,25000.00,25000.00,USD,Paid,Amazon - Professional Services
 2025-08,ENT100,AP050006,Microsoft Corporation,2025-08-24,2025-09-23,34792.46,34792.46,USD,Outstanding,Microsoft - Professional Services
 2025-08,ENT100,AP050008,Microsoft Corporation,2025-08-31,2025-09-30,53243.71,53243.71,USD,Outstanding,Microsoft - Professional Services
 2025-08,ENT100,AP050009,Oracle Corporation,2025-08-15,2025-09-14,42156.89,42156.89,USD,Outstanding,Oracle - Database Services
-2025-08,ENT100,AP050010,Salesforce Inc,2025-08-20,2025-09-19,28934.56,28934.56,USD,Paid,Salesforce - CRM Services
+2025-08,ENT100,AP050010,Salesforce Inc,2025-08-20,2025-09-19,12500.00,12500.00,USD,Paid,Salesforce - CRM Services
+2025-08,ENT100,AP050010B,Salesforce Inc,2025-08-22,2025-09-21,12500.00,12500.00,USD,Paid,Salesforce - CRM Services
 2025-08,ENT100,AP050011,Adobe Systems,2025-08-25,2025-09-24,15678.90,15678.90,USD,Outstanding,Adobe - Software Licensing
 2025-08,ENT100,AP050012,Zoom Video,2025-08-28,2025-09-27,8945.23,8945.23,USD,Paid,Zoom - Video Conferencing
 2025-08,ENT100,AP050013,Slack Technologies,2025-08-12,2025-09-11,12345.67,12345.67,USD,Outstanding,Slack - Communication Platform
@@ -24,3 +25,9 @@ period,entity,bill_id,vendor_name,bill_date,due_date,amount_local,amount_usd,cur
 2025-08,ENT102,AP050026,Barclays Bank,2025-08-16,2025-09-15,9876.54,12567.89,GBP,Outstanding,Barclays - Banking Services
 2025-08,ENT102,AP050027,HSBC Holdings,2025-08-29,2025-09-28,21345.67,27123.45,GBP,Outstanding,HSBC - Treasury Services
 2025-08,ENT102,AP050028,Lloyds Banking,2025-08-07,2025-09-06,13456.78,17123.45,GBP,Paid,Lloyds - Corporate Banking
+2025-08,ENT100,AP050029,QuickPay Solutions,2025-08-15,2025-09-14,35000.00,35000.00,USD,Outstanding,QuickPay - Payment Processing
+2025-08,ENT100,AP050030,Rapid Services LLC,2025-08-20,2025-09-19,28500.00,28500.00,USD,Paid,Rapid - Consulting Services
+2025-08,ENT101,AP050031,Express Financial,2025-08-25,2025-09-24,42000.00,45678.90,EUR,Outstanding,Express - Financial Advisory
+2025-08,ENT100,AP050032,Oracle Corporation,2025-08-15,2025-09-14,8500.00,8500.00,USD,Outstanding,Oracle - Database Services
+2025-08,ENT100,AP050033,Oracle Corporation,2025-08-15,2025-09-14,12300.00,12300.00,USD,Outstanding,Oracle - Database Services
+2025-08,ENT100,AP050034,Oracle Corporation,2025-08-15,2025-09-14,9800.00,9800.00,USD,Outstanding,Oracle - Database Services

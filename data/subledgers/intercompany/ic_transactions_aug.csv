@@ -1,7 +1,7 @@
 period,entity_src,entity_dst,doc_id,date,amount_src,amount_dst,currency,transaction_type,description
-2025-08,ENT100,ENT101,IC-001,2025-08-15,50000.00,50000.00,USD,Management Fee,Management fee from ENT100 to ENT101
+2025-08,ENT100,ENT101,IC-001,2025-08-15,75000.00,75000.00,USD,Management Fee,Management fee from ENT100 to ENT101
 2025-08,ENT101,ENT100,IC-002,2025-08-16,45678.90,49765.43,EUR,Service Charge,IT services from ENT101 to ENT100
-2025-08,ENT100,ENT102,IC-003,2025-08-17,75000.00,75000.00,USD,Management Fee,Management fee from ENT100 to ENT102
+2025-08,ENT100,ENT102,IC-003,2025-08-17,80000.00,80000.00,USD,Management Fee,Management fee from ENT100 to ENT102
 2025-08,ENT102,ENT100,IC-004,2025-08-18,38765.43,49654.32,GBP,Service Charge,Legal services from ENT102 to ENT100
 2025-08,ENT101,ENT102,IC-005,2025-08-19,32456.78,35345.67,EUR,Management Fee,Management fee from ENT101 to ENT102
 2025-08,ENT102,ENT101,IC-006,2025-08-20,25678.90,32876.54,GBP,Service Charge,HR services from ENT102 to ENT101
@@ -12,10 +12,12 @@ period,entity_src,entity_dst,doc_id,date,amount_src,amount_dst,currency,transact
 2025-08,ENT100,ENT101,IC-011,2025-08-25,42345.67,42345.67,USD,Management Fee,Quarterly management fee from ENT100 to ENT101
 2025-08,ENT101,ENT102,IC-012,2025-08-26,23456.78,25543.21,EUR,Service Charge,Technical support from ENT101 to ENT102
 2025-08,ENT102,ENT101,IC-013,2025-08-27,19876.54,25432.10,GBP,Recharge,Insurance recharge from ENT102 to ENT101
-2025-08,ENT100,ENT102,IC-014,2025-08-28,56789.01,56789.01,USD,Management Fee,Strategic consulting from ENT100 to ENT102
+2025-08,ENT100,ENT102,IC-014,2025-08-28,60000.00,60000.00,USD,Management Fee,Strategic consulting from ENT100 to ENT102
 2025-08,ENT101,ENT100,IC-015,2025-08-29,34567.89,37654.32,EUR,Service Charge,Audit support from ENT101 to ENT100
 2025-08,ENT102,ENT100,IC-016,2025-08-30,27890.12,35678.90,GBP,Service Charge,Tax advisory from ENT102 to ENT100
-2025-08,ENT100,ENT101,IC-017,2025-08-05,15678.90,15678.90,USD,Recharge,Travel expense recharge from ENT100 to ENT101
+2025-08,ENT100,ENT101,IC-017,2025-08-05,3500.00,3500.00,USD,Recharge,Travel expense recharge from ENT100 to ENT101
+2025-08,ENT100,ENT101,IC-017B,2025-08-05,4200.00,4200.00,USD,Recharge,Meal expense recharge from ENT100 to ENT101
+2025-08,ENT100,ENT101,IC-017C,2025-08-05,2300.00,2300.00,USD,Recharge,Hotel expense recharge from ENT100 to ENT101
 2025-08,ENT101,ENT102,IC-018,2025-08-06,29876.54,32543.21,EUR,Management Fee,Project management from ENT101 to ENT102
 2025-08,ENT102,ENT101,IC-019,2025-08-07,21345.67,27321.09,GBP,Service Charge,Training services from ENT102 to ENT101
 2025-08,ENT100,ENT102,IC-020,2025-08-08,38901.23,38901.23,USD,Recharge,Software license recharge from ENT100 to ENT102

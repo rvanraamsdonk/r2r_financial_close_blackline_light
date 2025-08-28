@@ -1,0 +1,109 @@
+{
+  "generated_at": "2025-08-28T17:06:50Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "case_summaries": [
+    {
+      "case_id": "CASE-202508-BANK_DUPLICATES-001",
+      "summary": "Duplicate bank transactions identified, potentially leading to inaccurate cash balances and financial misstatements.",
+      "risk_level": "critical",
+      "business_impact": "Potential overstatement of cash by $250,000, affecting liquidity ratios.",
+      "confidence": 0.9
+    },
+    {
+      "case_id": "CASE-202508-AP_EXCEPTIONS-002",
+      "summary": "Accounts payable discrepancies could result in delayed payments and vendor disputes.",
+      "risk_level": "high",
+      "business_impact": "Possible late fees and damaged vendor relationships, estimated financial impact of $50,000.",
+      "confidence": 0.85
+    },
+    {
+      "case_id": "CASE-202508-AR_EXCEPTIONS-003",
+      "summary": "Accounts receivable issues may lead to revenue recognition errors and cash flow problems.",
+      "risk_level": "high",
+      "business_impact": "Delayed revenue recognition affecting cash flow by $100,000.",
+      "confidence": 0.88
+    },
+    {
+      "case_id": "CASE-202508-IC_MISMATCHES-004",
+      "summary": "Intercompany transaction mismatches could cause consolidation errors.",
+      "risk_level": "high",
+      "business_impact": "Potential misstatement of consolidated financials by $75,000.",
+      "confidence": 0.87
+    },
+    {
+      "case_id": "CASE-202508-ACCRUALS_EXCEPTIONS-005",
+      "summary": "Accrual discrepancies may result in inaccurate expense reporting.",
+      "risk_level": "high",
+      "business_impact": "Misstated expenses by approximately $30,000, impacting net income.",
+      "confidence": 0.86
+    },
+    {
+      "case_id": "CASE-202508-FLUX_EXCEPTIONS-006",
+      "summary": "Significant fluctuations in account balances without clear justification, indicating potential errors or fraud.",
+      "risk_level": "critical",
+      "business_impact": "Unexplained variances totaling $500,000, posing a risk of financial misstatement.",
+      "confidence": 0.92
+    }
+  ],
+  "next_actions": [
+    {
+      "action": "Investigate and resolve duplicate bank transactions.",
+      "priority": "critical",
+      "owner": "Bank Reconciliation Team",
+      "estimated_effort": "3 days",
+      "dependencies": [
+        "Access to bank statements"
+      ]
+    },
+    {
+      "action": "Review and correct accounts payable discrepancies.",
+      "priority": "high",
+      "owner": "Accounts Payable Team",
+      "estimated_effort": "2 days",
+      "dependencies": [
+        "Vendor invoices"
+      ]
+    },
+    {
+      "action": "Address accounts receivable exceptions to ensure accurate revenue recognition.",
+      "priority": "high",
+      "owner": "Accounts Receivable Team",
+      "estimated_effort": "3 days",
+      "dependencies": [
+        "Customer payment records"
+      ]
+    },
+    {
+      "action": "Reconcile intercompany mismatches to ensure accurate consolidation.",
+      "priority": "high",
+      "owner": "Intercompany Accounting Team",
+      "estimated_effort": "2 days",
+      "dependencies": [
+        "Intercompany transaction records"
+      ]
+    },
+    {
+      "action": "Adjust accruals to reflect accurate expense reporting.",
+      "priority": "high",
+      "owner": "Financial Reporting Team",
+      "estimated_effort": "1 day",
+      "dependencies": [
+        "Expense reports"
+      ]
+    },
+    {
+      "action": "Analyze and justify significant account balance fluctuations.",
+      "priority": "critical",
+      "owner": "Financial Analysis Team",
+      "estimated_effort": "4 days",
+      "dependencies": [
+        "General ledger access"
+      ]
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170554Z/cases_run_20250828T170554Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170554Z/cases_manifest_run_20250828T170554Z.json"
+  ]
+}

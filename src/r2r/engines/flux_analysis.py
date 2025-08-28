@@ -120,9 +120,9 @@ def flux_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
             "within" if abs(var_used) <= thr else "above"
         )
 
-        # Deterministic [AI]-labeled narrative with citations to computed fields
+        # Deterministic narrative with citations to computed fields
         ai_narrative = (
-            f"[AI] {ent}/{acct}: variance vs {basis} = {var_used:.2f} USD (thr={thr:.2f}, band={band_used}). "
+            f"[FORENSIC] {ent}/{acct}: variance vs {basis} = {var_used:.2f} USD (thr={thr:.2f}, band={band_used}). "
             f"Cites entity={ent}, account={acct}, period={period}."
         )
 
@@ -151,6 +151,7 @@ def flux_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
                 {
                     "entity": ent,
                     "account": acct,
+                    "amount": abs(var_b),
                     "reason": "flux_budget_above_threshold",
                     "actual_usd": round(actual, 2),
                     "budget_amount": round(bud, 2),
@@ -164,6 +165,7 @@ def flux_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
                 {
                     "entity": ent,
                     "account": acct,
+                    "amount": abs(var_p),
                     "reason": "flux_prior_above_threshold",
                     "actual_usd": round(actual, 2),
                     "prior_usd": round(prev, 2),

@@ -79,24 +79,67 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
         dst = str(r["entity_dst"])  # e.g., ENT101
         diff = abs(float(r["amount_src"]) - float(r["amount_dst"]))
         thr = pair_threshold(src, dst)
+        amount_src = float(r["amount_src"])
+        amount_dst = float(r["amount_dst"])
+        doc_id = str(r["doc_id"])
+        transaction_type = str(r.get("transaction_type", ""))
+        description = str(r.get("description", ""))
+        
+        reason = None
+        
+        # Standard mismatch detection
         if diff > thr:
-            exceptions.append(
-                {
-                    "doc_id": r["doc_id"],
-                    "entity_src": src,
-                    "entity_dst": dst,
-                    "amount_src": float(r["amount_src"]),
-                    "amount_dst": float(r["amount_dst"]),
-                    "currency": r.get("currency"),
-                    "transaction_type": r.get("transaction_type"),
-                    "description": r.get("description"),
-                    "diff_abs": float(round(diff, 2)),
-                    "threshold": float(round(thr, 2)),
-                    "reason": "ic_amount_mismatch_above_threshold",
-                    "ai_rationale": f"[DET] IC doc {r['doc_id']} {src}->{dst}: diff={diff:.2f} USD exceeds threshold {thr:.2f}. Cites doc_id, entities, and computed threshold.",
-                }
-            )
-            input_row_ids.append(str(r["doc_id"]))
+            reason = "ic_amount_mismatch_above_threshold"
+        
+        # Forensic Pattern Detection for Intercompany
+        if not reason:
+            # 1. Round Dollar Anomaly Detection
+            if amount_src % 1000 == 0 and amount_src >= 10000:
+                reason = "ic_round_dollar_anomaly"
+            
+            # 2. Unusual Transaction Type Patterns
+            elif "management fee" in transaction_type.lower() and amount_src > 50000:
+                # Large management fees could indicate transfer pricing manipulation
+                reason = "ic_transfer_pricing_risk"
+            
+            # 3. Frequent Small Transactions (potential structuring)
+            elif amount_src < 10000:
+                # Count similar small transactions from same entity pair on same day
+                same_day_small = df[
+                    (df["entity_src"] == src) & 
+                    (df["entity_dst"] == dst) & 
+                    (df["date"] == r["date"]) & 
+                    (df["amount_src"] < 10000)
+                ]
+                if len(same_day_small) >= 3:
+                    reason = "ic_structuring_pattern"
+        
+        if reason:
+            exception_data = {
+                "doc_id": doc_id,
+                "entity": src,  # Add required entity field
+                "entity_src": src,
+                "entity_dst": dst,
+                "amount": float(round(amount_src, 2)),  # Use actual transaction amount, not diff
+                "amount_src": amount_src,
+                "amount_dst": amount_dst,
+                "diff_abs": float(round(diff, 2)),
+                "threshold": float(round(thr, 2)),
+                "reason": reason,
+            }
+            
+            # Enhanced rationale for forensic patterns
+            if reason == "ic_amount_mismatch_above_threshold":
+                exception_data["ai_rationale"] = f"[DET] IC doc {doc_id} {src}->{dst}: diff={diff:.2f} USD exceeds threshold {thr:.2f}. Cites doc_id, entities, and computed threshold."
+            elif reason == "ic_round_dollar_anomaly":
+                exception_data["ai_rationale"] = f"[FORENSIC] Round dollar anomaly: IC transaction {doc_id} for exactly ${amount_src:,.0f} between {src} and {dst} suggests potential manipulation"
+            elif reason == "ic_transfer_pricing_risk":
+                exception_data["ai_rationale"] = f"[FORENSIC] Transfer pricing risk: Large management fee ${amount_src:,.2f} from {src} to {dst} may indicate profit shifting"
+            elif reason == "ic_structuring_pattern":
+                exception_data["ai_rationale"] = f"[FORENSIC] Structuring pattern: Multiple small transactions from {src} to {dst} on same day may indicate avoidance of controls"
+            
+            exceptions.append(exception_data)
+            input_row_ids.append(doc_id)
 
     # Build simple candidate hints per exception: other exceptions in same pair/currency with closest diff_abs
     if exceptions:

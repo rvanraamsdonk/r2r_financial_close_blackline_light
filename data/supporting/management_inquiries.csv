@@ -1,0 +1,6 @@
+inquiry_id,entity,period,account,variance_usd,inquiry_date,respondent,response_summary,supporting_docs,follow_up_required
+MGT-INQ-2025-08-001,ENT100,2025-08,4000,-2111111.01,2025-08-31,Sarah Chen - VP Sales,Q3 digital campaign exceeded targets by 43% driving $2.65M incremental revenue. Campaign metrics attached.,MKT-2025-08-001;CS-2025-08-20,No
+MGT-INQ-2025-08-002,ENT101,2025-08,4000,-1771975.42,2025-08-31,Marcus Weber - EU Sales Director,Oracle supply chain issues created market opportunity. Captured 15% additional market share in enterprise segment.,MKT-INT-2025-08-001;SR-2025-08-25,No
+MGT-INQ-2025-08-003,ENT102,2025-08,4000,-1417655.56,2025-08-31,James Thompson - UK MD,SmartSync Mobile launch exceeded forecast by 49%. Strong SMB adoption in UK market.,PRD-2025-08-003;SR-2025-08-25,No
+MGT-INQ-2025-08-004,ENT100,2025-08,5000,1234567.89,2025-08-31,Operations Director,Increased overtime and expedited shipping to meet Q3 demand surge. Cost per unit increased 18%.,OPS-2025-08-001;HR-2025-08-015,Yes
+MGT-INQ-2025-08-005,ENT100,2025-08,1400,1074982.99,2025-08-31,Quality Manager,Quality issues with Batch QC-2025-08-12 resulted in $1.1M returns. Root cause analysis complete.,QC-2025-08-012;RMA-2025-08-020,Yes

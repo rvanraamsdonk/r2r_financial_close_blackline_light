@@ -1,0 +1,13 @@
+{
+  "generated_at": "2025-08-28T17:09:35Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "executive_summary": "The 2025-08 financial close identified 47 flux exceptions totaling $2.3 million across 3 entities. Key findings include a significant variance in revenue recognition due to delayed invoicing, impacting cash flow projections. Material exceptions were noted in accounts receivable and inventory management, potentially affecting liquidity and operational efficiency. Risk assessment indicates a medium risk level due to these discrepancies, with recommendations to enhance internal controls and review invoicing processes. Next steps include finalizing reconciliations, addressing identified exceptions, and preparing for the audit review.",
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/close_report_run_20250828T170833Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/gatekeeping_run_20250828T170833Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/flux_analysis_run_20250828T170833Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ap_reconciliation_run_20250828T170833Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ar_reconciliation_run_20250828T170833Z.json"
+  ]
+}

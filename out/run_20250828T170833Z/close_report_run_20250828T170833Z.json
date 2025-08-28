@@ -1,0 +1,45 @@
+{
+  "generated_at": "2025-08-28T17:09:35Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "artifacts": {
+    "period_init_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/period_init_run_20250828T170833Z.json",
+    "fx_translation_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/fx_translation_run_20250828T170833Z.json",
+    "bank_reconciliation_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/bank_reconciliation_run_20250828T170833Z.json",
+    "bank_ai_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ai_cache/bank_ai_rationales_run_20250828T170833Z_5c75c57ffa79.json",
+    "ap_reconciliation_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ap_reconciliation_run_20250828T170833Z.json",
+    "ar_reconciliation_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ar_reconciliation_run_20250828T170833Z.json",
+    "ap_ar_ai_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ai_cache/ap_ar_ai_suggestions_run_20250828T170833Z_19d15b5541bc.json",
+    "intercompany_reconciliation_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/intercompany_reconciliation_run_20250828T170833Z.json",
+    "ic_ai_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ai_cache/ic_ai_match_proposals_run_20250828T170833Z_928a1562fd68.json",
+    "accruals_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/accruals_run_20250828T170833Z.json",
+    "accruals_ai_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ai_cache/accruals_ai_narratives_run_20250828T170833Z_c42e02d6b49e.json",
+    "flux_analysis_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/flux_analysis_run_20250828T170833Z.json",
+    "flux_ai_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ai_cache/flux_ai_narratives_run_20250828T170833Z_464cbb381373.json",
+    "gatekeeping_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/gatekeeping_run_20250828T170833Z.json",
+    "gatekeeping_ai_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ai_cache/gatekeeping_ai_rationales_run_20250828T170833Z_3cc882085ce3.json",
+    "validation_ai_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ai_cache/validation_ai_run_20250828T170833Z_a6d305a43fae.json",
+    "hitl_cases_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/cases_run_20250828T170833Z.json",
+    "hitl_manifest_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/cases_manifest_run_20250828T170833Z.json",
+    "hitl_ai_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ai_cache/hitl_ai_case_summaries_run_20250828T170833Z_64fe453a9e34.json",
+    "controls_mapping_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/controls_mapping_run_20250828T170833Z.json",
+    "controls_ai_artifact": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/ai_cache/controls_ai_summaries_run_20250828T170833Z_9d96c2c6bfaa.json"
+  },
+  "summary": {
+    "period": "2025-08",
+    "entity": "ALL",
+    "risk_level": "high",
+    "block_close": true,
+    "open_hitl_cases": 6,
+    "tb_balanced_by_entity": false,
+    "fx_coverage_ok": true,
+    "key_counts": {
+      "ap_exceptions": 19,
+      "ar_exceptions": 15,
+      "je_exceptions": 0,
+      "flux_exceptions": 47,
+      "accruals_exceptions": 9
+    }
+  },
+  "audit_log": "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250828T170833Z/audit_run_20250828T170833Z.jsonl"
+}

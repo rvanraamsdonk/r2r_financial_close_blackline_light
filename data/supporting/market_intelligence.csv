@@ -1,0 +1,6 @@
+intel_id,period,source,category,description,impact_entity,financial_impact_usd,confidence_level,verification_source
+MKT-INT-2025-08-001,2025-08,Industry Report,Competitor,Oracle supply chain disruption affecting enterprise software delivery,ENT101,1750000,High,Gartner Research Report GR-2025-08-15
+MKT-INT-2025-08-002,2025-08,Customer Survey,Market Demand,Increased demand for analytics solutions post-COVID digital transformation,ENT100,2100000,Medium,Customer Survey CS-2025-08-20
+MKT-INT-2025-08-003,2025-08,Vendor Notice,Supply Chain,Microsoft Azure capacity constraints in EU region,ENT101,850000,High,Microsoft Partner Notice MPN-2025-08-12
+MKT-INT-2025-08-004,2025-08,Trade Publication,Regulatory,New GDPR enforcement affecting UK data processing,ENT102,450000,Medium,TechLaw Weekly TLW-2025-08-18
+MKT-INT-2025-08-005,2025-08,Sales Team,Customer Behavior,Enterprise clients accelerating digital transformation budgets,ENT100,1650000,High,Sales Report SR-2025-08-25

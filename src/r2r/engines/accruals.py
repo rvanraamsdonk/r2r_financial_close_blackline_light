@@ -101,6 +101,7 @@ def accruals_check(state: R2RState, audit: AuditLogger) -> R2RState:
                     "entity": r["entity"],
                     "accrual_id": r["accrual_id"],
                     "description": r["description"],
+                    "amount": float(r["amount_usd"]),  # Add required amount field
                     "amount_usd": float(r["amount_usd"]),
                     "currency": r["currency"],
                     "status": status,
@@ -226,6 +227,7 @@ def accruals_check(state: R2RState, audit: AuditLogger) -> R2RState:
             "accruals_exception_count": len(exceptions),
             "accruals_exception_total_usd": float(round(payload["summary"]["total_usd"], 2)),
             "accruals_exception_by_entity": payload["summary"]["by_entity"],
+            "accruals_artifact": str(out_path),
         }
     )
 

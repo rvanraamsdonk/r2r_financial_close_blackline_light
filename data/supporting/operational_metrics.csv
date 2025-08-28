@@ -1,0 +1,10 @@
+metric_id,entity,period,metric_type,metric_name,value,unit,variance_vs_budget,variance_pct,source_system,validation_status
+OPS-2025-08-001,ENT100,2025-08,Production,Overtime Hours,12450,hours,4250,52%,HR System,Verified
+OPS-2025-08-002,ENT100,2025-08,Logistics,Expedited Shipping Cost,285000,USD,125000,78%,ERP System,Verified
+OPS-2025-08-003,ENT100,2025-08,Quality,Defect Rate,0.034,percentage,0.018,112%,QMS System,Under Review
+OPS-2025-08-004,ENT101,2025-08,Sales,Customer Acquisition,156,count,45,41%,CRM System,Verified
+OPS-2025-08-005,ENT101,2025-08,Production,Capacity Utilization,0.94,percentage,0.12,15%,MES System,Verified
+OPS-2025-08-006,ENT102,2025-08,Marketing,Lead Conversion Rate,0.087,percentage,0.023,36%,Marketing Automation,Verified
+OPS-2025-08-007,ENT102,2025-08,Sales,Average Deal Size,7950,USD,1850,30%,CRM System,Verified
+QC-2025-08-012,ENT100,2025-08,Quality,Batch Failure Rate,0.045,percentage,0.035,350%,QMS System,Investigation Complete
+HR-2025-08-015,ENT100,2025-08,Labor,Cost Per Hour Premium,28.50,USD,12.50,78%,Payroll System,Verified

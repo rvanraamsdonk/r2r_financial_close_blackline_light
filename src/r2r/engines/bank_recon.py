@@ -117,7 +117,110 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                 exceptions.append(exc)
                 input_row_ids.append(str(r["bank_txn_id"]))
 
-    # Timing-difference heuristic: same signature excluding date, within window days
+    # Forensic Pattern Detection
+    def _norm_name(name):
+        if pd.isna(name) or name is None:
+            return ""
+        return str(name).strip().lower()
+    
+    def _parse_date(date_str):
+        if pd.isna(date_str) or date_str is None:
+            return None
+        try:
+            return pd.to_datetime(date_str)
+        except:
+            return None
+    
+    # 1. Unusual Counterparty Detection (Cash Advance keywords + >$25K)
+    suspicious_keywords = ["cash advance", "quick loan", "payday", "immediate funding", "rapid cash"]
+    for _, r in df.iterrows():
+        counterparty = _norm_name(r.get("counterparty", ""))
+        amount = abs(float(r.get("amount", 0.0)))
+        if amount > 25000 and any(keyword in counterparty for keyword in suspicious_keywords):
+            exc = {
+                "entity": r["entity"],
+                "bank_txn_id": r["bank_txn_id"],
+                "date": r["date"],
+                "amount": float(r["amount"]),
+                "currency": r["currency"],
+                "counterparty": r["counterparty"],
+                "transaction_type": r["transaction_type"],
+                "description": r.get("description"),
+                "reason": "unusual_counterparty",
+                "classification": "forensic_risk",
+                "ai_rationale": f"[FORENSIC] Unusual counterparty: Large transaction (${amount:.2f}) with suspicious entity '{r['counterparty']}' containing cash advance keywords",
+            }
+            exceptions.append(exc)
+            input_row_ids.append(str(r["bank_txn_id"]))
+    
+    # 2. Velocity Anomaly Detection (Multiple transactions same counterparty same day)
+    velocity_groups = df.groupby(["entity", "counterparty", "date"], dropna=False)
+    for (entity, counterparty, date), group in velocity_groups:
+        if len(group) >= 3:  # 3+ transactions same counterparty same day
+            total_amount = group["amount"].abs().sum()
+            for _, r in group.iterrows():
+                exc = {
+                    "entity": r["entity"],
+                    "bank_txn_id": r["bank_txn_id"],
+                    "date": r["date"],
+                    "amount": float(r["amount"]),
+                    "currency": r["currency"],
+                    "counterparty": r["counterparty"],
+                    "transaction_type": r["transaction_type"],
+                    "description": r.get("description"),
+                    "reason": "velocity_anomaly",
+                    "classification": "forensic_risk",
+                    "velocity_count": len(group),
+                    "velocity_total": float(total_amount),
+                    "ai_rationale": f"[FORENSIC] Velocity anomaly: {len(group)} transactions with '{counterparty}' on {date}, total ${total_amount:.2f}",
+                }
+                exceptions.append(exc)
+                input_row_ids.append(str(r["bank_txn_id"]))
+    
+    # 3. Kiting Detection (Round-trip transfers with suspicious timing)
+    transfer_out = df[df["transaction_type"] == "Transfer Out"].copy()
+    transfer_in = df[df["transaction_type"] == "Transfer In"].copy()
+    
+    for _, out_txn in transfer_out.iterrows():
+        out_amount = abs(float(out_txn.get("amount", 0.0)))
+        out_date = _parse_date(out_txn.get("date"))
+        if not out_date:
+            continue
+            
+        # Look for matching transfer in within 3 days with similar amount
+        for _, in_txn in transfer_in.iterrows():
+            in_amount = abs(float(in_txn.get("amount", 0.0)))
+            in_date = _parse_date(in_txn.get("date"))
+            if not in_date:
+                continue
+                
+            # Check if amounts are similar (within 5%) and dates are close (1-3 days)
+            amount_diff_pct = abs(out_amount - in_amount) / max(out_amount, in_amount) if max(out_amount, in_amount) > 0 else 0
+            day_diff = abs((in_date - out_date).days)
+            
+            if amount_diff_pct <= 0.05 and 1 <= day_diff <= 3 and out_amount > 10000:  # >$10K threshold
+                exc = {
+                    "entity": out_txn["entity"],
+                    "bank_txn_id": out_txn["bank_txn_id"],
+                    "date": out_txn["date"],
+                    "amount": float(out_txn["amount"]),
+                    "currency": out_txn["currency"],
+                    "counterparty": out_txn["counterparty"],
+                    "transaction_type": out_txn["transaction_type"],
+                    "description": out_txn.get("description"),
+                    "reason": "kiting_pattern",
+                    "classification": "forensic_risk",
+                    "matched_bank_txn_id": in_txn["bank_txn_id"],
+                    "matched_amount": float(in_txn["amount"]),
+                    "matched_date": in_txn["date"],
+                    "day_diff": day_diff,
+                    "ai_rationale": f"[FORENSIC] Potential kiting: Transfer out ${out_amount:.2f} on {out_txn['date']} followed by transfer in ${in_amount:.2f} on {in_txn['date']} ({day_diff} days later)",
+                }
+                exceptions.append(exc)
+                input_row_ids.append(str(out_txn["bank_txn_id"]))
+                break  # Only flag once per out transaction
+    
+    # 4. Timing-difference heuristic: same signature excluding date, within window days
     timing_window_days = 3
     sig_no_date = [c for c in sig_cols if c != "date"]
     grp2 = df.groupby(sig_no_date, dropna=False, as_index=False)
