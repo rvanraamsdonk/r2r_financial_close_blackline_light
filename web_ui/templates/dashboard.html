@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - R2R Financial Close{% endblock %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <!-- Header -->
+    <div class="border-b border-gray-200 pb-5 mb-6">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+            Financial Close Dashboard
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">
+            AI-assisted close automation with complete audit trail
+        </p>
+    </div>
+
+    <!-- Latest Run Summary -->
+    {% if latest_run %}
+    <div class="bg-white overflow-hidden shadow rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Latest Close Run</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ latest_run.label }}</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <a href="/run/{{ latest_run.timestamp }}" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        View Details
+                    </a>
+                </div>
+            </div>
+            <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Artifacts Generated</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ latest_run.artifacts_count }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Run ID</dt>
+                    <dd class="mt-1 text-sm text-gray-900 font-mono">{{ latest_run.timestamp }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Status</dt>
+                    <dd class="mt-1">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Completed
+                        </span>
+                    </dd>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- All Runs Table -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">All Close Runs</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                Complete history of financial close executions
+            </p>
+        </div>
+        
+        {% if runs %}
+        <div class="border-t border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Run Date
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Run ID
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Artifacts
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for run in runs %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ run.label }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
+                            {{ run.timestamp }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ run.artifacts_count }} files
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Completed
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a href="/run/{{ run.timestamp }}" 
+                               class="text-blue-600 hover:text-blue-900">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="border-t border-gray-200 px-6 py-8 text-center">
+            <div class="text-gray-500">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No close runs found</h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    Execute a close run to see results here.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-6">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <a href="{% if runs %}{{ '/run/' + runs[0].timestamp + '/reconciliation/ap' }}{% else %}#{% endif %}" 
+                       class="text-center hover:bg-gray-50 p-4 rounded-lg transition-colors">
+                        <div class="mx-auto h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <h4 class="mt-2 text-sm font-medium text-gray-900">View Reconciliations</h4>
+                        <p class="mt-1 text-sm text-gray-500">AP, AR, Bank, Intercompany</p>
+                    </a>
+                    <a href="{% if runs %}{{ '/run/' + runs[0].timestamp + '/flux' }}{% else %}#{% endif %}" 
+                       class="text-center hover:bg-gray-50 p-4 rounded-lg transition-colors">
+                        <div class="mx-auto h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </div>
+                        <h4 class="mt-2 text-sm font-medium text-gray-900">Flux Analysis</h4>
+                        <p class="mt-1 text-sm text-gray-500">Variance explanations</p>
+                    </a>
+                    <a href="{% if runs %}{{ '/run/' + runs[0].timestamp + '/hitl' }}{% else %}#{% endif %}" 
+                       class="text-center hover:bg-gray-50 p-4 rounded-lg transition-colors">
+                        <div class="mx-auto h-12 w-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                            </svg>
+                        </div>
+                        <h4 class="mt-2 text-sm font-medium text-gray-900">HITL Cases</h4>
+                        <p class="mt-1 text-sm text-gray-500">Human review required</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
