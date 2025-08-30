@@ -1,0 +1,13 @@
+{
+  "generated_at": "2025-08-30T19:38:45Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "executive_summary": "The 2025-08 financial close identified 47 flux exceptions totaling $3.5 million across 3 entities. Key findings include significant variances in revenue recognition and unexpected expense accruals. Material exceptions have been noted in the accounts receivable and payable reconciliations, potentially impacting liquidity and financial reporting accuracy. Risk assessment indicates a high risk level, requiring close to be blocked pending resolution of critical issues. Recommendations include immediate investigation into the root causes of the variances, enhanced scrutiny of reconciliation processes, and implementation of corrective actions to mitigate identified risks.",
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250830T193707Z/close_report_run_20250830T193707Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250830T193707Z/gatekeeping_run_20250830T193707Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250830T193707Z/flux_analysis_run_20250830T193707Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250830T193707Z/ap_reconciliation_run_20250830T193707Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250830T193707Z/ar_reconciliation_run_20250830T193707Z.json"
+  ]
+}
