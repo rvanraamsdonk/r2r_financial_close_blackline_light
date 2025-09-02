@@ -3,13 +3,15 @@
 This document walks through the complete R2R financial close flow in this repository. Each step summarizes: purpose, expected outcomes, example outputs, and suggested user actions (for a console or GUI).
 
 Notes
+
 - Always run via the repo venv: `.venv/bin/python`.
 - Main entrypoints: `scripts/run_close.py` (end-to-end), `scripts/drill_through.py` (drill/inspect), `scripts/smoke_test.py` (quick validation).
 - Static, deterministic data for repeatable demos lives under `data/`. Outputs are timestamped into `out/`.
 
 ---
 
-## 0) Orchestration & Run Initialization [DET]
+## 0) Orchestration & Run Initialization
+
 - Purpose
   - Resolve configuration (entities, period), load `.env`, create a unique run ID, and initialize the LangGraph workflow.
 - Expected outcomes
@@ -27,7 +29,8 @@ References: `.env` loading (python-dotenv), AI cost rate in `src/r2r/ai/infra.py
 
 ---
 
-## 1) Period Initialization & Data Source Selection [DET]
+## 1) Period Initialization & Data Source Selection
+
 - Purpose
   - Establish the reporting period window and select the data source (static CSV dataset by default).
 - Expected outcomes
@@ -43,7 +46,8 @@ References: `docs/period_init.md`, dataset overview in `docs/` and `data/` struc
 
 ---
 
-## 2) Data Ingestion & Structural Validation [DET]
+## 2) Data Ingestion & Structural Validation
+
 - Purpose
   - Load CSVs into normalized DataFrames: Trial Balance, AP aging, AR aging, Bank statements, Intercompany, FX rates, Budget/Forecast, Email metadata.
 - Expected outcomes
@@ -58,7 +62,8 @@ References: Static dataset description in `docs/` and loader implementation in `
 
 ---
 
-## 3) FX Coverage (Explain) and Deterministic Translation [AI + DET]
+## 3) FX Coverage (Explain) and Deterministic Translation
+
 - Purpose
   - Validate FX rate coverage (optional AI narrative) and perform deterministic FX translation of balances.
 - Expected outcomes
@@ -74,7 +79,8 @@ References: `src/r2r/engines/fx_translation.py`, `docs/fx_translation.md`.
 
 ---
 
-## 4) Trial Balance Checks & Diagnostics [DET]
+## 4) Trial Balance Checks & Diagnostics
+
 - Purpose
   - Validate TB integrity and accounting rules; emit diagnostics for exceptions.
 - Expected outcomes
@@ -89,7 +95,8 @@ References: `src/r2r/engines/fx_translation.py`, `docs/fx_translation.md`.
 
 ---
 
-## 5) Bank Reconciliation [DET]
+## 5) Bank Reconciliation
+
 - Purpose
   - Match bank statement lines to GL cash activity; detect timing differences, duplicates, and unmatched items.
 - Expected outcomes
@@ -107,7 +114,8 @@ References: Bank engine in `src/r2r/engines/` with tests like `tests/unit/engine
 
 ---
 
-## 6) Accounts Payable (AP) Reconciliation [DET]
+## 6) Accounts Payable (AP) Reconciliation
+
 - Purpose
   - Reconcile AP subledger aging vs GL; identify duplicates, cut-off issues, and status anomalies.
 - Expected outcomes
@@ -124,7 +132,8 @@ References: NaN-safe handling via `_safe_str` in `src/r2r/engines/ap_ar_recon.py
 
 ---
 
-## 7) Accounts Receivable (AR) Reconciliation [DET]
+## 7) Accounts Receivable (AR) Reconciliation
+
 - Purpose
   - Reconcile AR subledger vs GL; detect duplicates, timing, and unapplied cash.
 - Expected outcomes
@@ -138,7 +147,8 @@ References: NaN-safe handling via `_safe_str` in `src/r2r/engines/ap_ar_recon.py
 
 ---
 
-## 8) Intercompany (IC) Reconciliation [DET]
+## 8) Intercompany (IC) Reconciliation
+
 - Purpose
   - Reconcile intercompany balances across entities; identify mismatches by counterparty and currency.
 - Expected outcomes
@@ -154,7 +164,8 @@ References: Tests and fixtures under `tests/` confirm materiality thresholds and
 
 ---
 
-## 9) Accruals Processing & Reversals [DET + HYBRID]
+## 9) Accruals Processing & Reversals
+
 - Purpose
   - Evaluate period-end accruals and expected reversals; flag missing or incorrect reversals.
 - Expected outcomes
@@ -170,7 +181,8 @@ References: Business context in `docs/accruals.md` and related narratives.
 
 ---
 
-## 10) Variance Analysis vs Budget/Forecast [DET]
+## 10) Variance Analysis vs Budget/Forecast
+
 - Purpose
   - Compare actuals vs budget/forecast at account/cost center level; compute variances and flags.
 - Expected outcomes
@@ -186,38 +198,8 @@ References: Budget input in `data/lite/budget.csv` and docs under `docs/`.
 
 ---
 
-## 11) Forensic Findings & Explanations [HYBRID]
-- Purpose
-  - Surface notable patterns (timing differences, duplicates, FX revaluation effects) with deterministic metrics and optional AI explanations.
-- Expected outcomes
-  - Clearly labeled findings tied to underlying data rows.
-- Example outputs
-  - `out/forensics_YYYYMMDDThhmmssZ.json` (if enabled by workflow).
-  - Console: ranked findings with confidence indicators when available.
-- User actions
-  - Drill into source records for each finding.
-  - Accept/override categorizations.
+# 11) Human-in-the-Loop (HITL) Review & Approvals [DET]
 
-References: Embedded scenarios documented in `docs/` (timing differences, duplicates, FX revaluation).
-
----
-
-## 12) Email Evidence Linkage [DET]
-- Purpose
-  - Link available email-like evidence metadata to exceptions to support explanations.
-- Expected outcomes
-  - Deterministic mapping of evidence items to input row IDs.
-- Example outputs
-  - `out/email_evidence_YYYYMMDDThhmmssZ.json`.
-  - Console: evidence links per exception.
-- User actions
-  - Open evidence preview, confirm linkage, or detach if irrelevant.
-
-References: Engine and drill-through wired; see `docs/email_evidence.md`, `docs/audit.md`.
-
----
-
-## 13) Human-in-the-Loop (HITL) Review & Approvals [DET]
 - Purpose
   - Route exceptions for review, collect approvals, and mark disposition (approved, adjust, follow-up).
 - Expected outcomes
@@ -233,7 +215,8 @@ References: Interactive flows shown in demo mode, with stop markers for HITL ite
 
 ---
 
-## 14) Audit Package & Provenance Export [DET]
+## 12) Audit Package
+
 - Purpose
   - Export key artifacts with immutable run IDs, input row references, and processing lineage for audit.
 - Expected outcomes
@@ -249,7 +232,8 @@ References: `docs/audit.md`, provenance verification extended for email evidence
 
 ---
 
-## 15) Metrics, Performance & AI Cost Governance [DET]
+## 13) Metrics, Performance & AI Cost Governance [DET]
+
 - Purpose
   - Track runtime metrics (counts, durations), and AI token usage/costs when enabled.
 - Expected outcomes
@@ -262,49 +246,3 @@ References: `docs/audit.md`, provenance verification extended for email evidence
   - Adjust AI usage flags or prompts accordingly.
 
 References: `docs/ai_infra.md`, `scripts/drill_through.py`.
-
----
-
-## 16) Error Handling & Recovery [DET]
-- Purpose
-  - Provide safe failure modes, clear error messages, and the ability to resume or rerun.
-- Expected outcomes
-  - Descriptive logs; failures isolate to a step with actionable context.
-- Example outputs
-  - Console errors with step name; partial artifacts in `out/`.
-- User actions
-  - Fix data/config, rerun from step, or reinitialize a new run.
-
-References: Unit/integration tests confirm stability and isolation across engines.
-
----
-
-## 17) Drill-through & Exploration [DET]
-- Purpose
-  - Explore outputs and link findings back to source rows for transparency.
-- Expected outcomes
-  - Consistent IDs and references across artifacts.
-- Example outputs
-  - `scripts/drill_through.py` supports listing, summarizing, and opening artifacts.
-- User actions
-  - Query artifacts, open specific items, export subsets for review.
-
----
-
-# How to Run (CLI examples)
-- End-to-end close
-  - `.venv/bin/python scripts/run_close.py`
-- Quick smoke test
-  - `.venv/bin/python scripts/smoke_test.py`
-- Drill-through examples
-  - `.venv/bin/python scripts/drill_through.py list-ai --sum`
-  - `.venv/bin/python scripts/drill_through.py help`
-
-# Using This as a UI Spec
-- For each step above, the UI should expose:
-  - Purpose text and status indicator.
-  - Key metrics and exceptions counts.
-  - Links to example outputs (JSON/CSV) and drill-through views.
-  - Contextual actions (approve, attach evidence, export, assign).
-
-This walkthrough is data-driven and grounded in the repository’s deterministic engines and static dataset. It can be used to script a demo or to design a UI flow that mirrors the underlying processing and artifacts.
