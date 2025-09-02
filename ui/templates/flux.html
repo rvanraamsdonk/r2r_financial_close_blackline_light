@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold">Flux Analysis</h1>
+    <div class="text-sm text-gray-600">Period: <span class="font-medium">{{ flux.period }}</span> vs Prior: <span class="font-medium">{{ flux.prior }}</span></div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white p-4 rounded shadow">
+      <div class="text-xs text-gray-500">Rows (filtered)</div>
+      <div class="text-2xl font-semibold">{{ flux.count_filtered }}</div>
+    </div>
+    <div class="bg-white p-4 rounded shadow">
+      <div class="text-xs text-gray-500">Total abs variance (filtered)</div>
+      <div class="text-2xl font-semibold">${{ '%.0f'|format(flux.total_abs_filtered) }}</div>
+    </div>
+    <div class="bg-white p-4 rounded shadow">
+      <div class="text-xs text-gray-500">Threshold basis</div>
+      <div class="text-sm">{{ flux.rules.threshold_basis or 'default' }} (floor ${{ flux.rules.default_floor_usd or 0 }})</div>
+    </div>
+  </div>
+
+  <form class="bg-white p-4 rounded shadow grid grid-cols-1 md:grid-cols-4 gap-4"
+        hx-get="/flux-table" hx-target="#flux-table-body" hx-swap="innerHTML">
+    <div>
+      <label class="block text-xs text-gray-600 mb-1">Entity</label>
+      <select name="entity" class="w-full border rounded px-2 py-1">
+        <option value="">(All)</option>
+        {% for ent in flux.entities %}
+          <option value="{{ ent }}" {% if flux.selected_entity == ent %}selected{% endif %}>{{ ent }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs text-gray-600 mb-1">Min abs variance (USD)</label>
+      <input type="number" step="1000" name="min_abs" value="{{ flux.min_abs }}" class="w-full border rounded px-2 py-1"/>
+    </div>
+    <div class="md:col-span-2 flex justify-end items-end gap-2">
+      <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white text-sm px-3 py-2 rounded" onclick="this.form.reset(); htmx.trigger(this.form, 'submit')">Clear</button>
+      <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-3 py-2 rounded">Apply Filters</button>
+    </div>
+  </form>
+
+  <div id="flux-table" class="bg-white rounded shadow overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="w-8 px-2 py-2"></th>
+          <th class="text-left px-3 py-2">Entity</th>
+          <th class="text-left px-3 py-2">Account</th>
+          <th class="text-right px-3 py-2">Actual USD</th>
+          <th class="text-right px-3 py-2">Budget USD</th>
+          <th class="text-right px-3 py-2">Prior USD</th>
+          <th class="text-right px-3 py-2">Var vs Budget</th>
+          <th class="text-right px-3 py-2">Var vs Prior</th>
+          <th class="text-right px-3 py-2">Threshold</th>
+          <th class="text-left px-3 py-2">Bands</th>
+          <th class="text-center px-2 py-2">JE</th>
+        </tr>
+      </thead>
+      <tbody id="flux-table-body">
+        {% for r in flux.rows %}
+          {% set vbud = r.var_vs_budget if r.var_vs_budget is not none else r.var_vs_prior %}
+          {% set severe = (vbud|abs) >= (r.threshold_usd or 0) %}
+          {% set rowbg = 'bg-rose-50' if severe else '' %}
+          {% set valcls = 'text-red-600' if vbud < 0 else 'text-emerald-600' %}
+          <tr class="border-t {{ rowbg }}">
+            <td class="px-2 py-2 text-center">
+              <a title="Details" class="text-gray-500 hover:text-indigo-600" hx-get="/details?module=Flux&period={{ flux.period }}&entity={{ r.entity }}&account={{ r.account }}&basis={{ 'budget' if r.var_vs_budget is not none else 'prior' }}" hx-target="#drawer-root" hx-swap="innerHTML">🔍</a>
+            </td>
+            <td class="px-3 py-2">{{ r.entity }}</td>
+            <td class="px-3 py-2">{{ r.account }}</td>
+            <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.actual_usd or 0) }}</td>
+            <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.budget_amount or 0) }}</td>
+            <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.prior_usd or 0) }}</td>
+            <td class="px-3 py-2 text-right font-semibold {{ valcls }}">${{ '%.0f'|format(vbud or 0) }}</td>
+            <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.var_vs_prior or 0) }}</td>
+            <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.threshold_usd or 0) }}</td>
+            <td class="px-3 py-2">
+              <span class="inline-flex items-center gap-1 text-xs">
+                <span class="px-2 py-0.5 rounded-full {{ 'bg-rose-200 text-rose-800' if r.band_vs_budget == 'above' else 'bg-gray-200 text-gray-700' }}">BGT {{ r.band_vs_budget or 'n/a' }}</span>
+                <span class="px-2 py-0.5 rounded-full {{ 'bg-rose-200 text-rose-800' if r.band_vs_prior == 'above' else 'bg-gray-200 text-gray-700' }}">PRIOR {{ r.band_vs_prior or 'n/a' }}</span>
+              </span>
+            </td>
+            <td class="px-2 py-2 text-center">
+              {% if severe %}
+              <button type="button" 
+                      class="inline-flex items-center px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded border border-indigo-200 transition-colors"
+                      hx-post="/je/propose"
+                      hx-vals='{"module": "Flux", "scenario": "variance_analysis", "source_data": {{ r | tojson }}, "period": "{{ flux.period }}", "entity": "{{ r.entity }}"}'
+                      hx-target="body"
+                      hx-swap="beforeend"
+                      title="Propose journal entry for variance exceeding threshold">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                JE
+              </button>
+              {% endif %}
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="11" class="px-3 py-6 text-center text-gray-500">No rows</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

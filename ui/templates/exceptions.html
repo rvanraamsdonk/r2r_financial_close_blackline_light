@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold">Exceptions Workbench</h1>
+    <div class="text-sm text-gray-600">Period: <span class="font-medium">{{ ex.period }}</span></div>
+  </div>
+
+  <form class="bg-white p-4 rounded shadow grid grid-cols-1 md:grid-cols-6 gap-4"
+        hx-get="/exceptions-table" hx-target="#exceptions-table-body" hx-swap="innerHTML">
+    <div>
+      <label class="block text-xs text-gray-600 mb-1">Entity</label>
+      <select name="entity" class="w-full border rounded px-2 py-1">
+        <option value="">(All)</option>
+        {% for ent in ex.entities %}
+          <option value="{{ ent }}" {% if ex.selected_entity == ent %}selected{% endif %}>{{ ent }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs text-gray-600 mb-1">Module</label>
+      <select name="module" class="w-full border rounded px-2 py-1">
+        <option value="">(All)</option>
+        {% for m in ex.modules %}
+          <option value="{{ m }}" {% if ex.selected_module == m %}selected{% endif %}>{{ m }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs text-gray-600 mb-1">Account</label>
+      <select name="account" class="w-full border rounded px-2 py-1">
+        <option value="">(All)</option>
+        {% for acc in ex.accounts %}
+          <option value="{{ acc }}" {% if ex.selected_account == acc %}selected{% endif %}>{{ acc }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs text-gray-600 mb-1">Status</label>
+      <select name="status" class="w-full border rounded px-2 py-1">
+        <option value="">(All)</option>
+        {% for s in ex.statuses %}
+          <option value="{{ s }}" {% if ex.selected_status == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs text-gray-600 mb-1">Min abs variance (USD)</label>
+      <input type="number" step="1000" name="min_abs" value="{{ ex.min_abs }}" class="w-full border rounded px-2 py-1"/>
+    </div>
+    <div class="flex justify-end items-end gap-2">
+      <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white text-sm px-3 py-2 rounded" onclick="this.form.reset(); htmx.trigger(this.form, 'submit')">Clear</button>
+      <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-3 py-2 rounded">Apply Filters</button>
+    </div>
+  </form>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white p-4 rounded shadow">
+      <div class="text-xs text-gray-500">Rows (filtered)</div>
+      <div class="text-2xl font-semibold">{{ ex.count_filtered }}</div>
+    </div>
+    <div class="bg-white p-4 rounded shadow">
+      <div class="text-xs text-gray-500">Total abs variance (filtered)</div>
+      <div class="text-2xl font-semibold">${{ '%.0f'|format(ex.total_abs_filtered) }}</div>
+    </div>
+    <div class="bg-white p-4 rounded shadow">
+      <div class="text-xs text-gray-500">Above threshold</div>
+      <div class="text-2xl font-semibold">{{ ex.above_threshold_count }}</div>
+    </div>
+  </div>
+
+  <div id="exceptions-table" class="bg-white rounded shadow overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="w-8 px-2 py-2"></th>
+          <th class="text-left px-3 py-2">Module</th>
+          <th class="text-left px-3 py-2">Entity</th>
+          <th class="text-left px-3 py-2">Account</th>
+          <th class="text-right px-3 py-2">Amount USD</th>
+          <th class="text-left px-3 py-2">Basis</th>
+          <th class="text-right px-3 py-2">Threshold</th>
+          <th class="text-left px-3 py-2">Band</th>
+          <th class="text-left px-3 py-2">Evidence</th>
+          <th class="text-left px-3 py-2">Assignee</th>
+          <th class="text-left px-3 py-2">Status</th>
+        </tr>
+      </thead>
+      <tbody id="exceptions-table-body">
+        {% for r in ex.rows %}
+          {% set severe = (r.amount_usd|abs) >= (r.threshold_usd or 0) %}
+          {% set rowbg = 'bg-rose-50' if severe else '' %}
+          {% set valcls = 'text-red-600' if r.amount_usd < 0 else 'text-emerald-600' %}
+          <tr class="border-t {{ rowbg }}">
+            <td class="px-2 py-2 text-center">
+              {% if r.module == 'FX' %}
+                <a title="Details" class="text-gray-500 hover:text-indigo-600" hx-get="/details?module=FX&period={{ ex.period }}&entity={{ r.entity }}&account={{ r.account }}" hx-target="#drawer-root" hx-swap="innerHTML">🔍</a>
+              {% else %}
+                <a title="Details" class="text-gray-500 hover:text-indigo-600" hx-get="/details?module=Flux&period={{ ex.period }}&entity={{ r.entity }}&account={{ r.account }}&basis={{ 'budget' if r.variance_basis == 'vs_budget' else 'prior' }}" hx-target="#drawer-root" hx-swap="innerHTML">🔍</a>
+              {% endif %}
+            </td>
+            <td class="px-3 py-2">{{ r.module }}</td>
+            <td class="px-3 py-2">{{ r.entity }}</td>
+            <td class="px-3 py-2">{{ r.account }}</td>
+            <td class="px-3 py-2 text-right font-semibold {{ valcls }}">${{ '%.0f'|format(r.amount_usd or 0) }}</td>
+            <td class="px-3 py-2">{{ r.variance_basis }}</td>
+            <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.threshold_usd or 0) }}</td>
+            <td class="px-3 py-2">
+              <span class="inline-flex items-center gap-1 text-xs">
+                <span class="px-2 py-0.5 rounded-full {{ 'bg-rose-200 text-rose-800' if r.band == 'above' else 'bg-gray-200 text-gray-700' }}">{{ r.band }}</span>
+              </span>
+            </td>
+            <td class="px-3 py-2">
+              {% if r.evidence_count and r.evidence_count > 0 %}
+                <a href="#" class="text-indigo-600 hover:underline">{{ r.evidence_count }} item(s)</a>
+              {% else %}
+                <span class="text-gray-400">None</span>
+              {% endif %}
+            </td>
+            <td class="px-3 py-2">{{ r.assignee }}</td>
+            <td class="px-3 py-2">{{ r.status }}</td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="10" class="px-3 py-6 text-center text-gray-500">No exceptions</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

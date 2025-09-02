@@ -1,0 +1,115 @@
+{
+  "generated_at": "2025-09-02T17:02:41Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "case_summaries": [
+    {
+      "case_id": "CASE-202508-BANK_DUPLICATES-001",
+      "summary": "Duplicate bank transactions identified, potentially leading to inaccurate cash balances.",
+      "risk_level": "critical",
+      "business_impact": "Potential misstatement of cash by approximately $500,000.",
+      "confidence": 0.9
+    },
+    {
+      "case_id": "CASE-202508-AP_EXCEPTIONS-002",
+      "summary": "Accounts payable discrepancies could result in overpayments or missed liabilities.",
+      "risk_level": "high",
+      "business_impact": "Possible financial exposure of $300,000 due to unrecorded liabilities.",
+      "confidence": 0.85
+    },
+    {
+      "case_id": "CASE-202508-AR_EXCEPTIONS-003",
+      "summary": "Accounts receivable issues may lead to revenue recognition errors.",
+      "risk_level": "high",
+      "business_impact": "Revenue misstatement risk of $250,000.",
+      "confidence": 0.8
+    },
+    {
+      "case_id": "CASE-202508-IC_MISMATCHES-004",
+      "summary": "Intercompany mismatches affecting consolidated financial statements.",
+      "risk_level": "high",
+      "business_impact": "Potential impact on consolidated net income by $150,000.",
+      "confidence": 0.75
+    },
+    {
+      "case_id": "CASE-202508-ACCRUALS_EXCEPTIONS-005",
+      "summary": "Accruals discrepancies could lead to incorrect expense reporting.",
+      "risk_level": "high",
+      "business_impact": "Expense misstatement risk of $200,000.",
+      "confidence": 0.8
+    },
+    {
+      "case_id": "CASE-202508-FLUX_EXCEPTIONS-006",
+      "summary": "Significant flux exceptions indicating potential financial anomalies.",
+      "risk_level": "critical",
+      "business_impact": "Potential misstatement of financial results by $1,000,000.",
+      "confidence": 0.9
+    }
+  ],
+  "next_actions": [
+    {
+      "action": "Investigate and resolve bank duplicate transactions.",
+      "priority": "critical",
+      "owner": "Bank Reconciliation Team",
+      "estimated_effort": "2 days",
+      "dependencies": [
+        "Access to bank statements",
+        "Reconciliation software"
+      ]
+    },
+    {
+      "action": "Review and correct accounts payable exceptions.",
+      "priority": "high",
+      "owner": "Accounts Payable Team",
+      "estimated_effort": "3 days",
+      "dependencies": [
+        "Supplier invoices",
+        "Payment records"
+      ]
+    },
+    {
+      "action": "Analyze and adjust accounts receivable discrepancies.",
+      "priority": "high",
+      "owner": "Accounts Receivable Team",
+      "estimated_effort": "3 days",
+      "dependencies": [
+        "Customer invoices",
+        "Payment receipts"
+      ]
+    },
+    {
+      "action": "Reconcile intercompany mismatches.",
+      "priority": "high",
+      "owner": "Intercompany Accounting Team",
+      "estimated_effort": "2 days",
+      "dependencies": [
+        "Intercompany agreements",
+        "Transaction records"
+      ]
+    },
+    {
+      "action": "Audit and adjust accruals exceptions.",
+      "priority": "high",
+      "owner": "Financial Reporting Team",
+      "estimated_effort": "2 days",
+      "dependencies": [
+        "Expense reports",
+        "Accrual schedules"
+      ]
+    },
+    {
+      "action": "Investigate flux exceptions for potential errors.",
+      "priority": "critical",
+      "owner": "Financial Analysis Team",
+      "estimated_effort": "5 days",
+      "dependencies": [
+        "Historical financial data",
+        "Variance analysis tools"
+      ]
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250902T170019Z/cases_run_20250902T170019Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250902T170019Z/cases_manifest_run_20250902T170019Z.json"
+  ]
+}

@@ -1,0 +1,28 @@
+{% set r = data.reconciliations %}
+<div class="space-y-4">
+  <!-- Header with completion stats -->
+  <div class="flex items-center justify-between">
+    <div class="text-sm text-gray-600">Completion progress</div>
+    <div class="text-sm"><span class="font-semibold">{{ r.completion_pct }}%</span> · {{ r.completed }} out of {{ r.count }}</div>
+  </div>
+
+  <!-- Segmented progress bar -->
+  <div class="w-full h-4 rounded bg-gray-100 overflow-hidden flex">
+    {% for seg in r.segments %}
+      <div class="{{ seg.color }} h-full" style="width: {{ seg.pct }}%" title="{{ seg.label }}: {{ seg.count }}"></div>
+    {% endfor %}
+  </div>
+
+  <!-- Cards row -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    {% for card in r.cards %}
+      <div class="border rounded-lg bg-white p-4 shadow-sm">
+        <div class="text-sm text-gray-500">{{ card.title }}</div>
+        <div class="mt-2 text-2xl font-semibold">{{ card.value }}</div>
+        {% if card.count is defined %}
+        <div class="text-xs text-gray-500">{{ card.count }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>

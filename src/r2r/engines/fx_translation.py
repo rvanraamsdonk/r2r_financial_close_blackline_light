@@ -57,7 +57,7 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
     for _, r in tb.iterrows():
         ent = str(r["entity"])
         acct = str(r["account"])
-        bal_local = float(r.get("balance", 0.0))
+        bal_local = float(r.get("balance_local", 0.0))
         bal_usd_reported = float(r.get("balance_usd", 0.0))
         cur = cur_map.get(ent)
         rate = rates.get(cur) if cur else None

@@ -1,0 +1,42 @@
+{% set s = data.states %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+  <!-- Close clock -->
+  <div class="bg-white rounded-lg border p-4 shadow-sm flex flex-col">
+    <div class="text-sm text-gray-500">Close clock</div>
+    <div class="mt-2 text-3xl font-semibold">{{ data.close_clock_days_remaining }}</div>
+    <div class="text-sm text-gray-500">days remaining</div>
+  </div>
+
+  <!-- Total -->
+  <div class="bg-white rounded-lg border p-4 shadow-sm flex flex-col">
+    <div class="text-sm text-gray-500">Total</div>
+    <div class="mt-1 flex items-end flex-wrap gap-x-3">
+      <div class="text-3xl font-semibold">{{ data.totals.recs }}</div>
+      <div class="text-xs text-gray-500">Recs</div>
+      <div class="text-xl hidden lg:block">·</div>
+      <div class="text-3xl font-semibold">{{ data.totals.tasks }}</div>
+      <div class="text-xs text-gray-500">Tasks</div>
+    </div>
+  </div>
+
+  <!-- Not prepared -->
+  <div class="bg-white rounded-lg border p-4 shadow-sm flex flex-col">
+    <div class="text-sm text-gray-500">Not prepared</div>
+    <div class="mt-1 text-3xl font-semibold">{{ s.not_prepared.pct }}%</div>
+    <div class="text-xs text-rose-600">Recs {{ s.not_prepared.recs }} · Tasks {{ s.not_prepared.tasks }}</div>
+  </div>
+
+  <!-- In progress -->
+  <div class="bg-white rounded-lg border p-4 shadow-sm flex flex-col">
+    <div class="text-sm text-gray-500">In progress</div>
+    <div class="mt-1 text-3xl font-semibold">{{ s.in_progress.pct }}%</div>
+    <div class="text-xs text-blue-700">Recs {{ s.in_progress.recs }} · Tasks {{ s.in_progress.tasks }}</div>
+  </div>
+
+  <!-- Completed -->
+  <div class="bg-white rounded-lg border p-4 shadow-sm flex flex-col">
+    <div class="text-sm text-gray-500">Completed</div>
+    <div class="mt-1 text-3xl font-semibold">{{ s.completed.pct }}%</div>
+    <div class="text-xs text-emerald-700">Recs {{ s.completed.recs }} · Tasks {{ s.completed.tasks }}</div>
+  </div>
+</div>

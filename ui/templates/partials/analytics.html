@@ -1,0 +1,18 @@
+<!-- Analytics tab placeholder (mock) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div class="bg-white border rounded-lg shadow-sm p-4">
+    <div class="text-sm text-gray-500">Recs total</div>
+    <div class="text-3xl font-semibold">{{ data.totals.recs }}</div>
+    <div class="text-xs text-gray-500 mt-1">Current period</div>
+  </div>
+  <div class="bg-white border rounded-lg shadow-sm p-4">
+    <div class="text-sm text-gray-500">Completion</div>
+    <div class="text-3xl font-semibold">{{ data.reconciliations.completion_pct }}%</div>
+    <div class="text-xs text-gray-500 mt-1">Progress to date</div>
+  </div>
+  <div class="bg-white border rounded-lg shadow-sm p-4">
+    <div class="text-sm text-gray-500">Auto-certified</div>
+    <div class="text-3xl font-semibold">42%</div>
+    <div class="text-xs text-gray-500 mt-1">Est. automation</div>
+  </div>
+</div>

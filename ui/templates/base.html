@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>R2R Close Dashboard</title>
+    <!-- Tailwind via CDN for simplicity -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <div class="min-h-screen">
+      <nav class="bg-indigo-700 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-14">
+            <div class="flex items-center space-x-3">
+              <a href="/" class="font-bold tracking-wide hover:underline">R2R</a>
+              <a href="/" class="opacity-80 hover:underline">Home</a>
+              <a href="/fx" class="opacity-80 hover:underline">FX</a>
+              <a href="/flux" class="opacity-80 hover:underline">Flux</a>
+              <a href="/exceptions" class="opacity-80 hover:underline">Exceptions</a>
+            </div>
+            <div class="flex items-center space-x-4">
+              <a href="/" class="text-xs bg-white/10 hover:bg-white/20 px-2 py-1 rounded">Home</a>
+              <div class="text-xs opacity-80" id="clock" hx-get="/partials/clock" hx-trigger="load, every 30s" hx-swap="outerHTML">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main class="max-w-7xl mx-auto p-4">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+    <!-- Drawer root for slide-out details -->
+    <div id="drawer-root"></div>
+    
+    <script>
+      // Simple solution: disable HTMX on detail links when drawer is open
+      function setupDrawerIntercept() {
+        console.log('Setting up drawer intercept');
+        
+        // Override all detail links to check drawer state
+        document.querySelectorAll('a[hx-get*="/details?"]').forEach(link => {
+          link.addEventListener('click', function(evt) {
+            const drawerOpen = document.querySelector('#drawer-root .fixed');
+            console.log('Link clicked, drawer open:', !!drawerOpen);
+            
+            if (drawerOpen) {
+              evt.preventDefault();
+              evt.stopPropagation();
+              
+              const url = this.getAttribute('hx-get') + '&content_only=true';
+              console.log('Making content request:', url);
+              
+              fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                  console.log('Got response, updating drawer');
+                  
+                  // Simple approach: look for OOB elements and update them
+                  const tempDiv = document.createElement('div');
+                  tempDiv.innerHTML = html;
+                  
+                  const oobElements = tempDiv.querySelectorAll('[hx-swap-oob]');
+                  oobElements.forEach(el => {
+                    const swapAttr = el.getAttribute('hx-swap-oob');
+                    const targetSelector = swapAttr.split(':')[1];
+                    const target = document.querySelector(targetSelector);
+                    if (target) {
+                      target.innerHTML = el.innerHTML;
+                    }
+                  });
+                  
+                  // If no OOB elements, update content directly
+                  if (oobElements.length === 0) {
+                    const content = document.getElementById('drawer-content');
+                    if (content) {
+                      content.innerHTML = html;
+                    }
+                  }
+                })
+                .catch(err => console.error('Fetch error:', err));
+            }
+          }, true);
+        });
+      }
+      
+      // Run on page load and after HTMX updates
+      document.addEventListener('DOMContentLoaded', setupDrawerIntercept);
+      document.addEventListener('htmx:afterSettle', setupDrawerIntercept);
+      
+      console.log('Drawer intercept script loaded');
+    </script>
+  </body>
+</html>

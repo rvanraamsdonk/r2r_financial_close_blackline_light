@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+  <!-- Tabs -->
+  <div class="border-b mb-4">
+    <nav class="-mb-px flex flex-wrap gap-2" aria-label="Tabs">
+      <button class="px-3 py-2 text-sm font-medium rounded-t border border-b-0 bg-white"
+              hx-get="/partials/tab/close-ops" hx-target="#tab-container" hx-swap="innerHTML" hx-trigger="load">
+        Close Operations
+      </button>
+      <button class="px-3 py-2 text-sm font-medium rounded-t border border-b-0 bg-gray-100 hover:bg-white"
+              hx-get="/partials/tab/my-work" hx-target="#tab-container" hx-swap="innerHTML">
+        My Work
+      </button>
+      <button class="px-3 py-2 text-sm font-medium rounded-t border border-b-0 bg-gray-100 hover:bg-white"
+              hx-get="/partials/tab/analytics" hx-target="#tab-container" hx-swap="innerHTML">
+        Analytics
+      </button>
+    </nav>
+  </div>
+
+  <!-- Tab content -->
+  <div id="tab-container">
+    <!-- Filled by HTMX (default loads Close Operations) -->
+  </div>
+{% endblock %}

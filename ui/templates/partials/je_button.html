@@ -1,0 +1,15 @@
+<!-- Generic "Propose JE" Button Component -->
+<!-- Usage: Include this partial and pass module, scenario, and source_data -->
+
+<button type="button" 
+        class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded border border-indigo-200 transition-colors"
+        hx-post="/je/propose"
+        hx-vals='{"module": "{{ module }}", "scenario": "{{ scenario }}", "source_data": {{ source_data | tojson }}, "period": "{{ period }}", "entity": "{{ entity }}"}'
+        hx-target="body"
+        hx-swap="beforeend"
+        title="Propose journal entry for this {{ scenario }}">
+  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+  </svg>
+  Propose JE
+</button>

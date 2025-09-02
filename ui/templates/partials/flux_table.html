@@ -1,0 +1,33 @@
+{% for r in flux.rows %}
+  {% set vbud = r.var_vs_budget if r.var_vs_budget is not none else r.var_vs_prior %}
+  {% set severe = (vbud|abs) >= (r.threshold_usd or 0) %}
+  {% set rowbg = 'bg-rose-50' if severe else '' %}
+  {% set valcls = 'text-red-600' if vbud < 0 else 'text-emerald-600' %}
+  <tr class="border-t {{ rowbg }}">
+    <td class="px-2 py-2 text-center">
+      <a title="Details" class="text-gray-500 hover:text-indigo-600" hx-get="/details?module=Flux&period={{ flux.period }}&entity={{ r.entity }}&account={{ r.account }}&basis={{ 'budget' if r.var_vs_budget is not none else 'prior' }}" hx-target="#drawer-root" hx-swap="innerHTML">🔍</a>
+    </td>
+    <td class="px-3 py-2">{{ r.entity }}</td>
+    <td class="px-3 py-2">{{ r.account }}</td>
+    <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.actual_usd) }}</td>
+    <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.budget_usd) if r.budget_usd is not none else '-' }}</td>
+    <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.prior_usd) if r.prior_usd is not none else '-' }}</td>
+    <td class="px-3 py-2 text-right font-semibold {{ valcls }}">${{ '%.0f'|format(r.var_vs_budget) if r.var_vs_budget is not none else '-' }}</td>
+    <td class="px-3 py-2 text-right font-semibold {{ valcls }}">${{ '%.0f'|format(r.var_vs_prior) if r.var_vs_prior is not none else '-' }}</td>
+    <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.threshold_usd or 0) }}</td>
+    <td class="px-3 py-2">
+      <span class="inline-flex items-center gap-1 text-xs">
+        {% if r.band_vs_budget %}
+          <span class="px-2 py-0.5 rounded-full {{ 'bg-rose-200 text-rose-800' if r.band_vs_budget == 'above' else 'bg-gray-200 text-gray-700' }}">{{ r.band_vs_budget }}</span>
+        {% endif %}
+        {% if r.band_vs_prior %}
+          <span class="px-2 py-0.5 rounded-full {{ 'bg-rose-200 text-rose-800' if r.band_vs_prior == 'above' else 'bg-gray-200 text-gray-700' }}">{{ r.band_vs_prior }}</span>
+        {% endif %}
+      </span>
+    </td>
+  </tr>
+{% else %}
+  <tr>
+    <td colspan="10" class="px-3 py-6 text-center text-gray-500">No flux data</td>
+  </tr>
+{% endfor %}

@@ -1,0 +1,115 @@
+{
+  "generated_at": "2025-09-02T19:38:07Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "case_summaries": [
+    {
+      "case_id": "CASE-202508-BANK_DUPLICATES-001",
+      "summary": "Multiple duplicate bank transactions detected, potentially leading to inaccurate cash balances and financial reporting errors.",
+      "risk_level": "critical",
+      "business_impact": "Potential misstatement of cash balances by up to $500,000.",
+      "confidence": 0.9
+    },
+    {
+      "case_id": "CASE-202508-AP_EXCEPTIONS-002",
+      "summary": "Significant number of accounts payable exceptions indicating possible vendor payment errors or fraud.",
+      "risk_level": "critical",
+      "business_impact": "Could result in overpayments or missed discounts totaling approximately $200,000.",
+      "confidence": 0.85
+    },
+    {
+      "case_id": "CASE-202508-AR_EXCEPTIONS-003",
+      "summary": "Accounts receivable exceptions suggest issues with invoice processing and collections, impacting cash flow.",
+      "risk_level": "high",
+      "business_impact": "Delayed collections affecting cash flow by up to $300,000.",
+      "confidence": 0.8
+    },
+    {
+      "case_id": "CASE-202508-IC_MISMATCHES-004",
+      "summary": "Intercompany mismatches detected, indicating reconciliation issues between entities.",
+      "risk_level": "high",
+      "business_impact": "Potential misstatement of intercompany balances by $150,000.",
+      "confidence": 0.75
+    },
+    {
+      "case_id": "CASE-202508-ACCRUALS_EXCEPTIONS-005",
+      "summary": "Accruals exceptions may lead to inaccurate expense recognition and financial reporting.",
+      "risk_level": "high",
+      "business_impact": "Misstatement of expenses by approximately $100,000.",
+      "confidence": 0.8
+    },
+    {
+      "case_id": "CASE-202508-FLUX_EXCEPTIONS-006",
+      "summary": "High volume of flux exceptions indicating potential errors in financial statement fluctuations.",
+      "risk_level": "critical",
+      "business_impact": "Significant risk of misstating financial performance metrics.",
+      "confidence": 0.9
+    }
+  ],
+  "next_actions": [
+    {
+      "action": "Conduct a detailed review of bank transactions to identify and correct duplicates.",
+      "priority": "critical",
+      "owner": "Bank Reconciliation Team",
+      "estimated_effort": "2 weeks",
+      "dependencies": [
+        "Access to bank statements",
+        "Reconciliation software"
+      ]
+    },
+    {
+      "action": "Investigate AP exceptions to identify root causes and implement controls to prevent recurrence.",
+      "priority": "critical",
+      "owner": "Accounts Payable Team",
+      "estimated_effort": "3 weeks",
+      "dependencies": [
+        "Vendor contracts",
+        "Payment records"
+      ]
+    },
+    {
+      "action": "Review AR processes to improve invoice accuracy and collections efficiency.",
+      "priority": "high",
+      "owner": "Accounts Receivable Team",
+      "estimated_effort": "4 weeks",
+      "dependencies": [
+        "Customer invoices",
+        "Collections reports"
+      ]
+    },
+    {
+      "action": "Reconcile intercompany accounts to resolve mismatches and ensure accurate reporting.",
+      "priority": "high",
+      "owner": "Intercompany Accounting Team",
+      "estimated_effort": "2 weeks",
+      "dependencies": [
+        "Intercompany agreements",
+        "Reconciliation tools"
+      ]
+    },
+    {
+      "action": "Analyze accruals process to ensure accurate expense recognition and reporting.",
+      "priority": "high",
+      "owner": "Financial Reporting Team",
+      "estimated_effort": "3 weeks",
+      "dependencies": [
+        "Expense reports",
+        "Accrual schedules"
+      ]
+    },
+    {
+      "action": "Investigate flux exceptions to identify and correct errors in financial statement fluctuations.",
+      "priority": "critical",
+      "owner": "Financial Analysis Team",
+      "estimated_effort": "4 weeks",
+      "dependencies": [
+        "Financial statements",
+        "Variance analysis tools"
+      ]
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250902T193556Z/cases_run_20250902T193556Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250902T193556Z/cases_manifest_run_20250902T193556Z.json"
+  ]
+}

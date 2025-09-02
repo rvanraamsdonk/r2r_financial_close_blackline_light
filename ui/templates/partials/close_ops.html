@@ -1,0 +1,26 @@
+<!-- Close Operations tab content -->
+<div class="space-y-6">
+  <!-- KPI row -->
+  <div id="kpi-row"
+       hx-get="/partials/kpis" hx-trigger="load, every 60s" hx-swap="innerHTML">
+    <!-- Filled by HTMX -->
+  </div>
+
+  <!-- Reconciliations Section -->
+  <div class="bg-white border rounded-lg shadow-sm">
+    <div class="flex items-center justify-between p-4 border-b">
+      <div class="flex items-center space-x-2">
+        <h2 class="text-lg font-semibold">Reconciliations</h2>
+        <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">mock</span>
+      </div>
+      <button class="text-sm text-indigo-700 hover:underline"
+              hx-get="/partials/recon-progress" hx-target="#recon-container" hx-swap="innerHTML">
+        Refresh
+      </button>
+    </div>
+    <div id="recon-container" class="p-4"
+         hx-get="/partials/recon-progress" hx-trigger="load, every 60s" hx-swap="innerHTML">
+      <!-- Filled by HTMX -->
+    </div>
+  </div>
+</div>

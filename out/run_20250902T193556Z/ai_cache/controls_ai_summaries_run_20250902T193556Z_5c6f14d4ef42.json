@@ -1,0 +1,53 @@
+{
+  "generated_at": "2025-09-02T19:38:23Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "owner_summaries": [
+    {
+      "owner_name": "John Doe",
+      "control_count": 3,
+      "risk_areas": [
+        "Financial Reporting",
+        "Cash Management"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "Entity-level TB balances not zero, high flux analysis exceptions",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Jane Smith",
+      "control_count": 2,
+      "risk_areas": [
+        "Reconciliation"
+      ],
+      "effectiveness_rating": "ineffective",
+      "key_concerns": "High AP and AR reconciliation exceptions",
+      "confidence": 0.7
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Entity-level trial balance discrepancies could lead to misstated financials",
+      "severity": "high",
+      "affected_processes": [
+        "General Ledger"
+      ],
+      "mitigation_recommendations": "Implement automated reconciliation tools and enhance review processes",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "operational",
+      "description": "High number of flux analysis exceptions indicating potential operational inefficiencies",
+      "severity": "medium",
+      "affected_processes": [
+        "Financial Analysis"
+      ],
+      "mitigation_recommendations": "Conduct detailed variance analysis and improve data accuracy",
+      "confidence": 0.75
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250902T193556Z/controls_mapping_run_20250902T193556Z.json"
+  ]
+}

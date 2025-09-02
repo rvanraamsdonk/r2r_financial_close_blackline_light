@@ -1,0 +1,38 @@
+{% for r in ex.rows %}
+  {% set severe = (r.amount_usd|abs) >= (r.threshold_usd or 0) %}
+  {% set rowbg = 'bg-rose-50' if severe else '' %}
+  {% set valcls = 'text-red-600' if r.amount_usd < 0 else 'text-emerald-600' %}
+  <tr class="border-t {{ rowbg }}">
+    <td class="px-2 py-2 text-center">
+      {% if r.module == 'FX' %}
+        <a title="Details" class="text-gray-500 hover:text-indigo-600" hx-get="/details?module=FX&period={{ ex.period }}&entity={{ r.entity }}&account={{ r.account }}" hx-target="#drawer-root" hx-swap="innerHTML">🔍</a>
+      {% else %}
+        <a title="Details" class="text-gray-500 hover:text-indigo-600" hx-get="/details?module=Flux&period={{ ex.period }}&entity={{ r.entity }}&account={{ r.account }}&basis={{ 'budget' if r.variance_basis == 'vs_budget' else 'prior' }}" hx-target="#drawer-root" hx-swap="innerHTML">🔍</a>
+      {% endif %}
+    </td>
+    <td class="px-3 py-2">{{ r.module }}</td>
+    <td class="px-3 py-2">{{ r.entity }}</td>
+    <td class="px-3 py-2">{{ r.account }}</td>
+    <td class="px-3 py-2 text-right font-semibold {{ valcls }}">${{ '%.0f'|format(r.amount_usd or 0) }}</td>
+    <td class="px-3 py-2">{{ r.variance_basis }}</td>
+    <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.threshold_usd or 0) }}</td>
+    <td class="px-3 py-2">
+      <span class="inline-flex items-center gap-1 text-xs">
+        <span class="px-2 py-0.5 rounded-full {{ 'bg-rose-200 text-rose-800' if r.band == 'above' else 'bg-gray-200 text-gray-700' }}">{{ r.band }}</span>
+      </span>
+    </td>
+    <td class="px-3 py-2">
+      {% if r.evidence_count and r.evidence_count > 0 %}
+        <a href="#" class="text-indigo-600 hover:underline">{{ r.evidence_count }} item(s)</a>
+      {% else %}
+        <span class="text-gray-400">None</span>
+      {% endif %}
+    </td>
+    <td class="px-3 py-2">{{ r.assignee }}</td>
+    <td class="px-3 py-2">{{ r.status }}</td>
+  </tr>
+{% else %}
+  <tr>
+    <td colspan="11" class="px-3 py-6 text-center text-gray-500">No exceptions</td>
+  </tr>
+{% endfor %}
