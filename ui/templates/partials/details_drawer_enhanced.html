@@ -1,0 +1,250 @@
+<div class="position-fixed top-0 start-0 w-100 h-100" style="z-index: 1050; background: rgba(0,0,0,0.5);">
+  <!-- Enhanced Drawer -->
+  <div class="position-fixed top-0 end-0 h-100 bg-white shadow-lg d-flex flex-column" style="width: 600px; max-width: 95vw; border-left: 1px solid var(--refined-gray-200);">
+    <!-- Header -->
+    <div class="px-3 py-2 border-bottom d-flex align-items-center justify-content-between" style="background-color: var(--refined-gray-50);">
+      <div>
+        <div class="text-uppercase text-muted small">{{ d.module }} Details</div>
+        <div class="fw-medium">{{ d.header.entity }}{% if d.header.account %} · {{ d.header.account }}{% endif %}{% if d.header.bill_id %} · {{ d.header.bill_id }}{% endif %}{% if d.header.invoice_id %} · {{ d.header.invoice_id }}{% endif %}{% if d.header.bank_txn_id %} · {{ d.header.bank_txn_id }}{% endif %}{% if d.header.ic_id %} · {{ d.header.ic_id }}{% endif %} · {{ d.header.period }}</div>
+      </div>
+      <button class="btn-close" aria-label="Close" hx-get="/partials/close-drawer" hx-target="#drawer-root" hx-swap="innerHTML"></button>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-grow-1 overflow-auto p-3">
+      
+      <!-- AI Risk Assessment Card (Prominent if forensic) -->
+      {% if d.ai_narrative.forensic_flag %}
+      <div class="card border-danger mb-3">
+        <div class="card-header bg-danger text-white">
+          <h6 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>FORENSIC AI ASSESSMENT</h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-8">
+              <p class="mb-2">{{ d.ai_narrative.narrative }}</p>
+              <span class="badge bg-warning text-dark me-2">{{ d.ai_narrative.risk_level|upper }}</span>
+              <span class="badge bg-info">{{ (d.ai_narrative.confidence * 100)|round }}% confidence</span>
+              {% if d.detailed_ai and d.detailed_ai.recommended_action %}
+                <div class="mt-2">
+                  <small class="text-muted">Recommended Action:</small>
+                  <div class="fw-medium">{{ d.detailed_ai.recommended_action }}</div>
+                </div>
+              {% endif %}
+            </div>
+            <div class="col-4 text-end">
+              <div class="h1 text-danger">🚨</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Exception Summary -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h6 class="mb-0 text-uppercase text-muted">Exception Summary</h6>
+        </div>
+        <div class="card-body">
+          {% if d.module|upper == 'FX' %}
+            <div class="row g-2">
+              <div class="col-6"><small class="text-muted">Computed USD:</small> <span class="fw-medium">${{ '%.2f'|format(d.metrics.computed_usd or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Reported USD:</small> <span class="fw-medium">${{ '%.2f'|format(d.metrics.reported_usd or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Diff USD:</small> <span class="fw-medium {% if (d.metrics.diff_usd or 0) >= 0 %}text-success{% else %}text-danger{% endif %}">${{ '%.2f'|format(d.metrics.diff_usd or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Rate:</small> <span class="fw-medium">{{ d.metrics.rate }}</span></div>
+            </div>
+          {% elif d.module|upper == 'BANK' %}
+            <div class="row g-2">
+              <div class="col-6"><small class="text-muted">Transaction ID:</small> <span class="font-monospace small">{{ d.metrics.bank_txn_id }}</span></div>
+              <div class="col-6"><small class="text-muted">Amount:</small> <span class="fw-medium {% if (d.metrics.amount or 0) >= 0 %}text-success{% else %}text-danger{% endif %}">{{ d.metrics.currency }} {{ '%.2f'|format(d.metrics.amount or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Date:</small> <span class="fw-medium">{{ d.metrics.date }}</span></div>
+              <div class="col-6"><small class="text-muted">Counterparty:</small> <span class="fw-medium">{{ d.metrics.counterparty }}</span></div>
+              <div class="col-12"><small class="text-muted">Classification:</small> <span class="badge {% if d.metrics.classification == 'forensic_risk' %}bg-danger{% else %}bg-warning{% endif %}">{{ d.metrics.classification.replace('_', ' ').title() if d.metrics.classification else 'Unknown' }}</span></div>
+            </div>
+          {% elif d.module|upper == 'AP' %}
+            <div class="row g-2">
+              <div class="col-6"><small class="text-muted">Bill ID:</small> <span class="font-monospace small">{{ d.metrics.bill_id }}</span></div>
+              <div class="col-6"><small class="text-muted">Vendor:</small> <span class="fw-medium">{{ d.metrics.vendor_name }}</span></div>
+              <div class="col-6"><small class="text-muted">Amount:</small> <span class="fw-medium">${{ '%.2f'|format(d.metrics.amount or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Age Days:</small> <span class="fw-medium">{{ d.metrics.age_days }}</span></div>
+              <div class="col-6"><small class="text-muted">Status:</small> <span class="badge bg-info">{{ d.metrics.status }}</span></div>
+              <div class="col-6"><small class="text-muted">Reason:</small> <span class="badge bg-warning">{{ d.metrics.reason.replace('_', ' ').title() if d.metrics.reason else 'Unknown' }}</span></div>
+            </div>
+          {% else %}
+            <div class="text-muted">Module-specific metrics will be displayed here.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- AI Analysis (Non-Forensic Cases) -->
+      {% if not d.ai_narrative.forensic_flag %}
+      <div class="card mb-3">
+        <div class="card-header">
+          <h6 class="mb-0"><i class="bi bi-robot me-2"></i>AI Assessment</h6>
+        </div>
+        <div class="card-body">
+          <p>{{ d.ai_narrative.narrative }}</p>
+          <div class="mt-2">
+            <span class="badge bg-{% if d.ai_narrative.risk_level == 'Critical' %}danger{% elif d.ai_narrative.risk_level == 'High' %}warning{% else %}secondary{% endif %}">{{ d.ai_narrative.risk_level }} Risk</span>
+            <span class="badge bg-info ms-2">{{ d.ai_narrative.business_driver }}</span>
+            <span class="badge bg-primary ms-2">{{ (d.ai_narrative.confidence * 100)|round }}% confidence</span>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Detailed AI Analysis (if available) -->
+      {% if d.detailed_ai %}
+      <div class="accordion mb-3" id="detailedAiAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#aiDetailed">
+              <i class="bi bi-cpu me-2"></i>Detailed AI Analysis
+              <span class="badge bg-success ms-2">{{ (d.detailed_ai.confidence * 100)|round }}%</span>
+            </button>
+          </h2>
+          <div id="aiDetailed" class="accordion-collapse collapse">
+            <div class="accordion-body">
+              {% if d.detailed_ai.ai_explanation %}
+                <p><strong>AI Explanation:</strong> {{ d.detailed_ai.ai_explanation }}</p>
+              {% endif %}
+              {% if d.detailed_ai.recommended_action %}
+                <p><strong>Recommended Action:</strong> {{ d.detailed_ai.recommended_action }}</p>
+              {% endif %}
+              {% if d.detailed_ai.risk_level %}
+                <div class="mt-2">
+                  <span class="badge bg-{% if d.detailed_ai.risk_level == 'high' %}danger{% elif d.detailed_ai.risk_level == 'medium' %}warning{% else %}secondary{% endif %}">{{ d.detailed_ai.risk_level|title }} Risk</span>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Cross-Module AI Correlations -->
+      {% if d.cross_module_matches and d.cross_module_matches|length > 0 %}
+      <div class="card mb-3">
+        <div class="card-header">
+          <h6 class="mb-0"><i class="bi bi-diagram-3 me-2"></i>AI Cross-Module Analysis</h6>
+        </div>
+        <div class="card-body">
+          {% for match in d.cross_module_matches %}
+          <div class="border-bottom pb-2 mb-2">
+            <div class="d-flex justify-content-between">
+              <div>
+                <strong>{{ match.type }}</strong>
+                <p class="mb-1 text-muted">{{ match.reason }}</p>
+                {% if match.signals %}
+                  <small class="text-muted">Signals: {{ match.signals|join(', ') }}</small>
+                {% endif %}
+                {% if match.amount_delta %}
+                  <small class="text-muted d-block">Amount Delta: ${{ '%.2f'|format(match.amount_delta) }}</small>
+                {% endif %}
+              </div>
+              <span class="badge bg-success">{{ (match.confidence * 100)|round }}%</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Email Evidence with AI Correlation -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h6 class="mb-0"><i class="bi bi-envelope me-2"></i>Email Evidence</h6>
+        </div>
+        <div class="card-body">
+          {% if d.evidence and d.evidence|length > 0 %}
+            {% for email in d.evidence %}
+            <div class="border-bottom pb-2 mb-2">
+              <div class="d-flex justify-content-between align-items-start">
+                <div style="flex: 1;">
+                  <strong>{{ email.subject }}</strong>
+                  <small class="text-muted d-block">{{ email.from }} • {{ email.timestamp }}</small>
+                  {% if email.summary %}
+                    <p class="mb-1">{{ email.summary }}</p>
+                  {% endif %}
+                  {% if email.ai_transaction_matches and email.ai_transaction_matches|length > 0 %}
+                    <div class="mt-1">
+                      <span class="badge bg-info">{{ email.ai_transaction_matches|length }} AI matches</span>
+                      <span class="badge bg-{% if email.correlation_strength == 'Strong' %}success{% elif email.correlation_strength == 'Moderate' %}warning{% else %}secondary{% endif %}">{{ email.correlation_strength }}</span>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="ms-2">
+                  <span class="badge bg-primary">{{ (email.confidence * 100)|round }}%</span>
+                  {% if email.email_id %}
+                    <button class="btn btn-sm btn-outline-primary mt-1" onclick="viewEmail('{{ email.email_id }}')">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="text-muted">No related email evidence found.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Source Documents & Artifacts -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h6 class="mb-0"><i class="bi bi-folder2-open me-2"></i>Source Documents</h6>
+        </div>
+        <div class="card-body">
+          <div class="list-group list-group-flush">
+            {% if d.source_artifacts %}
+              {% for artifact in d.source_artifacts %}
+                {% if artifact.path %}
+                <a href="/artifact/{{ artifact.path }}" target="_blank" class="list-group-item list-group-item-action">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <strong>{{ artifact.description }}</strong>
+                      <small class="text-muted d-block">{{ artifact.path }}</small>
+                    </div>
+                    <span class="badge bg-{% if artifact.type == 'ai_analysis' %}success{% else %}primary{% endif %}">{{ artifact.type|upper }}</span>
+                  </div>
+                </a>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <div class="list-group-item">
+                <div class="text-muted">No source artifacts available</div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Provenance -->
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0 text-uppercase text-muted">AI Provenance</h6>
+        </div>
+        <div class="card-body">
+          <div class="row g-2">
+            <div class="col-6"><small class="text-muted">Run ID:</small> <span class="font-monospace small">{{ d.run_id }}</span></div>
+            <div class="col-6"><small class="text-muted">Model:</small> <span class="fw-medium">{{ d.provenance.model or '—' }}</span></div>
+          </div>
+          {% if d.provenance.prompt %}
+            <div class="mt-2"><small class="text-muted">Prompt:</small> <span class="font-monospace small">{{ d.provenance.prompt }}</span></div>
+          {% else %}
+            <div class="mt-2 text-muted">AI analysis generated from backend processing pipeline.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function viewEmail(emailId) {
+    console.log('Viewing email:', emailId);
+    // Future implementation: open email in modal or new window
+    alert('Email viewer not yet implemented for: ' + emailId);
+}
+</script>

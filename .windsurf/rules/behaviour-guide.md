@@ -114,6 +114,7 @@ Documentation Requirements
 
 Style and Scope Discipline
 - Keep implementation as simple as possible.
+- Always apply fixes consistently across all pages
 - Prioritize exception-first workflows.
 - Avoid feature drift; if not in the Master Plan or Functional Journey, don’t build it.
 - Never degrade evidence/provenance fidelity for visual polish.

@@ -1294,31 +1294,54 @@ def _select_ap_row(period: Optional[str], entity: Optional[str], bill_id: Option
     raw = _load_ap_data()
     exception = next((e for e in raw.get("exceptions", []) if (not period or raw.get("period") == period) and e.get("entity") == entity and e.get("bill_id") == bill_id), None)
     
-    # Generate AI analysis for AP exceptions
+    # Load AI cache for detailed analysis
+    ai_cache = _load_ai_cache_file("ap_ar_ai_suggestions")
+    detailed_ai = _find_ai_analysis_for_ap(ai_cache, bill_id) if ai_cache else None
+    
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, bill_id)
+    
+    # Enhanced AI analysis
     ai_analysis = {}
     if exception:
         reason = exception.get("reason", "unknown")
-        amount = exception.get("amount_usd", 0.0)
+        amount = exception.get("amount", 0.0)
         vendor = exception.get("vendor_name", "Unknown")
         age_days = exception.get("age_days", 0)
+        ai_rationale = exception.get("ai_rationale", "")
+        
+        # Extract forensic flag and confidence from ai_rationale
+        is_forensic = "[FORENSIC]" in ai_rationale
         
         ai_analysis = {
-            "narrative": f"[AI] AP exception detected: {reason.replace('_', ' ').title()} for bill {bill_id} with {vendor}. Amount: ${amount:,.2f}. Age: {age_days} days.",
-            "business_driver": "Payment processing delay" if reason == "overdue" else "Aging management" if reason == "aged_over_60" else "Duplicate control",
-            "confidence": 0.85 if reason == "potential_duplicate" else 0.75,
-            "risk_level": "High" if age_days > 90 else "Medium" if age_days > 60 else "Low"
+            "narrative": ai_rationale or f"AP exception: {reason.replace('_', ' ').title()}",
+            "business_driver": "Forensic Risk" if is_forensic else "Payment processing delay" if reason == "overdue" else "Aging management" if reason == "aged_over_60" else "Duplicate control",
+            "confidence": 0.95 if is_forensic else 0.85 if reason == "potential_duplicate" else 0.75,
+            "risk_level": "Critical" if is_forensic else "High" if age_days > 90 else "Medium" if age_days > 60 else "Low",
+            "forensic_flag": is_forensic
         }
+    
+    # Source artifacts
+    primary_artifact = _find_latest_ap_file()
+    ai_artifact = _find_ai_cache_path("ap_ar_ai_suggestions")
     
     return {
         "module": "AP",
-        "artifact_path": _find_latest_ap_file(),
-        "run_id": _latest_run_id_from_path(_find_latest_ap_file()) if _find_latest_ap_file() else "mock",
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
         "header": {"period": period or raw.get("period"), "entity": entity, "bill_id": bill_id, "basis": "ap_exception"},
         "metrics": exception or {},
         "threshold": 0.0,
-        "evidence": _gather_email_evidence(entity, None, period or raw.get("period")),
+        "evidence": related_emails,
         "ai_narrative": ai_analysis,
-        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": "mock"},
+        "detailed_ai": detailed_ai,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "AP Reconciliation Data"},
+            {"path": ai_artifact, "type": "ai_analysis", "description": "AI Analysis Cache"}
+        ],
+        "cross_module_matches": _find_cross_module_matches(ai_cache, bill_id) if ai_cache else [],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
     }
 
 
@@ -1326,31 +1349,54 @@ def _select_ar_row(period: Optional[str], entity: Optional[str], invoice_id: Opt
     raw = _load_ar_data()
     exception = next((e for e in raw.get("exceptions", []) if (not period or raw.get("period") == period) and e.get("entity") == entity and e.get("invoice_id") == invoice_id), None)
     
-    # Generate AI analysis for AR exceptions
+    # Load AI cache for detailed analysis
+    ai_cache = _load_ai_cache_file("ap_ar_ai_suggestions")
+    detailed_ai = _find_ai_analysis_for_ar(ai_cache, invoice_id) if ai_cache else None
+    
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, invoice_id)
+    
+    # Enhanced AI analysis
     ai_analysis = {}
     if exception:
         reason = exception.get("reason", "unknown")
-        amount = exception.get("amount_usd", 0.0)
+        amount = exception.get("amount", 0.0)
         customer = exception.get("customer_name", "Unknown")
         age_days = exception.get("age_days", 0)
+        ai_rationale = exception.get("ai_rationale", "")
+        
+        # Extract forensic flag
+        is_forensic = "[FORENSIC]" in ai_rationale
         
         ai_analysis = {
-            "narrative": f"[AI] AR exception detected: {reason.replace('_', ' ').title()} for invoice {invoice_id} with {customer}. Amount: ${amount:,.2f}. Age: {age_days} days.",
-            "business_driver": "Collection management" if reason == "overdue" else "Credit risk" if reason == "aged_over_60" else "Customer relations",
-            "confidence": 0.80,
-            "risk_level": "Critical" if age_days > 120 else "High" if age_days > 90 else "Medium"
+            "narrative": ai_rationale or f"AR exception: {reason.replace('_', ' ').title()}",
+            "business_driver": "Forensic Risk" if is_forensic else "Collection delay" if reason == "overdue" else "Aging management" if reason == "aged_over_60" else "Credit risk",
+            "confidence": 0.95 if is_forensic else 0.80 if reason == "aged_over_120" else 0.70,
+            "risk_level": "Critical" if is_forensic else "High" if age_days > 120 else "Medium" if age_days > 60 else "Low",
+            "forensic_flag": is_forensic
         }
+    
+    # Source artifacts
+    primary_artifact = _find_latest_ar_file()
+    ai_artifact = _find_ai_cache_path("ap_ar_ai_suggestions")
     
     return {
         "module": "AR",
-        "artifact_path": _find_latest_ar_file(),
-        "run_id": _latest_run_id_from_path(_find_latest_ar_file()) if _find_latest_ar_file() else "mock",
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
         "header": {"period": period or raw.get("period"), "entity": entity, "invoice_id": invoice_id, "basis": "ar_exception"},
         "metrics": exception or {},
         "threshold": 0.0,
-        "evidence": _gather_email_evidence(entity, None, period or raw.get("period")),
+        "evidence": related_emails,
         "ai_narrative": ai_analysis,
-        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": "mock"},
+        "detailed_ai": detailed_ai,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "AR Reconciliation Data"},
+            {"path": ai_artifact, "type": "ai_analysis", "description": "AI Analysis Cache"}
+        ],
+        "cross_module_matches": _find_cross_module_matches(ai_cache, invoice_id) if ai_cache else [],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
     }
 
 
@@ -1358,30 +1404,46 @@ def _select_fx_row(period: Optional[str], entity: Optional[str], account: Option
     raw = _load_fx_data()
     row = next((r for r in raw.get("rows", []) if (not period or raw.get("period") == period) and r.get("entity") == entity and r.get("account") == account), None)
     
-    # Generate AI analysis for FX differences
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, f"{entity}_{account}")
+    
+    # Enhanced AI analysis
     ai_analysis = {}
     if row:
         diff_usd = row.get("diff_usd", 0.0)
-        currency = row.get("currency", "USD")
         rate = row.get("rate", 1.0)
+        currency = row.get("currency", "USD")
+        
+        # Check for significant differences
+        is_significant = abs(diff_usd) > 50000
         
         ai_analysis = {
-            "narrative": f"[AI] FX translation difference detected for {entity} account {account} in {currency}. Computed vs reported variance: ${diff_usd:,.2f}. Rate: {rate}.",
-            "business_driver": "FX rate fluctuation" if abs(diff_usd) > 1000 else "Rounding difference",
-            "confidence": 0.90 if abs(diff_usd) > 5000 else 0.75,
-            "risk_level": "High" if abs(diff_usd) > 10000 else "Medium" if abs(diff_usd) > 1000 else "Low"
+            "narrative": f"FX translation difference: {entity}/{account} in {currency}. Difference: ${diff_usd:,.2f} at rate {rate}.",
+            "business_driver": "Currency volatility" if abs(diff_usd) > 10000 else "Rate precision",
+            "confidence": 0.90 if abs(diff_usd) > 50000 else 0.75,
+            "risk_level": "High" if abs(diff_usd) > 100000 else "Medium" if abs(diff_usd) > 10000 else "Low",
+            "forensic_flag": is_significant
         }
+    
+    # Source artifacts
+    primary_artifact = _find_latest_fx_file()
     
     return {
         "module": "FX",
-        "artifact_path": _find_latest_fx_file(),
-        "run_id": _latest_run_id_from_path(_find_latest_fx_file()) if _find_latest_fx_file() else "mock",
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
         "header": {"period": period or raw.get("period"), "entity": entity, "account": account, "basis": "fx_translation"},
         "metrics": row or {},
         "threshold": raw.get("policy", {}).get("tolerance_usd", 0.01),
-        "evidence": _gather_email_evidence(entity, None, period or raw.get("period")),
+        "evidence": related_emails,
         "ai_narrative": ai_analysis,
-        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": "mock"},
+        "detailed_ai": None,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "FX Translation Data"}
+        ],
+        "cross_module_matches": [],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
     }
 
 
@@ -1389,30 +1451,53 @@ def _select_flux_row(period: Optional[str], entity: Optional[str], account: Opti
     raw = _load_flux_data()
     row = next((r for r in raw.get("rows", []) if (not period or raw.get("period") == period) and r.get("entity") == entity and r.get("account") == account), None)
     
-    # Generate AI analysis for flux variances
+    # Load AI cache for detailed analysis
+    ai_cache = _load_ai_cache_file("flux_ai_narratives")
+    detailed_ai = _find_ai_analysis_for_flux(ai_cache, entity, account) if ai_cache else None
+    
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, f"{entity}_{account}")
+    
+    # Enhanced AI analysis
     ai_analysis = {}
     if row:
-        variance = row.get("variance", 0.0)
-        variance_pct = row.get("variance_pct", 0.0)
-        account_name = row.get("account_name", "Unknown")
+        var_vs_budget = row.get("var_vs_budget", 0.0)
+        var_vs_prior = row.get("var_vs_prior", 0.0)
+        actual_usd = row.get("actual_usd", 0.0)
+        ai_narrative = row.get("ai_narrative", "")
+        
+        # Check for significant variances
+        is_significant = abs(var_vs_budget) > 500000
         
         ai_analysis = {
-            "narrative": f"[AI] Budget variance detected for {entity} {account_name}. Variance: ${variance:,.2f} ({variance_pct:.1f}%). Requires management explanation.",
-            "business_driver": "Operational variance" if abs(variance_pct) < 20 else "Significant business change",
-            "confidence": 0.85,
-            "risk_level": "High" if abs(variance_pct) > 25 else "Medium" if abs(variance_pct) > 10 else "Low"
+            "narrative": ai_narrative or f"Flux variance: {entity}/{account}. Budget variance: ${var_vs_budget:,.0f}",
+            "business_driver": "Budget overrun" if var_vs_budget > 0 else "Operational efficiency" if var_vs_budget < 0 else "Seasonal variation",
+            "confidence": 0.85 if abs(var_vs_budget) > 100000 else 0.70,
+            "risk_level": "High" if abs(var_vs_budget) > 500000 else "Medium" if abs(var_vs_budget) > 100000 else "Low",
+            "forensic_flag": is_significant
         }
+    
+    # Source artifacts
+    primary_artifact = _find_latest_flux_file()
+    ai_artifact = _find_ai_cache_path("flux_ai_narratives")
     
     return {
         "module": "FLUX",
-        "artifact_path": _find_latest_flux_file(),
-        "run_id": _latest_run_id_from_path(_find_latest_flux_file()) if _find_latest_flux_file() else "mock",
-        "header": {"period": period or raw.get("period"), "entity": entity, "account": account, "basis": "flux_variance"},
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
+        "header": {"period": period or raw.get("period"), "entity": entity, "account": account, "basis": "flux_analysis"},
         "metrics": row or {},
-        "threshold": raw.get("policy", {}).get("materiality_usd", 5000.0),
-        "evidence": _gather_email_evidence(entity, None, period or raw.get("period")),
+        "threshold": row.get("threshold_usd", 0.0) if row else 0.0,
+        "evidence": related_emails,
         "ai_narrative": ai_analysis,
-        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": "mock"},
+        "detailed_ai": detailed_ai,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "Flux Analysis Data"},
+            {"path": ai_artifact, "type": "ai_analysis", "description": "AI Analysis Cache"}
+        ],
+        "cross_module_matches": [],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
     }
 
 
@@ -1420,31 +1505,53 @@ def _select_bank_row(period: Optional[str], entity: Optional[str], bank_txn_id: 
     raw = _load_bank_data()
     exception = next((e for e in raw.get("exceptions", []) if (not period or raw.get("period") == period) and e.get("entity") == entity and e.get("bank_txn_id") == bank_txn_id), None)
     
-    # Generate AI analysis for bank exceptions
+    # Load AI cache for detailed analysis
+    ai_cache = _load_ai_cache_file("bank_ai_rationales")
+    detailed_ai = _find_ai_analysis_for_bank(ai_cache, bank_txn_id) if ai_cache else None
+    
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, bank_txn_id)
+    
+    # Enhanced AI analysis
     ai_analysis = {}
     if exception:
         reason = exception.get("reason", "unknown")
         amount = exception.get("amount", 0.0)
         counterparty = exception.get("counterparty", "Unknown")
         classification = exception.get("classification", "unknown")
+        ai_rationale = exception.get("ai_rationale", "")
+        
+        # Extract forensic flag
+        is_forensic = "[FORENSIC]" in ai_rationale or classification == "forensic_risk"
         
         ai_analysis = {
-            "narrative": f"[AI] Bank exception detected: {reason.replace('_', ' ').title()} for transaction {bank_txn_id} with {counterparty}. Amount: ${amount:,.2f}. Classification: {classification}.",
-            "business_driver": "Forensic risk" if classification == "forensic_risk" else "Timing difference" if reason == "timing_difference" else "Operational issue",
-            "confidence": 0.95 if classification == "forensic_risk" else 0.80,
-            "risk_level": "Critical" if classification == "forensic_risk" else "Medium"
+            "narrative": ai_rationale or f"Bank exception: {reason.replace('_', ' ').title()}",
+            "business_driver": "Forensic Risk" if is_forensic else "Timing difference" if reason == "timing_difference" else "Operational issue",
+            "confidence": 0.95 if is_forensic else 0.80,
+            "risk_level": "Critical" if is_forensic else "High" if classification == "forensic_risk" else "Medium",
+            "forensic_flag": is_forensic
         }
+    
+    # Source artifacts
+    primary_artifact = _find_latest_bank_file()
+    ai_artifact = _find_ai_cache_path("bank_ai_rationales")
     
     return {
         "module": "BANK",
-        "artifact_path": _find_latest_bank_file(),
-        "run_id": _latest_run_id_from_path(_find_latest_bank_file()) if _find_latest_bank_file() else "mock",
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
         "header": {"period": period or raw.get("period"), "entity": entity, "bank_txn_id": bank_txn_id, "basis": "bank_exception"},
         "metrics": exception or {},
         "threshold": 0.0,
-        "evidence": _gather_email_evidence(entity, None, period or raw.get("period")),
+        "evidence": related_emails,
         "ai_narrative": ai_analysis,
-        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": "mock"},
+        "detailed_ai": detailed_ai,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "Bank Reconciliation Data"},
+            {"path": ai_artifact, "type": "ai_analysis", "description": "AI Analysis Cache"}
+        ],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
     }
 
 
@@ -1458,19 +1565,192 @@ def _latest_run_id_from_path(path: Optional[str]) -> Optional[str]:
     return match.group(1) if match else "mock"
 
 
-def _gather_email_evidence(entity: Optional[str], account: Optional[str], period: Optional[str]) -> List[Dict[str, Any]]:
-    """Mock email evidence for details drawer"""
-    return [
-        {
-            "subject": f"RE: {entity} Month-end inquiry",
-            "sender": "controller@techcorp.com",
-            "date": "2025-08-31",
-            "confidence": 0.85,
-            "relevance": "High",
-            "snippet": f"Following up on the {entity} reconciliation items..."
-        }
-    ]
+def _load_ai_cache_file(cache_type: str) -> Optional[Dict[str, Any]]:
+    """Load AI cache file by type"""
+    try:
+        run_dir = _latest_run_dir()
+        if not run_dir:
+            return None
+        
+        cache_pattern = f"{run_dir}/ai_cache/{cache_type}_*"
+        cache_files = glob.glob(cache_pattern)
+        if cache_files:
+            with open(cache_files[0], 'r') as f:
+                return json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading AI cache {cache_type}: {e}")
+    return None
 
+def _find_ai_cache_path(cache_type: str) -> Optional[str]:
+    """Find AI cache file path"""
+    try:
+        run_dir = _latest_run_dir()
+        if not run_dir:
+            return None
+        
+        cache_pattern = f"{run_dir}/ai_cache/{cache_type}_*"
+        cache_files = glob.glob(cache_pattern)
+        return cache_files[0] if cache_files else None
+    except Exception:
+        return None
+
+def _find_ai_analysis_for_ap(ai_cache: Dict[str, Any], bill_id: str) -> Optional[Dict[str, Any]]:
+    """Find detailed AI analysis for AP bill"""
+    if not ai_cache or "matches" not in ai_cache:
+        return None
+    
+    for match in ai_cache["matches"]:
+        if match.get("ap_bill_id") == bill_id:
+            return {
+                "confidence": match.get("confidence", 0.0),
+                "reason": match.get("reason", ""),
+                "support": match.get("support", {}),
+                "cross_module_correlation": True
+            }
+    return None
+
+def _find_ai_analysis_for_bank(ai_cache: Dict[str, Any], bank_txn_id: str) -> Optional[Dict[str, Any]]:
+    """Find detailed AI analysis for bank transaction"""
+    if not ai_cache or "rationales" not in ai_cache:
+        return None
+    
+    for rationale in ai_cache["rationales"]:
+        if rationale.get("bank_txn_id") == bank_txn_id:
+            return {
+                "ai_explanation": rationale.get("ai_explanation", ""),
+                "confidence": rationale.get("confidence", 0.0),
+                "risk_level": rationale.get("risk_level", "medium"),
+                "recommended_action": rationale.get("recommended_action", "")
+            }
+    return None
+
+def _find_ai_analysis_for_ar(ai_cache: Dict[str, Any], invoice_id: str) -> Optional[Dict[str, Any]]:
+    """Find detailed AI analysis for AR invoice"""
+    if not ai_cache or "matches" not in ai_cache:
+        return None
+    
+    for match in ai_cache["matches"]:
+        if match.get("ar_invoice_id") == invoice_id:
+            return {
+                "confidence": match.get("confidence", 0.0),
+                "reason": match.get("reason", ""),
+                "support": match.get("support", {}),
+                "cross_module_correlation": True
+            }
+    return None
+
+def _find_ai_analysis_for_flux(ai_cache: Dict[str, Any], entity: str, account: str) -> Optional[Dict[str, Any]]:
+    """Find detailed AI analysis for flux variance"""
+    if not ai_cache or "narratives" not in ai_cache:
+        return None
+    
+    for narrative in ai_cache["narratives"]:
+        if narrative.get("entity") == entity and narrative.get("account") == account:
+            return {
+                "narrative": narrative.get("narrative", ""),
+                "business_driver": narrative.get("business_driver", ""),
+                "management_response": narrative.get("management_response", ""),
+                "supporting_evidence": narrative.get("supporting_evidence", []),
+                "risk_assessment": narrative.get("risk_assessment", ""),
+                "confidence": narrative.get("confidence", "medium"),
+                "root_cause": narrative.get("root_cause", "")
+            }
+    return None
+
+def _find_cross_module_matches(ai_cache: Dict[str, Any], item_id: str) -> List[Dict[str, Any]]:
+    """Find cross-module AI matches"""
+    matches = []
+    if not ai_cache or "matches" not in ai_cache:
+        return matches
+    
+    for match in ai_cache["matches"]:
+        if match.get("ap_bill_id") == item_id or match.get("ar_invoice_id") == item_id:
+            matches.append({
+                "type": "AP/AR Cross-Match",
+                "confidence": match.get("confidence", 0.0),
+                "reason": match.get("reason", ""),
+                "signals": match.get("support", {}).get("signals", []),
+                "amount_delta": match.get("support", {}).get("amount_delta", 0.0)
+            })
+    return matches
+
+def _load_email_evidence() -> Dict[str, Any]:
+    """Load email evidence from backend"""
+    try:
+        run_dir = _latest_run_dir()
+        if not run_dir:
+            return {"items": []}
+        
+        email_file = f"{run_dir}/email_evidence_*.json"
+        email_files = glob.glob(email_file)
+        if email_files:
+            with open(email_files[0], 'r') as f:
+                return json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading email evidence: {e}")
+    return {"items": []}
+
+def _find_related_emails(email_data: Dict[str, Any], entity: str, item_id: str) -> List[Dict[str, Any]]:
+    """Find emails related to specific entity/item"""
+    related = []
+    items = email_data.get("items", [])
+    
+    for email in items:
+        # Check AI transaction matches
+        ai_matches = email.get("ai_transaction_matches", [])
+        if any(item_id in str(match) for match in ai_matches):
+            related.append({
+                "email_id": email.get("email_id"),
+                "subject": email.get("subject"),
+                "from": email.get("from"),
+                "timestamp": email.get("timestamp"),
+                "summary": email.get("summary"),
+                "ai_transaction_matches": ai_matches,
+                "confidence": len(ai_matches) * 0.2 + 0.6,  # Higher confidence with more matches
+                "correlation_strength": "Strong" if len(ai_matches) > 2 else "Moderate" if len(ai_matches) > 0 else "Weak"
+            })
+    
+    # If no direct matches, return some contextual emails
+    if not related and items:
+        related = items[:2]  # Return first 2 as contextual
+        for email in related:
+            email["correlation_strength"] = "Contextual"
+            email["confidence"] = 0.3
+    
+    return related
+
+def _fx_viewmodel(raw: Dict[str, Any], entity: Optional[str], currency: Optional[str]) -> Dict[str, Any]:
+    """FX view model"""
+    rows: List[Dict[str, Any]] = raw.get("rows", [])
+    entities = sorted({r.get("entity") for r in rows})
+    currencies = sorted({r.get("currency") for r in rows})
+    
+    # Filter
+    if entity:
+        rows = [r for r in rows if r.get("entity") == entity]
+    if currency:
+        rows = [r for r in rows if r.get("currency") == currency]
+    
+    # Sort by amount desc (absolute value)
+    rows_sorted = sorted(rows, key=lambda r: abs(float(r.get("diff_usd", 0.0))), reverse=True)
+    
+    # Calculate metrics
+    total_diff = sum(abs(float(r.get("diff_usd", 0.0))) for r in rows)
+    significant_diffs = [r for r in rows if abs(float(r.get("diff_usd", 0.0))) > 1000]
+    significant_diff_amount = sum(abs(float(r.get("diff_usd", 0.0))) for r in significant_diffs)
+    
+    return {
+        "period": raw.get("period"),
+        "entities": entities,
+        "currencies": currencies,
+        "selected_entity": entity or "",
+        "selected_currency": currency or "",
+        "rows": rows_sorted,
+        "count_filtered": len(rows_sorted),
+        "total_diff": total_diff,
+        "significant_diff_count": len(significant_diffs),
+        "significant_diff_amount": significant_diff_amount,
+    }
 
 @app.get("/fx", response_class=HTMLResponse)
 async def fx_analysis(request: Request, entity: Optional[str] = None, currency: Optional[str] = None):
@@ -1651,6 +1931,22 @@ async def flux_table_partial(request: Request, entity: Optional[str] = None, acc
     )
 
 
+@app.get("/artifact/{file_path:path}")
+async def view_artifact(file_path: str):
+    """Direct JSON artifact viewer with syntax highlighting"""
+    try:
+        # Handle both absolute and relative paths
+        if file_path.startswith("/"):
+            full_path = file_path
+        else:
+            full_path = f"/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/{file_path}"
+        
+        with open(full_path, 'r') as f:
+            data = json.load(f)
+        return JSONResponse(data, headers={"Content-Type": "application/json"})
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Artifact not found: {str(e)}")
+
 @app.get("/details", response_class=HTMLResponse)
 async def details_drawer(request: Request, module: str, period: Optional[str] = None, entity: Optional[str] = None, 
                         bank_txn_id: Optional[str] = None, bill_id: Optional[str] = None, 
@@ -1675,7 +1971,7 @@ async def details_drawer(request: Request, module: str, period: Optional[str] = 
     else:
         details = {"error": f"Unknown module: {module}"}
     
-    template_name = "partials/drawer_content.html" if content_only else "partials/details_drawer.html"
+    template_name = "partials/drawer_content.html" if content_only else "partials/details_drawer_enhanced.html"
     return templates.TemplateResponse(
         template_name,
         {"request": request, "d": details}
@@ -1694,71 +1990,48 @@ def _select_intercompany_row(period: Optional[str], entity: Optional[str], ic_id
             exception = e
             break
 
-    # Lightweight AI analysis (descriptive, non-fabricated)
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, ic_id or "")
+
+    # Enhanced AI analysis
     ai_analysis = {}
     if exception:
         diff = float(exception.get("difference", exception.get("diff_abs", 0.0)) or 0.0)
         cp = exception.get("counterparty", "Unknown")
         status = exception.get("status", "unmatched")
+        
+        # Check for significant differences
+        is_significant = abs(diff) > 100000
+        
         ai_analysis = {
-            "narrative": f"[AI] Intercompany exception for {entity} vs {cp}. Status: {status.title()}. Difference: ${diff:,.2f}.",
-            "business_driver": "Intercompany mismatch" if status != "matched" else "Resolved",
-            "confidence": 0.80 if abs(diff) > 0 else 0.95,
-            "risk_level": "High" if abs(diff) > 10000 else ("Medium" if abs(diff) > 1000 else "Low"),
+            "narrative": f"Intercompany mismatch: {entity} vs {cp}. Difference: ${diff:,.2f}. Status: {status}.",
+            "business_driver": "Timing difference" if status == "timing" else "Process variance" if status == "variance" else "Reconciliation gap",
+            "confidence": 0.85 if abs(diff) > 10000 else 0.70,
+            "risk_level": "High" if abs(diff) > 100000 else "Medium" if abs(diff) > 10000 else "Low",
+            "forensic_flag": is_significant
         }
+
+    # Source artifacts
+    primary_artifact = _find_latest_intercompany_file()
 
     return {
         "module": "INTERCOMPANY",
-        "artifact_path": _find_latest_intercompany_file(),
-        "run_id": _latest_run_id_from_path(_find_latest_intercompany_file()) if _find_latest_intercompany_file() else "mock",
-        "header": {"period": period or raw.get("period"), "entity": entity, "ic_id": ic_id, "basis": "intercompany_exception"},
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
+        "header": {"period": period or raw.get("period"), "entity": entity, "ic_id": ic_id, "basis": "intercompany_reconciliation"},
         "metrics": exception or {},
         "threshold": 0.0,
-        "evidence": _gather_email_evidence(entity, None, period or raw.get("period")),
+        "evidence": related_emails,
         "ai_narrative": ai_analysis,
-        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": "mock"},
+        "detailed_ai": None,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "Intercompany Reconciliation Data"}
+        ],
+        "cross_module_matches": [],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
     }
 
-
-def _select_tb_row(period: Optional[str], entity: Optional[str]) -> Dict[str, Any]:
-    raw = _load_tb_diagnostics_data()
-    # Find matching diagnostic by entity and period
-    diagnostic = None
-    for d in raw.get("diagnostics", []):
-        period_match = (not period) or (raw.get("period") == period)
-        entity_match = (not entity) or (d.get("entity") == entity)
-        if period_match and entity_match:
-            diagnostic = d
-            break
-
-    # Generate AI analysis for TB diagnostics
-    ai_analysis = {}
-    if diagnostic:
-        imbalance = float(diagnostic.get("imbalance_usd", 0.0))
-        is_balanced = diagnostic.get("is_balanced", True)
-        confidence = float(diagnostic.get("confidence_score", 0.0))
-        
-        ai_analysis = {
-            "narrative": f"[AI] Trial balance diagnostic for {entity}. Status: {'Balanced' if is_balanced else 'Imbalanced'}. Imbalance: ${imbalance:,.2f}.",
-            "business_driver": "Trial balance validation" if is_balanced else "Material imbalance detected",
-            "confidence": confidence,
-            "risk_level": "Low" if is_balanced else ("High" if abs(imbalance) > 10000 else "Medium"),
-        }
-
-    return {
-        "module": "TB",
-        "artifact_path": _find_latest_tb_diagnostics_file(),
-        "run_id": _latest_run_id_from_path(_find_latest_tb_diagnostics_file()) if _find_latest_tb_diagnostics_file() else "mock",
-        "header": {"period": period or raw.get("period"), "entity": entity, "basis": "trial_balance_diagnostic"},
-        "metrics": diagnostic or {},
-        "threshold": raw.get("summary", {}).get("materiality_threshold", 1000.0),
-        "evidence": _gather_email_evidence(entity, None, period or raw.get("period")),
-        "ai_narrative": ai_analysis,
-        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": "mock"},
-    }
-
-
-# ---- Bank Reconciliation ----------------------------------------------------
 
 def _find_latest_bank_file(base_out: str = None) -> Optional[str]:
     # Auto-detect out directory location
