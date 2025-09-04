@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <td><input type="checkbox" class="form-check-input row-select" data-case-id="${caseItem.case_id}"></td>
             <td>
                 <span class="badge ${getPriorityClass(caseItem.priority)}">
-                    ${caseItem.priority === 'high' ? '<i class="fas fa-exclamation-triangle me-1"></i>' : ''}
+                    ${caseItem.priority === 'high' ? '<i class="bi bi-exclamation-triangle-fill me-1"></i>' : ''}
                     ${caseItem.priority.toUpperCase()}
                 </span>
             </td>
@@ -270,15 +270,15 @@ document.addEventListener('DOMContentLoaded', function () {
             <td class="text-center">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-info btn-details" data-case-id="${caseItem.case_id}" title="View Details">
-                        <i class="fas fa-info"></i>
+                        <i class="bi bi-info-circle"></i>
                     </button>
                     <button class="btn btn-outline-secondary btn-assign" data-case-id="${caseItem.case_id}" 
                             ${caseItem.status === 'resolved' ? 'disabled' : ''} title="Assign">
-                        <i class="fas fa-user"></i>
+                        <i class="bi bi-person"></i>
                     </button>
                     <button class="btn btn-outline-success btn-resolve" data-case-id="${caseItem.case_id}" 
                             ${caseItem.status === 'resolved' ? 'disabled' : ''} title="Resolve">
-                        <i class="fas fa-check"></i>
+                        <i class="bi bi-check-lg"></i>
                     </button>
                 </div>
             </td>

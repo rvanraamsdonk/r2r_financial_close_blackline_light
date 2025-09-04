@@ -1654,7 +1654,8 @@ async def flux_table_partial(request: Request, entity: Optional[str] = None, acc
 @app.get("/details", response_class=HTMLResponse)
 async def details_drawer(request: Request, module: str, period: Optional[str] = None, entity: Optional[str] = None, 
                         bank_txn_id: Optional[str] = None, bill_id: Optional[str] = None, 
-                        invoice_id: Optional[str] = None, account: Optional[str] = None):
+                        invoice_id: Optional[str] = None, account: Optional[str] = None, ic_id: Optional[str] = None,
+                        content_only: Optional[bool] = False):
     """Details drawer for exception drill-through"""
     
     if module == "BANK":
@@ -1667,13 +1668,94 @@ async def details_drawer(request: Request, module: str, period: Optional[str] = 
         details = _select_fx_row(period, entity, account)
     elif module == "FLUX":
         details = _select_flux_row(period, entity, account)
+    elif module == "INTERCOMPANY":
+        details = _select_intercompany_row(period, entity, ic_id)
+    elif module == "TB":
+        details = _select_tb_row(period, entity)
     else:
         details = {"error": f"Unknown module: {module}"}
     
+    template_name = "partials/drawer_content.html" if content_only else "partials/details_drawer.html"
     return templates.TemplateResponse(
-        "partials/details_drawer.html",
+        template_name,
         {"request": request, "d": details}
     )
+
+
+def _select_intercompany_row(period: Optional[str], entity: Optional[str], ic_id: Optional[str]) -> Dict[str, Any]:
+    raw = _load_intercompany_data()
+    # Try to match by unique id primarily; fall back to entity + account if needed
+    exception = None
+    for e in raw.get("exceptions", []):
+        period_match = (not period) or (raw.get("period") == period)
+        entity_match = (not entity) or (e.get("entity") == entity)
+        id_match = (not ic_id) or (e.get("id") == ic_id or e.get("doc_id") == ic_id)
+        if period_match and entity_match and id_match:
+            exception = e
+            break
+
+    # Lightweight AI analysis (descriptive, non-fabricated)
+    ai_analysis = {}
+    if exception:
+        diff = float(exception.get("difference", exception.get("diff_abs", 0.0)) or 0.0)
+        cp = exception.get("counterparty", "Unknown")
+        status = exception.get("status", "unmatched")
+        ai_analysis = {
+            "narrative": f"[AI] Intercompany exception for {entity} vs {cp}. Status: {status.title()}. Difference: ${diff:,.2f}.",
+            "business_driver": "Intercompany mismatch" if status != "matched" else "Resolved",
+            "confidence": 0.80 if abs(diff) > 0 else 0.95,
+            "risk_level": "High" if abs(diff) > 10000 else ("Medium" if abs(diff) > 1000 else "Low"),
+        }
+
+    return {
+        "module": "INTERCOMPANY",
+        "artifact_path": _find_latest_intercompany_file(),
+        "run_id": _latest_run_id_from_path(_find_latest_intercompany_file()) if _find_latest_intercompany_file() else "mock",
+        "header": {"period": period or raw.get("period"), "entity": entity, "ic_id": ic_id, "basis": "intercompany_exception"},
+        "metrics": exception or {},
+        "threshold": 0.0,
+        "evidence": _gather_email_evidence(entity, None, period or raw.get("period")),
+        "ai_narrative": ai_analysis,
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": "mock"},
+    }
+
+
+def _select_tb_row(period: Optional[str], entity: Optional[str]) -> Dict[str, Any]:
+    raw = _load_tb_diagnostics_data()
+    # Find matching diagnostic by entity and period
+    diagnostic = None
+    for d in raw.get("diagnostics", []):
+        period_match = (not period) or (raw.get("period") == period)
+        entity_match = (not entity) or (d.get("entity") == entity)
+        if period_match and entity_match:
+            diagnostic = d
+            break
+
+    # Generate AI analysis for TB diagnostics
+    ai_analysis = {}
+    if diagnostic:
+        imbalance = float(diagnostic.get("imbalance_usd", 0.0))
+        is_balanced = diagnostic.get("is_balanced", True)
+        confidence = float(diagnostic.get("confidence_score", 0.0))
+        
+        ai_analysis = {
+            "narrative": f"[AI] Trial balance diagnostic for {entity}. Status: {'Balanced' if is_balanced else 'Imbalanced'}. Imbalance: ${imbalance:,.2f}.",
+            "business_driver": "Trial balance validation" if is_balanced else "Material imbalance detected",
+            "confidence": confidence,
+            "risk_level": "Low" if is_balanced else ("High" if abs(imbalance) > 10000 else "Medium"),
+        }
+
+    return {
+        "module": "TB",
+        "artifact_path": _find_latest_tb_diagnostics_file(),
+        "run_id": _latest_run_id_from_path(_find_latest_tb_diagnostics_file()) if _find_latest_tb_diagnostics_file() else "mock",
+        "header": {"period": period or raw.get("period"), "entity": entity, "basis": "trial_balance_diagnostic"},
+        "metrics": diagnostic or {},
+        "threshold": raw.get("summary", {}).get("materiality_threshold", 1000.0),
+        "evidence": _gather_email_evidence(entity, None, period or raw.get("period")),
+        "ai_narrative": ai_analysis,
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": "mock"},
+    }
 
 
 # ---- Bank Reconciliation ----------------------------------------------------

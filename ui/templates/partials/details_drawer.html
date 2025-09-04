@@ -1,112 +1,140 @@
-<div class="fixed inset-0 z-40">
-  <!-- Overlay -->
-  <div class="absolute inset-0 bg-black/30" hx-get="/partials/close-drawer" hx-target="#drawer-root" hx-swap="innerHTML"></div>
+<div class="position-fixed top-0 start-0 w-100 h-100" style="z-index: 1050; background: rgba(0,0,0,0.5);">
   <!-- Drawer -->
-  <aside class="absolute right-0 top-0 h-full w-full max-w-xl bg-white shadow-xl flex flex-col">
+  <div class="position-fixed top-0 end-0 h-100 bg-white shadow-lg d-flex flex-column" style="width: 480px; max-width: 90vw; border-left: 1px solid var(--refined-gray-200);">
     <!-- Header -->
-    <div class="px-4 py-3 border-b flex items-center justify-between">
-      <div id="drawer-header">
-        <div class="text-xs uppercase text-gray-500">{{ d.module }} Details</div>
-        <div class="text-sm font-semibold">{{ d.header.entity }} · {{ d.header.account }} · {{ d.header.period }}{% if d.header.basis %} · {{ d.header.basis }}{% endif %}</div>
+    <div class="px-3 py-2 border-bottom d-flex align-items-center justify-content-between" style="background-color: var(--refined-gray-50);">
+      <div>
+        <div class="text-uppercase text-muted small">{{ d.module }} Details</div>
+        <div class="fw-medium">{{ d.header.entity }}{% if d.header.account %} · {{ d.header.account }}{% endif %}{% if d.header.bill_id %} · {{ d.header.bill_id }}{% endif %}{% if d.header.invoice_id %} · {{ d.header.invoice_id }}{% endif %}{% if d.header.bank_txn_id %} · {{ d.header.bank_txn_id }}{% endif %}{% if d.header.ic_id %} · {{ d.header.ic_id }}{% endif %} · {{ d.header.period }}</div>
       </div>
-      <button class="text-gray-500 hover:text-gray-700" aria-label="Close" hx-get="/partials/close-drawer" hx-target="#drawer-root" hx-swap="innerHTML">✕</button>
+      <button class="btn-close" aria-label="Close" hx-get="/partials/close-drawer" hx-target="#drawer-root" hx-swap="innerHTML"></button>
     </div>
 
     <!-- Content -->
-    <div class="flex-1 overflow-y-auto p-4 space-y-4" id="drawer-content">
+    <div class="flex-grow-1 overflow-auto p-3">
       <!-- Exception Summary -->
-      <section class="bg-gray-50 border rounded p-3">
-        <div class="text-xs uppercase text-gray-500 mb-2">Exception Summary</div>
-        {% if d.module == 'FX' %}
-          <div class="grid grid-cols-2 gap-2 text-sm">
-            <div>Computed USD: <span class="font-medium">{{ '%.2f'|format(d.metrics.computed_usd or 0) }}</span></div>
-            <div>Reported USD: <span class="font-medium">{{ '%.2f'|format(d.metrics.reported_usd or 0) }}</span></div>
-            <div>Diff USD: <span class="font-semibold {% if (d.metrics.diff_usd or 0) >= 0 %}text-emerald-700{% else %}text-rose-700{% endif %}">{{ '%.2f'|format(d.metrics.diff_usd or 0) }}</span></div>
-            <div>Rate: <span class="font-medium">{{ d.metrics.rate }}</span></div>
-            <div>Tolerance USD: <span class="font-medium">{{ d.threshold }}</span></div>
-          </div>
-        {% elif d.module == 'Flux' %}
-          <div class="grid grid-cols-2 gap-2 text-sm">
-            <div>Actual USD: <span class="font-medium">{{ '%.0f'|format(d.metrics.actual_usd or 0) }}</span></div>
-            <div>Budget USD: <span class="font-medium">{{ '%.0f'|format(d.metrics.budget_amount or 0) }}</span></div>
-            <div>Prior USD: <span class="font-medium">{{ '%.0f'|format(d.metrics.prior_usd or 0) }}</span></div>
-            <div>Var vs Budget: <span class="font-semibold {% if (d.metrics.var_vs_budget or 0) >= 0 %}text-emerald-700{% else %}text-rose-700{% endif %}">{{ '%.0f'|format(d.metrics.var_vs_budget or 0) }}</span></div>
-            <div>Var vs Prior: <span class="font-semibold {% if (d.metrics.var_vs_prior or 0) >= 0 %}text-emerald-700{% else %}text-rose-700{% endif %}">{{ '%.0f'|format(d.metrics.var_vs_prior or 0) }}</span></div>
-            <div>Threshold USD: <span class="font-medium">{{ '%.0f'|format(d.threshold or 0) }}</span></div>
-          </div>
-        {% elif d.module == 'Bank' %}
-          <div class="grid grid-cols-2 gap-2 text-sm">
-            <div>Transaction ID: <span class="font-mono text-xs">{{ d.metrics.bank_txn_id }}</span></div>
-            <div>Amount: <span class="font-semibold {% if (d.metrics.amount or 0) >= 0 %}text-emerald-700{% else %}text-rose-700{% endif %}">{{ d.metrics.currency }} {{ '%.2f'|format(d.metrics.amount or 0) }}</span></div>
-            <div>Date: <span class="font-medium">{{ d.metrics.date }}</span></div>
-            <div>Type: <span class="font-medium">{{ d.metrics.transaction_type }}</span></div>
-            <div>Counterparty: <span class="font-medium">{{ d.metrics.counterparty }}</span></div>
-            <div>Classification: <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {% if d.metrics.classification == 'forensic_risk' %}bg-red-200 text-red-900{% else %}bg-yellow-200 text-yellow-900{% endif %}">{{ d.metrics.classification.replace('_', ' ').title() if d.metrics.classification else 'Unknown' }}</span></div>
-          </div>
-        {% else %}
-          <div class="text-sm text-gray-600">No metrics available.</div>
-        {% endif %}
-        
-        <!-- AI Analysis Section (for all modules) -->
-        {% if d.ai_narrative and (d.ai_narrative.narrative or d.ai_narrative.business_driver) %}
-          <div class="mt-3 p-3 border rounded bg-white">
-            <div class="flex items-center justify-between mb-2">
-              <div class="text-xs uppercase text-gray-500">AI Analysis</div>
-              {% if d.ai_narrative.confidence %}
-                <span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-xs font-medium">{{ '%.0f'|format((d.ai_narrative.confidence * 100)|round) }}% confidence</span>
-              {% endif %}
+      <div class="card mb-3">
+        <div class="card-header">
+          <h6 class="mb-0 text-uppercase text-muted">Exception Summary</h6>
+        </div>
+        <div class="card-body">
+          {% if d.module|upper == 'FX' %}
+            <div class="row g-2">
+              <div class="col-6"><small class="text-muted">Computed USD:</small> <span class="fw-medium">${{ '%.2f'|format(d.metrics.computed_usd or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Reported USD:</small> <span class="fw-medium">${{ '%.2f'|format(d.metrics.reported_usd or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Diff USD:</small> <span class="fw-medium {% if (d.metrics.diff_usd or 0) >= 0 %}text-success{% else %}text-danger{% endif %}">${{ '%.2f'|format(d.metrics.diff_usd or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Rate:</small> <span class="fw-medium">{{ d.metrics.rate }}</span></div>
+              <div class="col-6"><small class="text-muted">Tolerance USD:</small> <span class="fw-medium">${{ d.threshold }}</span></div>
             </div>
-            {% if d.ai_narrative.narrative %}
-              <div class="text-sm text-gray-800 mb-2">{{ d.ai_narrative.narrative }}</div>
+          {% elif d.module|upper == 'FLUX' %}
+            <div class="row g-2">
+              <div class="col-6"><small class="text-muted">Actual USD:</small> <span class="fw-medium">${{ '%.0f'|format(d.metrics.actual_usd or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Budget USD:</small> <span class="fw-medium">${{ '%.0f'|format(d.metrics.budget_amount or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Prior USD:</small> <span class="fw-medium">${{ '%.0f'|format(d.metrics.prior_usd or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Var vs Budget:</small> <span class="fw-medium {% if (d.metrics.var_vs_budget or 0) >= 0 %}text-success{% else %}text-danger{% endif %}">${{ '%.0f'|format(d.metrics.var_vs_budget or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Var vs Prior:</small> <span class="fw-medium {% if (d.metrics.var_vs_prior or 0) >= 0 %}text-success{% else %}text-danger{% endif %}">${{ '%.0f'|format(d.metrics.var_vs_prior or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Threshold USD:</small> <span class="fw-medium">${{ '%.0f'|format(d.threshold or 0) }}</span></div>
+            </div>
+          {% elif d.module|upper == 'BANK' %}
+            <div class="row g-2">
+              <div class="col-6"><small class="text-muted">Transaction ID:</small> <span class="font-monospace small">{{ d.metrics.bank_txn_id }}</span></div>
+              <div class="col-6"><small class="text-muted">Amount:</small> <span class="fw-medium {% if (d.metrics.amount or 0) >= 0 %}text-success{% else %}text-danger{% endif %}">{{ d.metrics.currency }} {{ '%.2f'|format(d.metrics.amount or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Date:</small> <span class="fw-medium">{{ d.metrics.date }}</span></div>
+              <div class="col-6"><small class="text-muted">Type:</small> <span class="fw-medium">{{ d.metrics.transaction_type }}</span></div>
+              <div class="col-6"><small class="text-muted">Counterparty:</small> <span class="fw-medium">{{ d.metrics.counterparty }}</span></div>
+              <div class="col-6"><small class="text-muted">Classification:</small> <span class="badge {% if d.metrics.classification == 'forensic_risk' %}bg-danger{% else %}bg-warning{% endif %}">{{ d.metrics.classification.replace('_', ' ').title() if d.metrics.classification else 'Unknown' }}</span></div>
+            </div>
+          {% elif d.module|upper == 'INTERCOMPANY' %}
+            <div class="row g-2">
+              <div class="col-6"><small class="text-muted">Entity:</small> <span class="fw-medium">{{ d.metrics.entity or 'N/A' }}</span></div>
+              <div class="col-6"><small class="text-muted">Counterparty:</small> <span class="fw-medium">{{ d.metrics.counterparty or 'N/A' }}</span></div>
+              <div class="col-6"><small class="text-muted">Entity Amount:</small> <span class="fw-medium">${{ '%.2f'|format(d.metrics.entity_amount or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">CP Amount:</small> <span class="fw-medium">${{ '%.2f'|format(d.metrics.counterparty_amount or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Difference:</small> <span class="fw-medium {% if (d.metrics.difference or 0) >= 0 %}text-success{% else %}text-danger{% endif %}">${{ '%.2f'|format(d.metrics.difference or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Status:</small> <span class="badge {% if d.metrics.status == 'matched' %}bg-success{% elif d.metrics.status == 'mismatched' %}bg-warning{% else %}bg-danger{% endif %}">{{ d.metrics.status.title() if d.metrics.status else 'Unknown' }}</span></div>
+            </div>
+          {% elif d.module|upper == 'TB' %}
+            <div class="row g-2">
+              <div class="col-6"><small class="text-muted">Entity:</small> <span class="fw-medium">{{ d.metrics.entity or 'N/A' }}</span></div>
+              <div class="col-6"><small class="text-muted">Imbalance USD:</small> <span class="fw-medium {% if (d.metrics.imbalance_usd or 0) == 0 %}text-success{% else %}text-danger{% endif %}">${{ '%.2f'|format(d.metrics.imbalance_usd or 0) }}</span></div>
+              <div class="col-6"><small class="text-muted">Status:</small> <span class="badge {% if d.metrics.is_balanced %}bg-success{% else %}bg-danger{% endif %}">{{ 'Balanced' if d.metrics.is_balanced else 'Imbalanced' }}</span></div>
+              <div class="col-6"><small class="text-muted">Confidence:</small> <span class="fw-medium">{{ '%.1f'|format((d.metrics.confidence_score or 0) * 100) }}%</span></div>
+              <div class="col-6"><small class="text-muted">Auto Approved:</small> <span class="badge {% if d.metrics.auto_approved %}bg-success{% else %}bg-warning{% endif %}">{{ 'Yes' if d.metrics.auto_approved else 'Pending' }}</span></div>
+              <div class="col-6"><small class="text-muted">Threshold:</small> <span class="fw-medium">${{ '%.0f'|format(d.threshold or 0) }}</span></div>
+            </div>
+          {% else %}
+            <div class="text-muted">No metrics available.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- AI Analysis Section -->
+      {% if d.ai_narrative and (d.ai_narrative.narrative or d.ai_narrative.business_driver) %}
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h6 class="mb-0 text-uppercase text-muted">AI Analysis</h6>
+          {% if d.ai_narrative.confidence %}
+            <span class="badge bg-primary">{{ '%.0f'|format((d.ai_narrative.confidence * 100)|round) }}% confidence</span>
+          {% endif %}
+        </div>
+        <div class="card-body">
+          {% if d.ai_narrative.narrative %}
+            <p class="mb-2">{{ d.ai_narrative.narrative }}</p>
+          {% endif %}
+          <div class="d-flex flex-wrap gap-1">
+            {% if d.ai_narrative.business_driver %}
+              <span class="badge bg-info">{{ d.ai_narrative.business_driver }}</span>
             {% endif %}
-            <div class="flex flex-wrap gap-2 text-xs">
-              {% if d.ai_narrative.business_driver %}
-                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded">Driver: {{ d.ai_narrative.business_driver }}</span>
-              {% endif %}
-              {% if d.ai_narrative.risk_level %}
-                <span class="px-2 py-1 rounded {% if d.ai_narrative.risk_level == 'Critical' %}bg-red-100 text-red-800{% elif d.ai_narrative.risk_level == 'High' %}bg-orange-100 text-orange-800{% elif d.ai_narrative.risk_level == 'Medium' %}bg-yellow-100 text-yellow-800{% else %}bg-green-100 text-green-800{% endif %}">Risk: {{ d.ai_narrative.risk_level }}</span>
-              {% endif %}
-            </div>
+            {% if d.ai_narrative.risk_level %}
+              <span class="badge {% if d.ai_narrative.risk_level == 'Critical' %}bg-danger{% elif d.ai_narrative.risk_level == 'High' %}bg-warning{% elif d.ai_narrative.risk_level == 'Medium' %}bg-secondary{% else %}bg-success{% endif %}">{{ d.ai_narrative.risk_level }} Risk</span>
+            {% endif %}
           </div>
-        {% endif %}
-      </section>
+        </div>
+      </div>
+      {% endif %}
 
       <!-- Evidence -->
-      <section class="bg-gray-50 border rounded p-3">
-        <div class="text-xs uppercase text-gray-500 mb-2">Evidence</div>
-        {% if d.evidence and d.evidence|length > 0 %}
-          <ul class="space-y-2">
-            {% for ev in d.evidence %}
-              <li class="text-sm flex items-start justify-between">
-                <div>
-                  <div class="font-medium">{{ ev.type|capitalize }} · {{ ev.source }}</div>
-                  <div class="text-gray-600">{{ ev.snippet }}</div>
-                  <div class="text-xs text-gray-500">{{ ev.ts }}</div>
+      <div class="card mb-3">
+        <div class="card-header">
+          <h6 class="mb-0 text-uppercase text-muted">Evidence</h6>
+        </div>
+        <div class="card-body">
+          {% if d.evidence and d.evidence|length > 0 %}
+            <div class="list-group list-group-flush">
+              {% for ev in d.evidence %}
+                <div class="list-group-item d-flex justify-content-between align-items-start border-0 border-bottom" style="padding: 0.5rem 0;">
+                  <div style="flex: 1;">
+                    <div class="fw-medium">{{ ev.subject or (ev.type|capitalize + ' · ' + ev.sender) }}</div>
+                    <div class="text-muted small">{{ ev.snippet }}</div>
+                    <small class="text-muted">{{ ev.date or ev.ts }}</small>
+                  </div>
+                  <span class="badge bg-secondary ms-2">{{ '%.2f'|format(ev.confidence or 0) }}</span>
                 </div>
-                <div class="ml-3 text-xs">
-                  <span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">conf {{ '%.2f'|format(ev.confidence or 0) }}</span>
-                </div>
-              </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <div class="text-sm text-gray-600">No evidence found.</div>
-        {% endif %}
-      </section>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-muted">No evidence found.</div>
+          {% endif %}
+        </div>
+      </div>
 
       <!-- AI Provenance -->
-      <section class="bg-gray-50 border rounded p-3">
-        <div class="text-xs uppercase text-gray-500 mb-2">AI Provenance</div>
-        <div class="grid grid-cols-2 gap-2 text-sm">
-          <div>Run ID: <span class="font-mono">{{ d.run_id }}</span></div>
-          <div>Model: <span class="font-medium">{{ d.provenance.model or '—' }}</span></div>
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0 text-uppercase text-muted">AI Provenance</h6>
         </div>
-        {% if d.provenance.prompt %}
-          <div class="mt-2 text-xs text-gray-600">Prompt: <span class="font-mono">{{ d.provenance.prompt }}</span></div>
-        {% else %}
-          <div class="mt-2 text-xs text-gray-500">No prompt metadata available.</div>
-        {% endif %}
-      </section>
+        <div class="card-body">
+          <div class="row g-2">
+            <div class="col-6"><small class="text-muted">Run ID:</small> <span class="font-monospace small">{{ d.run_id }}</span></div>
+            <div class="col-6"><small class="text-muted">Model:</small> <span class="fw-medium">{{ d.provenance.model or '—' }}</span></div>
+          </div>
+          {% if d.provenance.prompt %}
+            <div class="mt-2"><small class="text-muted">Prompt:</small> <span class="font-monospace small">{{ d.provenance.prompt }}</span></div>
+          {% else %}
+            <div class="mt-2 text-muted">No prompt metadata available.</div>
+          {% endif %}
+        </div>
+      </div>
     </div>
-  </aside>
+  </div>
 </div>

@@ -112,11 +112,14 @@
     <!-- FX Details Table -->
     <div class="card">
         <div class="card-header">FX Translation Details</div>
-        <div class="table-responsive">
-            <table class="table table-hover table-sm mb-0">
-                <thead>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm mb-0">
+                    <thead class="table-light">
                     <tr>
-                        <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
+                            <th width="40">
+                                <input type="checkbox" id="selectAll" class="form-check-input">
+                            </th>
                         <th>Entity</th>
                         <th>Account</th>
                         <th>Currency</th>
@@ -133,35 +136,41 @@
                     {% for r in fx.rows %}
                     <tr class="{{ 'table-danger' if r.is_material else '' }}">
                         <td><input type="checkbox" class="form-check-input row-select" data-entity="{{ r.entity }}" data-account="{{ r.account }}"></td>
-                        <td><strong>{{ r.entity }}</strong></td>
+                        <td>{{ r.entity }}</td>
                         <td>{{ r.account }}</td>
                         <td><span class="badge bg-secondary">{{ r.currency }}</span></td>
-                        <td class="text-end font-monospace">{{ r.balance_local | format_currency }}</td>
-                        <td class="text-end font-monospace">{{ "%.4f"|format(r.rate) }}</td>
-                        <td class="text-end font-monospace">{{ r.computed_usd | format_currency }}</td>
-                        <td class="text-end font-monospace">{{ r.reported_usd | format_currency }}</td>
-                        <td class="text-end fw-bold font-monospace {{ 'text-danger' if r.is_material else 'text-success' }}">
+                        <td class="text-end">{{ r.balance_local | format_currency }}</td>
+                        <td class="text-end">{{ "%.4f"|format(r.rate) }}</td>
+                        <td class="text-end">{{ r.computed_usd | format_currency }}</td>
+                        <td class="text-end">{{ r.reported_usd | format_currency }}</td>
+                        <td class="text-end {{ 'text-danger' if r.is_material else 'text-success' }}">
                             {{ r.diff_usd | format_currency }}
                             {% if r.is_material %}
-                                <i class="fas fa-exclamation-triangle text-danger ms-1" title="Material Variance"></i>
+                                <i class="bi bi-exclamation-triangle-fill text-danger ms-1" title="Material Variance"></i>
                             {% endif %}
                         </td>
                         <td class="text-center">
                             {% if r.auto_approved %}
-                                <span class="badge bg-success"><i class="fas fa-check me-1"></i>Auto-Approved</span>
+                                <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Auto-Approved</span>
                             {% elif r.is_material %}
-                                <span class="badge bg-danger"><i class="fas fa-exclamation-triangle me-1"></i>Material</span>
+                                <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Material</span>
                             {% else %}
-                                <span class="badge bg-warning"><i class="fas fa-info-circle me-1"></i>Immaterial</span>
+                                <span class="badge bg-warning"><i class="bi bi-info-circle me-1"></i>Immaterial</span>
                             {% endif %}
                         </td>
                         <td class="text-center">
                             <div class="btn-group btn-group-sm">
+                                <a class="btn btn-outline-info"
+                                   title="View Details"
+                                   hx-get="/details?module=FX&period={{ fx.period }}&entity={{ r.entity }}&account={{ r.account }}"
+                                   hx-target="#drawer-root"
+                                   hx-swap="innerHTML">
+                                   <i class="bi bi-eye"></i>
+                                </a>
                                 {% if not r.auto_approved %}
-                                    <button class="btn btn-outline-success" onclick="approve('{{ r.entity }}', '{{ r.account }}')"><i class="fas fa-check"></i></button>
-                                    <button class="btn btn-outline-danger" onclick="reject('{{ r.entity }}', '{{ r.account }}')"><i class="fas fa-times"></i></button>
+                                    <button class="btn btn-outline-success" onclick="approve('{{ r.entity }}', '{{ r.account }}')"><i class="bi bi-check-lg"></i></button>
+                                    <button class="btn btn-outline-danger" onclick="reject('{{ r.entity }}', '{{ r.account }}')"><i class="bi bi-x-lg"></i></button>
                                 {% endif %}
-                                <button class="btn btn-outline-primary" onclick="showDetails('{{ r.entity }}', '{{ r.account }}')"><i class="fas fa-info"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -175,6 +184,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </div>
