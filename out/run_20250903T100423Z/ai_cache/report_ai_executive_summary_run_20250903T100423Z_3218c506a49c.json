@@ -1,0 +1,13 @@
+{
+  "generated_at": "2025-09-03T10:04:57Z",
+  "period": "2025-01",
+  "entity_scope": "ALL",
+  "executive_summary": "The 2025-01 financial close identified 47 flux exceptions totaling $3.5 million across 3 entities. Key findings include discrepancies in revenue recognition and inventory valuation adjustments. Material exceptions primarily impacted the manufacturing and retail sectors, potentially affecting quarterly earnings reports. Risk assessment indicates a low risk level, with no need to block the close. Recommendations include enhancing internal controls for revenue processes and conducting a detailed review of inventory management practices. Next steps involve finalizing reconciliations and preparing for the audit review.",
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250903T100423Z/close_report_run_20250903T100423Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250903T100423Z/gatekeeping_run_20250903T100423Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250903T100423Z/flux_analysis_run_20250903T100423Z.json",
+    null,
+    null
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "generated_at": "2025-09-03T10:18:44Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "owner_summaries": [
+    {
+      "owner_name": "John Doe",
+      "control_count": 3,
+      "risk_areas": [
+        "Financial Reporting",
+        "Cash Management"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "High number of reconciliation exceptions and duplicate detections",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Jane Smith",
+      "control_count": 2,
+      "risk_areas": [
+        "Currency Management"
+      ],
+      "effectiveness_rating": "effective",
+      "key_concerns": "None",
+      "confidence": 0.9
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Significant number of flux analysis exceptions indicating potential misstatements",
+      "severity": "high",
+      "affected_processes": [
+        "Flux Analysis"
+      ],
+      "mitigation_recommendations": "Enhance flux analysis procedures and increase frequency of reviews",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "operational",
+      "description": "Unresolved bank and AP reconciliation exceptions could lead to cash flow issues",
+      "severity": "medium",
+      "affected_processes": [
+        "Bank Reconciliation",
+        "AP"
+      ],
+      "mitigation_recommendations": "Implement automated reconciliation tools and conduct regular audits",
+      "confidence": 0.78
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250903T101632Z/controls_mapping_run_20250903T101632Z.json"
+  ]
+}

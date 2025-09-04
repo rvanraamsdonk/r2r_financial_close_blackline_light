@@ -78,6 +78,12 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
 
     exceptions: List[Dict[str, Any]] = []
     input_row_ids: List[str] = []
+    # AI governance accumulators (Master Plan Coverage Analysis: Phase 4–7 Immediate Priority)
+    MATERIALITY_THRESHOLD = 50000.0
+    weighted_conf_sum = 0.0
+    amount_sum_abs = 0.0
+    auto_approved_count = 0
+    auto_approved_total_abs = 0.0
 
     # Precompute simple deterministic duplicate candidates within AP
     def _norm_name(x: Any) -> str:
@@ -253,6 +259,41 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                     f"amount={float(r.get('amount', 0.0)):.2f} {r.get('currency')}, age_days={age}. "
                     f"Candidates={len(cand)} (vendor={_safe_str(r.get('vendor_name'))})."
                 )
+
+            # AI confidence scoring and auto-approval (aligned with gatekeeping materiality)
+            amt_abs = abs(float(e.get("amount", 0.0)))
+            reason_type = _safe_str(e.get("reason"))
+            base_conf = 0.7
+            if reason_type in ("duplicate_payment_pattern", "duplicate_flag"):
+                base_conf = 0.92
+            elif reason_type.startswith("round_dollar"):
+                base_conf = 0.80
+            elif reason_type in ("split_transaction_pattern", "weekend_entry"):
+                base_conf = 0.78
+            elif reason_type in ("suspicious_new_vendor",):
+                base_conf = 0.72
+            elif reason_type in ("overdue", "age_gt_60"):
+                base_conf = 0.75
+
+            # Materiality adjustment: reduce confidence for material items
+            materiality_factor = 1.0 if amt_abs < MATERIALITY_THRESHOLD else 0.85
+            confidence_score = round(min(0.99, base_conf * materiality_factor), 3)
+
+            # Auto-approval policy (AP): only immaterial clear-pattern duplicates/splits
+            auto_approve = bool(
+                (amt_abs < MATERIALITY_THRESHOLD)
+                and (reason_type in ("duplicate_payment_pattern", "duplicate_flag", "split_transaction_pattern"))
+            )
+
+            e["confidence_score"] = confidence_score
+            e["auto_approve"] = auto_approve
+            if auto_approve:
+                auto_approved_count += 1
+                auto_approved_total_abs += amt_abs
+
+            # Accumulate for summary confidence
+            amount_sum_abs += amt_abs
+            weighted_conf_sum += confidence_score * amt_abs
             exceptions.append(e)
             input_row_ids.append(str(r.get("bill_id")))
 
@@ -265,6 +306,23 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
     for e in exceptions:
         ent = str(e.get("entity"))
         by_ent[ent] = by_ent.get(ent, 0.0) + abs(float(e.get("amount", 0.0)))
+
+    # Summary AI confidence and rationale
+    ap_confidence_score = round((weighted_conf_sum / amount_sum_abs), 3) if amount_sum_abs > 0 else 0.0
+    if exceptions:
+        if auto_approved_count > 0:
+            ap_ai_rationale = (
+                f"AP AI assessment: {len(exceptions)} exceptions, {auto_approved_count} auto-approved "
+                f"(total_abs=${auto_approved_total_abs:,.0f}) as immaterial duplicate/split patterns under "
+                f"materiality (${MATERIALITY_THRESHOLD:,.0f})."
+            )
+        else:
+            ap_ai_rationale = (
+                f"AP AI assessment: {len(exceptions)} exceptions identified; no items met auto-approval policy. "
+                f"Materiality threshold=${MATERIALITY_THRESHOLD:,.0f}."
+            )
+    else:
+        ap_ai_rationale = "AP AI assessment: no exceptions."
 
     payload = {
         "generated_at": now_iso_z(),
@@ -280,6 +338,10 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "count": len(exceptions),
             "total_abs_amount": float(round(total_abs, 2)),
             "by_entity_abs_amount": {k: float(round(v, 2)) for k, v in by_ent.items()},
+            "ai_confidence_score": ap_confidence_score,
+            "ai_rationale": ap_ai_rationale,
+            "auto_approved_count": auto_approved_count,
+            "auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         },
     }
 
@@ -333,6 +395,10 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "ap_exceptions_total_abs": payload["summary"]["total_abs_amount"],
             "ap_exceptions_by_entity": payload["summary"]["by_entity_abs_amount"],
             "ap_reconciliation_artifact": str(out_path),
+            "ap_confidence_score": ap_confidence_score,
+            "ap_ai_rationale": ap_ai_rationale,
+            "ap_auto_approved_count": auto_approved_count,
+            "ap_auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         }
     )
 
@@ -519,6 +585,34 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                     f"amount={float(r.get('amount', 0.0)):.2f} {r.get('currency')}, age_days={age}. "
                     f"Candidates={len(cand)} (customer={_safe_str(r.get('customer_name'))})."
                 )
+
+            # AI confidence scoring and auto-approval (conservative for AR forensic risks)
+            amt_abs = abs(float(e.get("amount", 0.0)))
+            reason_type = _safe_str(e.get("reason"))
+            base_conf = 0.7
+            if reason_type in ("channel_stuffing_pattern", "related_party_transaction"):
+                base_conf = 0.7  # riskier patterns, keep moderate confidence
+            elif reason_type in ("credit_memo_abuse",):
+                base_conf = 0.75
+            elif reason_type in ("weekend_revenue_recognition",):
+                base_conf = 0.78
+            elif reason_type in ("overdue", "age_gt_60"):
+                base_conf = 0.8
+
+            materiality_factor = 1.0 if amt_abs < MATERIALITY_THRESHOLD else 0.85
+            confidence_score = round(min(0.99, base_conf * materiality_factor), 3)
+
+            # Auto-approval policy (AR): none of the AR forensic patterns are auto-approved
+            auto_approve = False
+
+            e["confidence_score"] = confidence_score
+            e["auto_approve"] = auto_approve
+            if auto_approve:
+                auto_approved_count += 1
+                auto_approved_total_abs += amt_abs
+
+            amount_sum_abs += amt_abs
+            weighted_conf_sum += confidence_score * amt_abs
             exceptions.append(e)
             input_row_ids.append(str(r.get("invoice_id")))
 
@@ -545,6 +639,10 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "count": len(exceptions),
             "total_abs_amount": float(round(total_abs, 2)),
             "by_entity_abs_amount": {k: float(round(v, 2)) for k, v in by_ent.items()},
+            "ai_confidence_score": ar_confidence_score,
+            "ai_rationale": ar_ai_rationale,
+            "auto_approved_count": auto_approved_count,
+            "auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         },
     }
 
@@ -598,6 +696,10 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "ar_exceptions_total_abs": payload["summary"]["total_abs_amount"],
             "ar_exceptions_by_entity": payload["summary"]["by_entity_abs_amount"],
             "ar_reconciliation_artifact": str(out_path),
+            "ar_confidence_score": ar_confidence_score,
+            "ar_ai_rationale": ar_ai_rationale,
+            "ar_auto_approved_count": auto_approved_count,
+            "ar_auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         }
     )
 

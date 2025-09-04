@@ -1,0 +1,466 @@
+{% extends "base.html" %}
+
+{% block title %}Human-in-the-Loop Review Queue{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 py-2">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h4 class="mb-1">HITL Review Queue</h4>
+            <small class="text-muted">Exceptions requiring manual review</small>
+        </div>
+        <div id="case-count-badge" class="badge bg-danger">
+            <i class="bi bi-exclamation-circle me-1"></i>
+            <span id="case-count">0</span> Open
+        </div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="row g-2 mb-2">
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-danger" id="kpi-open">0</div>
+                <small class="text-muted">Exceptions</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-success" id="kpi-resolved">0</div>
+                <small class="text-muted">Auto-Approved</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">95%</div>
+                <small class="text-muted">Avg. Confidence</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold" id="kpi-total">0</div>
+                <small class="text-muted">Total Items</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">2025-08</div>
+                <small class="text-muted">Period</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <span class="badge bg-secondary">AI</span>
+                <small class="text-muted d-block">Analysis Type</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Methodology -->
+    <div class="bg-light border rounded p-2 mb-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <span class="badge bg-secondary">AI</span>
+            </div>
+            <div class="col">
+                <small class="text-muted me-3">Method: <strong>AI Case Management</strong></small>
+                <small class="text-muted me-3">Priority: <strong>Risk-Based Routing</strong></small>
+                <small class="text-muted me-3">SLA: <strong>24h High, 72h Medium</strong></small>
+                <small class="text-muted">Source: <strong>Exception Queue Data</strong></small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="bg-light border rounded p-2 mb-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <select id="status-filter" class="form-select form-select-sm">
+                    <option value="">All Status</option>
+                    <option value="open" selected>Open</option>
+                    <option value="assigned">Assigned</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <select id="priority-filter" class="form-select form-select-sm">
+                    <option value="">All Priority</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <select id="module-filter" class="form-select form-select-sm">
+                    <option value="">All Modules</option>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+            <div class="col-auto">
+                <select id="assignee-filter" class="form-select form-select-sm">
+                    <option value="">All Assignees</option>
+                    <option value="unassigned">Unassigned</option>
+                    <option value="john.doe">John Doe</option>
+                    <option value="jane.smith">Jane Smith</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button id="filter-btn" class="btn btn-outline-primary btn-sm">Apply</button>
+                <button id="clear-btn" class="btn btn-outline-secondary btn-sm">Clear</button>
+            </div>
+            <div class="col">
+                <div class="btn-group btn-group-sm ms-auto">
+                    <button class="btn btn-outline-success" id="bulk-assign-btn">Approve All</button>
+                    <button class="btn btn-outline-warning" id="bulk-resolve-btn">Approve Selected</button>
+                    <button class="btn btn-outline-secondary" id="export-btn">Export</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cases Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Review Queue Cases</h6>
+            <span class="badge bg-secondary" id="filtered-count">0 items</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th><input type="checkbox" class="form-check-input" id="selectAll"></th>
+                        <th>Priority</th>
+                        <th>Module</th>
+                        <th>Case ID</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Assignee</th>
+                        <th>Created</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="cases-table-body">
+                    <!-- Cases will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Case Details Modal -->
+    <div class="modal fade" id="caseDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Case Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="case-details-content">
+                    <!-- Details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="modal-resolve-btn">Resolve Case</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="no-cases-message" class="text-center py-5" style="display: none;">
+        <div class="display-4 text-success mb-3"><i class="bi bi-check2-circle"></i></div>
+        <h3 class="mb-2">No Matching Cases</h3>
+        <p class="text-muted">
+            The queue is empty or no cases match your filter criteria.
+        </p>
+    </div>
+</div>
+
+<!-- Assign Modal -->
+<div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="assignModalLabel">Assign Case</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="assign-form">
+            <input type="hidden" id="assign-case-id">
+            <div class="mb-3">
+                <label for="assignee-name" class="form-label">Assignee Name</label>
+                <input type="text" class="form-control" id="assignee-name" placeholder="e.g., 'Jane Doe'" required>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirm-assign-btn">Assign</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const casesTableBody = document.getElementById('cases-table-body');
+    const noCasesMessage = document.getElementById('no-cases-message');
+    const caseCountSpan = document.getElementById('case-count');
+    const filterBtn = document.getElementById('filter-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const statusFilter = document.getElementById('status-filter');
+    const priorityFilter = document.getElementById('priority-filter');
+    const moduleFilter = document.getElementById('module-filter');
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const filteredCountSpan = document.getElementById('filtered-count');
+
+    // KPI elements
+    const kpiOpen = document.getElementById('kpi-open');
+    const kpiAssigned = document.getElementById('kpi-assigned');
+    const kpiResolved = document.getElementById('kpi-resolved');
+    const kpiTotal = document.getElementById('kpi-total');
+
+    const assignModal = new bootstrap.Modal(document.getElementById('assignModal'));
+    const caseDetailsModal = new bootstrap.Modal(document.getElementById('caseDetailsModal'));
+    const assignForm = document.getElementById('assign-form');
+    const confirmAssignBtn = document.getElementById('confirm-assign-btn');
+    const assignCaseIdInput = document.getElementById('assign-case-id');
+
+    let allCases = [];
+
+    const getPriorityClass = (priority) => {
+        switch (priority.toLowerCase()) {
+            case 'high': return 'bg-danger-soft text-danger';
+            case 'medium': return 'bg-warning-soft text-warning';
+            case 'low': return 'bg-info-soft text-info';
+            default: return 'bg-secondary-soft text-secondary';
+        }
+    };
+
+    const getStatusClass = (status) => {
+        switch (status.toLowerCase()) {
+            case 'open': return 'bg-primary-soft text-primary';
+            case 'assigned': return 'bg-warning-soft text-warning';
+            case 'resolved': return 'bg-success-soft text-success';
+            default: return 'bg-secondary-soft text-secondary';
+        }
+    };
+
+    const createCaseRow = (caseItem) => {
+        const row = document.createElement('tr');
+        row.className = caseItem.priority === 'high' ? 'table-danger' : '';
+        row.id = `case-row-${caseItem.case_id}`;
+        
+        const createdDate = new Date(caseItem.created_at).toLocaleDateString();
+        const assigneeText = caseItem.assignee || '-';
+        
+        row.innerHTML = `
+            <td><input type="checkbox" class="form-check-input row-select" data-case-id="${caseItem.case_id}"></td>
+            <td>
+                <span class="badge ${getPriorityClass(caseItem.priority)}">
+                    ${caseItem.priority === 'high' ? '<i class="fas fa-exclamation-triangle me-1"></i>' : ''}
+                    ${caseItem.priority.toUpperCase()}
+                </span>
+            </td>
+            <td><span class="badge bg-secondary">${caseItem.module}</span></td>
+            <td><span class="font-monospace">${caseItem.case_id}</span></td>
+            <td class="text-truncate" style="max-width: 200px;" title="${caseItem.reason}">${caseItem.reason}</td>
+            <td><span class="badge ${getStatusClass(caseItem.status)}">${caseItem.status.toUpperCase()}</span></td>
+            <td><span class="small">${assigneeText}</span></td>
+            <td><span class="font-monospace small">${createdDate}</span></td>
+            <td class="text-center">
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-info btn-details" data-case-id="${caseItem.case_id}" title="View Details">
+                        <i class="fas fa-info"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary btn-assign" data-case-id="${caseItem.case_id}" 
+                            ${caseItem.status === 'resolved' ? 'disabled' : ''} title="Assign">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <button class="btn btn-outline-success btn-resolve" data-case-id="${caseItem.case_id}" 
+                            ${caseItem.status === 'resolved' ? 'disabled' : ''} title="Resolve">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        return row;
+    };
+
+    const updateKPIs = (cases) => {
+        const openCases = cases.filter(c => c.status === 'open').length;
+        const assignedCases = cases.filter(c => c.status === 'assigned').length;
+        const resolvedCases = cases.filter(c => c.status === 'resolved').length;
+        const totalCases = cases.length;
+        
+        kpiOpen.textContent = openCases;
+        kpiAssigned.textContent = assignedCases;
+        kpiResolved.textContent = resolvedCases;
+        kpiTotal.textContent = totalCases;
+        caseCountSpan.textContent = openCases;
+    };
+
+    const renderCases = (cases) => {
+        casesTableBody.innerHTML = '';
+        if (cases.length === 0) {
+            casesTableBody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">No cases match your filter criteria.</td></tr>';
+        } else {
+            cases.forEach(caseItem => {
+                const row = createCaseRow(caseItem);
+                casesTableBody.appendChild(row);
+            });
+        }
+        filteredCountSpan.textContent = `${cases.length} items`;
+        updateKPIs(allCases.length > 0 ? allCases : cases);
+    };
+
+    const populateModuleFilter = (cases) => {
+        const modules = [...new Set(cases.map(c => c.module))];
+        moduleFilter.innerHTML = '<option value="">All</option>';
+        modules.forEach(module => {
+            const option = document.createElement('option');
+            option.value = module;
+            option.textContent = module;
+            moduleFilter.appendChild(option);
+        });
+    };
+
+    const fetchCases = async () => {
+        const status = statusFilter.value;
+        const priority = priorityFilter.value;
+        const module = moduleFilter.value;
+        
+        const params = new URLSearchParams();
+        if (status) params.append('status', status);
+        if (priority) params.append('priority', priority);
+        if (module) params.append('module', module);
+
+        try {
+            const response = await fetch(`/api/hitl/cases?${params.toString()}`);
+            if (!response.ok) throw new Error('Failed to fetch cases');
+            const cases = await response.json();
+            
+            if (allCases.length === 0) {
+                // This is the first fetch, so we populate the full list for filters
+                const allCasesResponse = await fetch(`/api/hitl/cases`);
+                allCases = await allCasesResponse.json();
+                populateModuleFilter(allCases);
+            }
+
+            renderCases(cases);
+        } catch (error) {
+            console.error('Error fetching cases:', error);
+            casesContainer.innerHTML = '<p class="text-danger">Could not load cases. Please try again later.</p>';
+        }
+    };
+
+    // Bulk selection
+    selectAllCheckbox.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.row-select');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+
+    // Clear filters
+    clearBtn.addEventListener('click', () => {
+        statusFilter.value = '';
+        priorityFilter.value = '';
+        moduleFilter.value = '';
+        fetchCases();
+    });
+
+    filterBtn.addEventListener('click', fetchCases);
+
+    casesTableBody.addEventListener('click', async (e) => {
+        const caseId = e.target.closest('button')?.dataset.caseId;
+        if (!caseId) return;
+
+        if (e.target.closest('.btn-resolve')) {
+            try {
+                const response = await fetch(`/api/hitl/cases/${caseId}/resolve`, { method: 'POST' });
+                if (!response.ok) throw new Error('Failed to resolve case');
+                fetchCases(); // Refresh the list
+            } catch (error) {
+                console.error('Error resolving case:', error);
+            }
+        }
+
+        if (e.target.closest('.btn-assign')) {
+            assignCaseIdInput.value = caseId;
+            assignModal.show();
+        }
+
+        if (e.target.closest('.btn-details')) {
+            const caseData = allCases.find(c => c.case_id === caseId);
+            if (caseData) {
+                showCaseDetails(caseData);
+            }
+        }
+    });
+
+    const showCaseDetails = (caseData) => {
+        const content = document.getElementById('case-details-content');
+        content.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Case Information</h6>
+                    <p><strong>ID:</strong> ${caseData.case_id}</p>
+                    <p><strong>Module:</strong> ${caseData.module}</p>
+                    <p><strong>Priority:</strong> ${caseData.priority}</p>
+                    <p><strong>Status:</strong> ${caseData.status}</p>
+                    <p><strong>Assignee:</strong> ${caseData.assignee || 'Unassigned'}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>AI Summary</h6>
+                    <p>${caseData.ai_summary}</p>
+                </div>
+            </div>
+            <div class="mt-3">
+                <h6>Raw Case Data</h6>
+                <pre class="bg-light p-3 rounded"><code>${JSON.stringify(caseData.raw_data, null, 2)}</code></pre>
+            </div>
+        `;
+        caseDetailsModal.show();
+    };
+
+    confirmAssignBtn.addEventListener('click', async () => {
+        const caseId = assignCaseIdInput.value;
+        const assignee = document.getElementById('assignee-name').value;
+        if (!assignee) {
+            alert('Please enter an assignee name.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/hitl/cases/${caseId}/assign`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ assignee: assignee })
+            });
+            if (!response.ok) throw new Error('Failed to assign case');
+            
+            assignModal.hide();
+            assignForm.reset();
+            fetchCases(); // Refresh list
+        } catch (error) {
+            console.error('Error assigning case:', error);
+        }
+    });
+
+    // Bulk actions
+    document.getElementById('bulk-assign-btn').addEventListener('click', () => {
+        const selected = document.querySelectorAll('.row-select:checked');
+        if (selected.length === 0) {
+            alert('Please select cases to assign');
+            return;
+        }
+        console.log('Bulk assigning', selected.length, 'cases');
+    });
+
+    document.getElementById('export-btn').addEventListener('click', () => {
+        console.log('Exporting cases to Excel');
+    });
+
+    // Initial load
+    fetchCases();
+});
+</script>
+{% endblock %}

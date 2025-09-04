@@ -1,0 +1,57 @@
+{% for e in ap.exceptions %}
+{% set is_overdue = e.reason == 'overdue' %}
+{% set is_aged = e.age_days > 60 %}
+{% set is_duplicate = e.reason == 'potential_duplicate' %}
+<tr class="border-t {% if is_duplicate %}bg-red-50{% elif is_aged %}bg-orange-50{% elif is_overdue %}bg-yellow-50{% endif %}">
+  <td class="px-2 py-2 text-center">
+    <a title="Details" class="text-gray-500 hover:text-indigo-600" hx-get="/details?module=AP&period={{ ap.period }}&entity={{ e.entity }}&bill_id={{ e.bill_id }}" hx-target="#drawer-root" hx-swap="innerHTML">🔍</a>
+  </td>
+  <td class="px-3 py-2">{{ e.entity }}</td>
+  <td class="px-3 py-2 font-mono text-xs">{{ e.bill_id }}</td>
+  <td class="px-3 py-2">{{ e.vendor_name }}</td>
+  <td class="px-3 py-2">{{ e.bill_date }}</td>
+  <td class="px-3 py-2">{{ e.due_date }}</td>
+  <td class="px-3 py-2 text-right font-medium {% if e.amount_usd >= 0 %}text-emerald-700{% else %}text-rose-700{% endif %}">
+    {{ e.currency }} {{ '%.2f'|format(e.amount_usd) }}
+  </td>
+  <td class="px-3 py-2 text-center">
+    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+      {% if e.age_days > 90 %}bg-red-200 text-red-900
+      {% elif e.age_days > 60 %}bg-orange-200 text-orange-900
+      {% elif e.age_days > 30 %}bg-yellow-200 text-yellow-900
+      {% else %}bg-green-200 text-green-900{% endif %}">
+      {{ e.age_days }}d
+    </span>
+  </td>
+  <td class="px-3 py-2">{{ e.status }}</td>
+  <td class="px-3 py-2">
+    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+      {% if e.reason == 'potential_duplicate' %}bg-red-100 text-red-800
+      {% elif e.reason == 'aged_over_60' %}bg-orange-100 text-orange-800
+      {% elif e.reason == 'overdue' %}bg-yellow-100 text-yellow-800
+      {% else %}bg-gray-100 text-gray-800{% endif %}">
+      {{ e.reason.replace('_', ' ').title() }}
+    </span>
+  </td>
+  <td class="px-2 py-2 text-center">
+    {% if is_duplicate or is_aged or (is_overdue and e.amount_usd > 10000) %}
+    <button type="button" 
+            class="inline-flex items-center px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded border border-indigo-200 transition-colors"
+            hx-post="/je/propose"
+            hx-vals='{"module": "AP", "scenario": "ap_reconciliation", "source_data": {{ e | tojson }}, "period": "{{ ap.period }}", "entity": "{{ e.entity }}"}'
+            hx-target="body"
+            hx-swap="beforeend"
+            title="Propose journal entry for AP adjustment">
+      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      JE
+    </button>
+    {% endif %}
+  </td>
+</tr>
+{% else %}
+<tr>
+  <td colspan="11" class="px-3 py-6 text-center text-gray-500">No exceptions match current filters.</td>
+</tr>
+{% endfor %}

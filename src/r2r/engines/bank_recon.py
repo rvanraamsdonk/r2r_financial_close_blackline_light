@@ -265,11 +265,80 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
     run_id = Path(audit.log_path).stem.replace("audit_", "")
     out_path = Path(audit.out_dir) / f"bank_reconciliation_{run_id}.json"
 
+    # AI-first confidence scoring and auto-approval policy (align with gatekeeping)
+    MATERIALITY_THRESHOLD = 50000  # $50K
+
+    def _score_exception(e: Dict[str, Any]) -> tuple[float, bool, str]:
+        reason = e.get("reason")
+        amount = abs(float(e.get("amount", 0.0)))
+        cls = e.get("classification")
+        # Defaults
+        conf = 0.5
+        auto = False
+        note = ""
+        if cls == "error_duplicate" or reason == "duplicate_candidate":
+            conf = 0.95
+            auto = amount <= MATERIALITY_THRESHOLD
+            note = (
+                "Duplicate candidate reliably detected; within materiality auto-approve."
+                if auto
+                else "Duplicate candidate detected; over materiality -> manual review."
+            )
+        elif cls == "timing_difference" or reason == "timing_candidate":
+            conf = 0.85
+            auto = amount <= MATERIALITY_THRESHOLD
+            note = (
+                "Timing difference likely benign; within materiality auto-approve."
+                if auto
+                else "Timing difference over materiality -> manual review."
+            )
+        elif cls == "forensic_risk":
+            conf = 0.40
+            auto = False
+            note = "Forensic risk pattern -> require analyst review."
+        else:
+            conf = 0.60
+            auto = amount <= MATERIALITY_THRESHOLD
+            note = "Unclassified exception; conservative policy."
+        return conf, auto, note
+
+    auto_approved_count = 0
+    auto_approved_total_abs = 0.0
+    for e in exceptions:
+        conf, auto, note = _score_exception(e)
+        e["confidence_score"] = conf
+        e["auto_approve"] = auto
+        prior = e.get("ai_rationale")
+        suffix = f" Policy: {note} Materiality threshold=${MATERIALITY_THRESHOLD:,.0f}."
+        e["ai_rationale"] = (prior + " " + suffix).strip() if prior else suffix.strip()
+        if auto:
+            auto_approved_count += 1
+            auto_approved_total_abs += abs(float(e.get("amount", 0.0)))
+
     total_abs = float(sum(abs(e.get("amount", 0.0)) for e in exceptions))
     by_ent: Dict[str, float] = {}
     for e in exceptions:
         ent = str(e.get("entity"))
         by_ent[ent] = by_ent.get(ent, 0.0) + abs(float(e.get("amount", 0.0)))
+
+    # Summary AI rationale
+    high_risk_count = sum(1 for e in exceptions if e.get("classification") == "forensic_risk")
+    if high_risk_count == 0 and total_abs <= MATERIALITY_THRESHOLD:
+        summary_conf = 0.90
+        summary_rationale = (
+            f"Bank recon exceptions are immaterial in aggregate (${total_abs:,.0f} <= ${MATERIALITY_THRESHOLD:,.0f}) with no forensic-risk flags. "
+            f"Auto-approvals applied to {auto_approved_count} items totaling ${auto_approved_total_abs:,.0f}."
+        )
+    elif high_risk_count == 0:
+        summary_conf = 0.80
+        summary_rationale = (
+            f"No forensic-risk flags detected. Aggregate impact ${total_abs:,.0f} exceeds materiality; timing/duplicates require sampling review."
+        )
+    else:
+        summary_conf = 0.60
+        summary_rationale = (
+            f"Detected {high_risk_count} forensic-risk pattern(s); route to analyst. Duplicates/timing auto-approvals limited to immaterial items only."
+        )
 
     payload = {
         "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
@@ -284,6 +353,11 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "count": len(exceptions),
             "total_abs_amount": float(round(total_abs, 2)),
             "by_entity_abs_amount": {k: float(round(v, 2)) for k, v in by_ent.items()},
+            "materiality_threshold": MATERIALITY_THRESHOLD,
+            "auto_approved_count": auto_approved_count,
+            "auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
+            "ai_rationale": summary_rationale,
+            "confidence_score": summary_conf,
         },
     }
 
@@ -323,7 +397,7 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
     # Messages, tags, metrics
     if exceptions:
         msgs.append(
-            f"[DET] Bank recon duplicates: {len(exceptions)} items, total_abs={payload['summary']['total_abs_amount']:.2f} -> {out_path}"
+            f"[DET] Bank recon: {len(exceptions)} items, total_abs={payload['summary']['total_abs_amount']:.2f}, auto_approved={auto_approved_count} -> {out_path}"
         )
     else:
         msgs.append("[DET] Bank recon: no duplicate candidates for period")
@@ -337,6 +411,10 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "bank_duplicates_total_abs": payload["summary"]["total_abs_amount"],
             "bank_duplicates_by_entity": payload["summary"]["by_entity_abs_amount"],
             "bank_reconciliation_artifact": str(out_path),
+            "bank_confidence_score": payload["summary"].get("confidence_score"),
+            "bank_ai_rationale": payload["summary"].get("ai_rationale"),
+            "bank_auto_approved_count": auto_approved_count,
+            "bank_auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         }
     )
 

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Intercompany Reconciliation{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mt-4">Intercompany Reconciliation</h1>
+            <p class="text-muted">Review and resolve intercompany balances.</p>
+        </div>
+        <div>
+            <span class="badge bg-success-soft me-2">0 Matched</span>
+            <span class="badge bg-warning-soft me-2">0 Mismatched</span>
+            <span class="badge bg-danger-soft">0 Unmatched</span>
+        </div>
+    </div>
+
+    <!-- Filter and Action Bar -->
+    <div class="card mb-4">
+        <div class="card-body d-flex justify-content-between">
+            <div>
+                <select class="form-select-sm me-2">
+                    <option selected>Entity: All</option>
+                    <option>Entity A</option>
+                    <option>Entity B</option>
+                </select>
+                <select class="form-select-sm">
+                    <option selected>Status: All</option>
+                    <option>Matched</option>
+                    <option>Mismatched</option>
+                    <option>Unmatched</option>
+                </select>
+            </div>
+            <div>
+                <button class="btn btn-primary">Run Matching Engine</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="card">
+        <div class="card-header">
+            Intercompany Balances
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Entity</th>
+                        <th>Counterparty</th>
+                        <th>Account</th>
+                        <th>Amount (Entity)</th>
+                        <th>Amount (Counterparty)</th>
+                        <th>Difference</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Placeholder Row -->
+                    <tr>
+                        <td>Entity A</td>
+                        <td>Entity B</td>
+                        <td>140100 - Intercompany AR</td>
+                        <td>$100,000.00</td>
+                        <td>$95,000.00</td>
+                        <td class="text-danger">($5,000.00)</td>
+                        <td><span class="badge bg-warning-soft">Mismatched</span></td>
+                        <td><button class="btn btn-sm btn-outline-primary">Investigate</button></td>
+                    </tr>
+                    <tr>
+                        <td>Entity C</td>
+                        <td>Entity D</td>
+                        <td>210200 - Intercompany AP</td>
+                        <td>$50,000.00</td>
+                        <td>$50,000.00</td>
+                        <td>$0.00</td>
+                        <td><span class="badge bg-success-soft">Matched</span></td>
+                        <td><button class="btn btn-sm btn-outline-secondary" disabled>View</button></td>
+                    </tr>
+                     <tr>
+                        <td>Entity A</td>
+                        <td>Entity C</td>
+                        <td>140100 - Intercompany AR</td>
+                        <td>$25,000.00</td>
+                        <td>-</td>
+                        <td class="text-danger">($25,000.00)</td>
+                        <td><span class="badge bg-danger-soft">Unmatched</span></td>
+                        <td><button class="btn btn-sm btn-outline-primary">Investigate</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

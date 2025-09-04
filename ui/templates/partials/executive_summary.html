@@ -1,0 +1,73 @@
+<!-- Executive Summary Dashboard -->
+<div class="container-fluid px-4 py-4">
+  <!-- Header -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="h2 fw-bold">Financial Close Executive Summary</h1>
+          <p class="small text-muted mb-0">Period Ending: {{ automation_data.period | default('N/A') }} | As of: {{ automation_data.generated_at | default('') }}</p>
+        </div>
+        <div class="text-end">
+            <p class="small text-muted mb-1">Overall AI Confidence</p>
+            <p class="h2 fw-bold text-primary mb-0">{{ automation_data.automation_status.confidence_score | default(0) }}%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Metrics Grid -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 mb-4">
+    <!-- Auto-Close Rate -->
+    <div class="col">
+      <div class="card shadow-sm h-100 text-center">
+        <div class="card-body">
+          <h3 class="h6 text-muted fw-normal">Auto-Close Rate</h3>
+          <p class="display-5 fw-bold text-success mt-1 mb-0">{{ "%.1f" | format(automation_data.automation_status.auto_close_rate | default(0.0)) }}%</p>
+          <p class="small text-muted mt-1">{{ automation_data.automation_status.auto_closed_count | default(0) }} of {{ automation_data.automation_status.total_items | default(0) }} items</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Net Auto-Journal Impact -->
+    <div class="col">
+      <div class="card shadow-sm h-100 text-center">
+        <div class="card-body">
+          <h3 class="h6 text-muted fw-normal">Net Auto-Journal Impact</h3>
+          <p class="display-5 fw-bold text-info mt-1 mb-0">${{ "%.2f" | format(automation_data.automation_status.auto_journals_amount | default(0.0) / 1000000) }}M</p>
+          <p class="small text-muted mt-1">Across {{ automation_data.automation_status.auto_journals_count | default(0) }} automated entries</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exceptions for Review -->
+    <div class="col">
+      <div class="card shadow-sm h-100 text-center">
+        <div class="card-body">
+          <h3 class="h6 text-muted fw-normal">Exceptions for Review</h3>
+          <p class="display-5 fw-bold text-warning mt-1 mb-0">{{ automation_data.exceptions.total_count | default(0) }}</p>
+          <p class="small text-muted mt-1">Impact: ${{ "%.2f" | format(automation_data.exceptions.net_impact | default(0.0) / 1000) }}K</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Risk Score -->
+    <div class="col">
+        <div class="card shadow-sm h-100 text-center">
+            <div class="card-body">
+                <h3 class="h6 text-muted fw-normal">Risk Score</h3>
+                <p class="display-5 fw-bold text-danger mt-1 mb-0">{{ automation_data.automation_status.risk_score | default(0) }}</p>
+                <p class="small text-muted mt-1">{{ automation_data.automation_status.risk_level | default('Low') }} Risk Level</p>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- AI Rationale -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3 class="h5 fw-bold mb-3">AI-Powered Insights</h3>
+      <p class="text-muted">{{ automation_data.automation_status.ai_rationale | default('AI rationale is not available for this close period.') }}</p>
+    </div>
+  </div>
+</div>

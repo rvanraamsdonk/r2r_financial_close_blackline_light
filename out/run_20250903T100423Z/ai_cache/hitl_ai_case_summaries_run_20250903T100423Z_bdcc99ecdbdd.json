@@ -1,0 +1,30 @@
+{
+  "generated_at": "2025-09-03T10:04:49Z",
+  "period": "2025-01",
+  "entity_scope": "ALL",
+  "case_summaries": [
+    {
+      "case_id": "CASE-202501-FLUX_EXCEPTIONS-001",
+      "summary": "The case involves 51 flux exceptions that could indicate potential discrepancies in financial reporting. These exceptions may impact the accuracy of financial statements if not resolved promptly.",
+      "risk_level": "medium",
+      "business_impact": "Potential misstatements in financial reports, affecting decision-making and compliance.",
+      "confidence": 0.75
+    }
+  ],
+  "next_actions": [
+    {
+      "action": "Conduct a detailed review of the 51 flux exceptions to identify and rectify any discrepancies.",
+      "priority": "high",
+      "owner": "Financial Reporting Team",
+      "estimated_effort": "3 days",
+      "dependencies": [
+        "Access to detailed transaction data",
+        "Availability of financial analysts"
+      ]
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250903T100423Z/cases_run_20250903T100423Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250903T100423Z/cases_manifest_run_20250903T100423Z.json"
+  ]
+}

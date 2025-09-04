@@ -1,0 +1,220 @@
+{
+  "generated_at": "2025-09-03T10:16:59Z",
+  "period": "2025-08",
+  "rules": {
+    "mismatch_rule": "flag |amount_src-amount_dst| > max(materiality[src], materiality[dst])",
+    "default_floor_usd": 1000.0
+  },
+  "exceptions": [
+    {
+      "doc_id": "IC-001",
+      "entity": "ENT100",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT101",
+      "amount": 75000.0,
+      "amount_src": 75000.0,
+      "amount_dst": 75000.0,
+      "diff_abs": 0.0,
+      "threshold": 50034.04,
+      "reason": "ic_round_dollar_anomaly",
+      "ai_rationale": "[FORENSIC] Round dollar anomaly: IC transaction IC-001 for exactly $75,000 between ENT100 and ENT101 suggests potential manipulation",
+      "candidates": [
+        {
+          "doc_id": "IC-017",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        },
+        {
+          "doc_id": "IC-017B",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        },
+        {
+          "doc_id": "IC-017C",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        }
+      ],
+      "assistive_hint": true,
+      "det_candidate_summary": "[DET] ENT100->ENT101 doc IC-001: 3 assistive candidate hint(s) by diff magnitude in None; no match claim."
+    },
+    {
+      "doc_id": "IC-003",
+      "entity": "ENT100",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT102",
+      "amount": 80000.0,
+      "amount_src": 80000.0,
+      "amount_dst": 80000.0,
+      "diff_abs": 0.0,
+      "threshold": 50034.04,
+      "reason": "ic_round_dollar_anomaly",
+      "ai_rationale": "[FORENSIC] Round dollar anomaly: IC transaction IC-003 for exactly $80,000 between ENT100 and ENT102 suggests potential manipulation",
+      "candidates": [
+        {
+          "doc_id": "IC-014",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT102",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        }
+      ],
+      "assistive_hint": true,
+      "det_candidate_summary": "[DET] ENT100->ENT102 doc IC-003: 1 assistive candidate hint(s) by diff magnitude in None; no match claim."
+    },
+    {
+      "doc_id": "IC-014",
+      "entity": "ENT100",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT102",
+      "amount": 60000.0,
+      "amount_src": 60000.0,
+      "amount_dst": 60000.0,
+      "diff_abs": 0.0,
+      "threshold": 50034.04,
+      "reason": "ic_round_dollar_anomaly",
+      "ai_rationale": "[FORENSIC] Round dollar anomaly: IC transaction IC-014 for exactly $60,000 between ENT100 and ENT102 suggests potential manipulation",
+      "candidates": [
+        {
+          "doc_id": "IC-003",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT102",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        }
+      ],
+      "assistive_hint": true,
+      "det_candidate_summary": "[DET] ENT100->ENT102 doc IC-014: 1 assistive candidate hint(s) by diff magnitude in None; no match claim."
+    },
+    {
+      "doc_id": "IC-017",
+      "entity": "ENT100",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT101",
+      "amount": 3500.0,
+      "amount_src": 3500.0,
+      "amount_dst": 3500.0,
+      "diff_abs": 0.0,
+      "threshold": 50034.04,
+      "reason": "ic_structuring_pattern",
+      "ai_rationale": "[FORENSIC] Structuring pattern: Multiple small transactions from ENT100 to ENT101 on same day may indicate avoidance of controls",
+      "candidates": [
+        {
+          "doc_id": "IC-001",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        },
+        {
+          "doc_id": "IC-017B",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        },
+        {
+          "doc_id": "IC-017C",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        }
+      ],
+      "assistive_hint": true,
+      "det_candidate_summary": "[DET] ENT100->ENT101 doc IC-017: 3 assistive candidate hint(s) by diff magnitude in None; no match claim."
+    },
+    {
+      "doc_id": "IC-017B",
+      "entity": "ENT100",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT101",
+      "amount": 4200.0,
+      "amount_src": 4200.0,
+      "amount_dst": 4200.0,
+      "diff_abs": 0.0,
+      "threshold": 50034.04,
+      "reason": "ic_structuring_pattern",
+      "ai_rationale": "[FORENSIC] Structuring pattern: Multiple small transactions from ENT100 to ENT101 on same day may indicate avoidance of controls",
+      "candidates": [
+        {
+          "doc_id": "IC-001",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        },
+        {
+          "doc_id": "IC-017",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        },
+        {
+          "doc_id": "IC-017C",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        }
+      ],
+      "assistive_hint": true,
+      "det_candidate_summary": "[DET] ENT100->ENT101 doc IC-017B: 3 assistive candidate hint(s) by diff magnitude in None; no match claim."
+    },
+    {
+      "doc_id": "IC-017C",
+      "entity": "ENT100",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT101",
+      "amount": 2300.0,
+      "amount_src": 2300.0,
+      "amount_dst": 2300.0,
+      "diff_abs": 0.0,
+      "threshold": 50034.04,
+      "reason": "ic_structuring_pattern",
+      "ai_rationale": "[FORENSIC] Structuring pattern: Multiple small transactions from ENT100 to ENT101 on same day may indicate avoidance of controls",
+      "candidates": [
+        {
+          "doc_id": "IC-001",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        },
+        {
+          "doc_id": "IC-017",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        },
+        {
+          "doc_id": "IC-017B",
+          "entity_src": "ENT100",
+          "entity_dst": "ENT101",
+          "diff_abs": 0.0,
+          "det_score": 1.0
+        }
+      ],
+      "assistive_hint": true,
+      "det_candidate_summary": "[DET] ENT100->ENT101 doc IC-017C: 3 assistive candidate hint(s) by diff magnitude in None; no match claim."
+    }
+  ],
+  "proposals": [],
+  "summary": {
+    "count": 6,
+    "total_diff_abs": 0.0,
+    "by_pair_diff_abs": {
+      "ENT100->ENT101": 0.0,
+      "ENT100->ENT102": 0.0
+    },
+    "proposal_count": 0
+  }
+}

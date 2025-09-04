@@ -25,6 +25,7 @@ from .engines import (
     controls_mapping,
     close_reporting,
 )
+from .engines.auto_journal_engine import auto_journal_creation
 from .metrics import compute_metrics
 from .ai import (
     ai_narrative_for_fx,
@@ -206,6 +207,11 @@ def _node_ai_close_report(state: GraphState) -> GraphState:
     s = ai_close_report_exec_summary(state["obj"], state["audit"])
     return {**state, "obj": s}
 
+
+def _node_auto_journals(state: GraphState) -> GraphState:
+    s = auto_journal_creation(state["obj"], state["audit"])
+    return {**state, "obj": s}
+
 def build_graph() -> StateGraph:
     g = StateGraph(GraphState)  # type: ignore[arg-type]
     g.add_node("period_init", _node_period_init)
@@ -236,6 +242,7 @@ def build_graph() -> StateGraph:
     g.add_node("metrics", _node_metrics)
     g.add_node("controls_mapping", _node_controls_mapping)
     g.add_node("ai_controls", _node_ai_controls)
+    g.add_node("auto_journals", _node_auto_journals)
     g.add_node("close_reporting", _node_close_reporting)
     g.add_node("ai_close_report", _node_ai_close_report)
 
@@ -259,7 +266,10 @@ def build_graph() -> StateGraph:
     g.add_edge("ai_accruals", "flux_analysis")
     g.add_edge("flux_analysis", "ai_flux")
     g.add_edge("ai_flux", "email_evidence")
-    g.add_edge("email_evidence", "gatekeeping")
+    # Tactical Change: Run auto-journals BEFORE gatekeeping to allow the gatekeeper
+    # to make a decision on the post-adjustment state of the books.
+    g.add_edge("email_evidence", "auto_journals")
+    g.add_edge("auto_journals", "gatekeeping")
     g.add_edge("gatekeeping", "ai_gatekeeping")
     g.add_edge("ai_gatekeeping", "ai_validation")
     g.add_edge("ai_validation", "hitl")

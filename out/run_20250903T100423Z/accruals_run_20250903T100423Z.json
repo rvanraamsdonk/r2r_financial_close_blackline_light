@@ -1,0 +1,19 @@
+{
+  "generated_at": "2025-09-03T10:04:30.021040Z",
+  "period": "2025-01",
+  "entity_scope": "ALL",
+  "next_period": "2025-02",
+  "exceptions": [],
+  "proposals": [],
+  "summary": {
+    "count": 0,
+    "total_usd": 0.0,
+    "by_entity": {},
+    "proposal_count": 0,
+    "roll_forward": {
+      "next_period": "2025-02",
+      "proposed_reversals_total_usd": 0.0,
+      "proposed_reversals_by_entity": {}
+    }
+  }
+}

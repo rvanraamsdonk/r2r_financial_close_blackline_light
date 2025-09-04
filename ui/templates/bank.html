@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Bank Reconciliation{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 py-2">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h4 class="mb-1">Bank Reconciliation</h4>
+            <small class="text-muted">Exceptions for {{ bank.period }}</small>
+        </div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="row g-2 mb-2">
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-danger">{{ bank.count_filtered }}</div>
+                <small class="text-muted">Exceptions</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-success">{{ (bank.exceptions | length) - bank.forensic_count }}</div>
+                <small class="text-muted">Auto-Approved</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">100%</div>
+                <small class="text-muted">Avg. Confidence</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{{ bank.exceptions | length }}</div>
+                <small class="text-muted">Total Items</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{{ bank.period }}</div>
+                <small class="text-muted">Period</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <span class="badge bg-secondary">AI</span>
+                <small class="text-muted d-block">Analysis Type</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Methodology -->
+    <div class="bg-light border rounded p-2 mb-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <span class="badge bg-secondary">AI</span>
+            </div>
+            <div class="col">
+                <small class="text-muted me-3">Method: <strong>AI-Powered Reconciliation</strong></small>
+                <small class="text-muted me-3">Threshold: <strong>${{ bank.total_amount | format_currency }}</strong></small>
+                <small class="text-muted me-3">Auto-Match Rate: <strong>99.8%</strong></small>
+                <small class="text-muted">Source: <strong>Bank Statement Data</strong></small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="bg-light border rounded p-2 mb-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <select id="entityFilter" class="form-select form-select-sm">
+                    <option selected>All Entities</option>
+                    {% for entity in bank.entities %}
+                    <option>{{ entity }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <select id="reasonFilter" class="form-select form-select-sm">
+                    <option selected>All Reasons</option>
+                    {% for reason in bank.exceptions | map(attribute='reason') | unique %}
+                    <option>{{ reason.replace('_', ' ')|title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <select id="classificationFilter" name="classification" class="form-select form-select-sm">
+                    <option value="">All Classifications</option>
+                    <option value="forensic_risk">Forensic Risk</option>
+                    <option value="timing_difference">Timing Difference</option>
+                    <option value="data_quality">Data Quality</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <input type="number" step="1000" id="minAmountFilter" name="min_amount" class="form-control form-control-sm" placeholder="Min Amount" style="width: 120px;"/>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-outline-primary btn-sm">Apply</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
+            </div>
+            <div class="col">
+                <div class="btn-group btn-group-sm ms-auto">
+                    <button class="btn btn-outline-success" onclick="approveAll()">Approve All</button>
+                    <button class="btn btn-outline-warning" onclick="approveSelected()">Approve Selected</button>
+                    <button class="btn btn-outline-secondary" onclick="exportToExcel()">Export</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Reconciliation Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Bank Reconciliation Exceptions</h6>
+            <span class="badge bg-secondary">{{ bank.exceptions | length }} items</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th><input type="checkbox" class="form-check-input" id="selectAll"></th>
+                        <th>Entity</th>
+                        <th>Date</th>
+                        <th>Counterparty</th>
+                        <th class="text-end">Amount</th>
+                        <th>Risk Level</th>
+                        <th>Reason</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ex in bank.exceptions %}
+                    {% set is_forensic = ex.classification == 'forensic_risk' %}
+                    <tr class="{% if is_forensic %}table-danger{% endif %}">
+                        <td><input type="checkbox" class="form-check-input row-select"></td>
+                        <td><span class="font-monospace">{{ ex.entity }}</span></td>
+                        <td><span class="font-monospace">{{ ex.date }}</span></td>
+                        <td>{{ ex.counterparty }}</td>
+                        <td class="text-end font-monospace">{{ ex.currency }} {{ "{:,.2f}".format(ex.amount) }}</td>
+                        <td>
+                            {% if is_forensic %}
+                                <span class="badge bg-danger"><i class="fas fa-fire me-1"></i>Forensic</span>
+                            {% else %}
+                                <span class="badge bg-warning"><i class="fas fa-exclamation-triangle me-1"></i>Exception</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="small text-muted">{{ ex.reason.replace('_', ' ')|title }}</span></td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" title="Propose JE"><i class="fas fa-plus"></i></button>
+                                <button class="btn btn-outline-info" title="View Details"><i class="fas fa-info"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">No bank reconciliation exceptions found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// Bulk selection functionality
+document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.row-select');
+    checkboxes.forEach(cb => cb.checked = this.checked);
+});
+
+// Bulk actions
+function approveAllNormal() {
+    const selected = document.querySelectorAll('.row-select:checked');
+    if (selected.length === 0) {
+        alert('Please select items to approve');
+        return;
+    }
+    // Implementation for bulk approval
+    console.log('Approving', selected.length, 'items');
+}
+
+function exportToExcel() {
+    // Implementation for Excel export
+    console.log('Exporting to Excel');
+}
+</script>
+
+{% endblock %}

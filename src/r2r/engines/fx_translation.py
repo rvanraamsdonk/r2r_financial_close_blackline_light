@@ -13,6 +13,53 @@ from ..state import R2RState
 from ..utils import now_iso_z, run_id
 
 
+def _calculate_confidence_score(diff: float, threshold: float) -> float:
+    """
+    Calculates a confidence score based on the difference relative to the materiality threshold.
+    Score is 1.0 for zero diff, and decreases as diff approaches the threshold.
+    """
+    if threshold == 0:
+        return 0.0 if diff != 0 else 1.0
+
+    # Scale confidence from 1.0 (zero diff) down to 0.5 (at threshold)
+    ratio = min(abs(diff) / threshold, 1.0)
+    confidence = 1.0 - (0.5 * ratio)
+    return round(confidence, 4)
+
+
+def _get_dynamic_materiality_threshold(
+    account: str,
+    entity: str,
+    coa_df: pd.DataFrame,
+    entities_df: pd.DataFrame,
+    default_threshold: float = 100.0,
+) -> float:
+    """
+    Calculates a dynamic materiality threshold based on account type and entity size.
+    """
+    try:
+        # Get account type from Chart of Accounts
+        account_info = coa_df[coa_df["account"] == account]
+        account_type = account_info["account_type"].iloc[0] if not account_info.empty else "other"
+
+        # Get entity size from entities table (assuming 'entity_size_usd' column exists)
+        entity_info = entities_df[entities_df["entity"] == entity]
+        entity_size_usd = entity_info["entity_size_usd"].iloc[0] if not entity_info.empty else 1_000_000 # Default size
+
+        # Dynamic thresholds based on context from Master Plan
+        if account_type == "cash":
+            return max(entity_size_usd * 0.001, 50.0)  # 0.1% of entity size, min $50
+        elif account_type == "revenue":
+            return max(entity_size_usd * 0.005, 250.0) # 0.5% of entity size, min $250
+        elif account_type == "expense":
+            return max(entity_size_usd * 0.005, 250.0) # 0.5% of entity size, min $250
+        else:
+            return default_threshold # Default for other accounts
+    except (IndexError, KeyError):
+        # Fallback to default if lookups fail
+        return default_threshold
+
+
 def _hash_df(df: pd.DataFrame) -> str:
     data_bytes = pd.util.hash_pandas_object(df.fillna(""), index=True).values.tobytes()
     return sha256(data_bytes).hexdigest()
@@ -38,10 +85,13 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
     assert state.tb_df is not None, "tb_df missing"
     assert state.fx_df is not None, "fx_df missing"
     assert state.entities_df is not None, "entities_df missing"
+    assert state.chart_of_accounts_df is not None, "chart_of_accounts_df missing"
 
     tb = state.tb_df.copy()
-    ents = state.entities_df[["entity", "home_currency"]].copy()
+    # Assume entities_df now contains 'entity_size_usd' for dynamic materiality
+    ents = state.entities_df.copy()
     fx = state.fx_df.copy()
+    coa = state.chart_of_accounts_df.copy()
 
     # Build currency map and rates for the period
     cur_map = {str(r["entity"]): str(r["home_currency"]) for _, r in ents.iterrows()}
@@ -53,6 +103,9 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
     computed_rows: List[Dict[str, Any]] = []
     diff_count = 0
     total_abs_diff = 0.0
+    auto_approved_count = 0
+    total_confidence = 0.0
+    processed_rows = 0
 
     for _, r in tb.iterrows():
         ent = str(r["entity"])
@@ -63,11 +116,27 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
         rate = rates.get(cur) if cur else None
         comp_usd = bal_local * float(rate) if rate is not None else None
         diff = None
+        is_exception = False
+        confidence = 1.0
+        auto_approved = False
+
         if comp_usd is not None:
             diff = float(comp_usd) - float(bal_usd_reported)
-            if abs(diff) > 0.01:
+            threshold = _get_dynamic_materiality_threshold(acct, ent, coa, ents)
+            confidence = _calculate_confidence_score(diff, threshold)
+
+            if abs(diff) > threshold:
                 diff_count += 1
                 total_abs_diff += abs(diff)
+                is_exception = True
+            
+            if not is_exception and confidence >= 0.95:
+                auto_approved = True
+                auto_approved_count += 1
+
+            total_confidence += confidence
+            processed_rows += 1
+
         computed_rows.append(
             {
                 "period": str(r["period"]),
@@ -79,6 +148,9 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
                 "computed_usd": float(comp_usd) if comp_usd is not None else None,
                 "reported_usd": bal_usd_reported,
                 "diff_usd": float(diff) if diff is not None else None,
+                "is_exception": is_exception,
+                "confidence_score": confidence,
+                "auto_approval_recommended": auto_approved,
             }
         )
         input_row_ids.append(f"{str(r['period'])}|{ent}|{acct}")
@@ -91,12 +163,15 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
         "entity_scope": state.entity,
         "policy": {
             "rate_basis": "period_rate (dataset)",
-            "tolerance_usd": 0.01,
+            "materiality_policy": "dynamic",
+            "description": "Materiality is based on account type and entity size."
         },
         "summary": {
             "rows": len(computed_rows),
-            "diff_count": int(diff_count),
-            "total_abs_diff_usd": float(round(total_abs_diff, 2)),
+            "exceptions_count": int(diff_count),
+            "exceptions_total_abs_diff_usd": float(round(total_abs_diff, 2)),
+            "auto_approved_count": auto_approved_count,
+            "average_confidence_score": round(total_confidence / processed_rows, 4) if processed_rows > 0 else 0,
         },
         "rows": computed_rows,
     }

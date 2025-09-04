@@ -73,6 +73,11 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
 
     exceptions: List[Dict[str, Any]] = []
     input_row_ids: List[str] = []
+    # AI governance accumulators (Master Plan Coverage Analysis: Phase 4–7 Immediate Priority)
+    weighted_conf_sum = 0.0
+    amount_sum_abs = 0.0
+    auto_approved_count = 0
+    auto_approved_total_abs = 0.0
 
     for _, r in df.iterrows():
         src = str(r["entity_src"])  # e.g., ENT100
@@ -138,6 +143,41 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
             elif reason == "ic_structuring_pattern":
                 exception_data["ai_rationale"] = f"[FORENSIC] Structuring pattern: Multiple small transactions from {src} to {dst} on same day may indicate avoidance of controls"
             
+            # AI confidence scoring and auto-approval (conservative for Intercompany)
+            # Choose materiality basis
+            if reason == "ic_amount_mismatch_above_threshold":
+                amt_abs = float(exception_data.get("diff_abs", 0.0))
+                # Base confidence for deterministic mismatch above threshold
+                base_conf = 0.85
+                # Materiality factor relative to pair threshold
+                mat_factor = 0.85 if amt_abs >= thr else 1.0
+            else:
+                # For forensic patterns, use transaction magnitude vs global materiality
+                GLOBAL_MATERIALITY = 50000.0
+                amt_abs = abs(float(exception_data.get("amount", 0.0)))
+                if reason == "ic_round_dollar_anomaly":
+                    base_conf = 0.80
+                elif reason == "ic_transfer_pricing_risk":
+                    base_conf = 0.72
+                elif reason == "ic_structuring_pattern":
+                    base_conf = 0.76
+                else:
+                    base_conf = 0.7
+                mat_factor = 1.0 if amt_abs < GLOBAL_MATERIALITY else 0.85
+
+            confidence_score = round(min(0.99, base_conf * mat_factor), 3)
+            auto_approve = False  # Policy: no auto-approvals for IC exceptions at this stage
+
+            exception_data["confidence_score"] = confidence_score
+            exception_data["auto_approve"] = auto_approve
+
+            # Accumulate AI governance metrics
+            weighted_conf_sum += confidence_score * amt_abs
+            amount_sum_abs += amt_abs
+            if auto_approve:
+                auto_approved_count += 1
+                auto_approved_total_abs += amt_abs
+
             exceptions.append(exception_data)
             input_row_ids.append(doc_id)
 
@@ -208,6 +248,16 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
             }
         )
 
+    # Summary AI confidence and rationale
+    ic_confidence_score = round((weighted_conf_sum / amount_sum_abs), 3) if amount_sum_abs > 0 else 0.0
+    if exceptions:
+        ic_ai_rationale = (
+            f"IC AI assessment: {len(exceptions)} exceptions across pairs; auto-approval disabled for intercompany at this stage. "
+            f"Pair thresholds enforced; forensic patterns flagged for review."
+        )
+    else:
+        ic_ai_rationale = "IC AI assessment: no exceptions."
+
     payload = {
         "generated_at": utils.now_iso_z(),
         "period": period,
@@ -222,6 +272,10 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
             "total_diff_abs": float(round(total_diff, 2)),
             "by_pair_diff_abs": {k: float(round(v, 2)) for k, v in by_pair.items()},
             "proposal_count": len(proposals),
+            "ai_confidence_score": ic_confidence_score,
+            "ai_rationale": ic_ai_rationale,
+            "auto_approved_count": auto_approved_count,
+            "auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         },
     }
 
@@ -275,6 +329,10 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
             "ic_mismatch_total_diff_abs": payload["summary"]["total_diff_abs"],
             "ic_mismatch_by_pair": payload["summary"]["by_pair_diff_abs"],
             "intercompany_reconciliation_artifact": str(out_path),
+            "ic_confidence_score": ic_confidence_score,
+            "ic_ai_rationale": ic_ai_rationale,
+            "ic_auto_approved_count": auto_approved_count,
+            "ic_auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         }
     )
 

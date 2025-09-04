@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}Trial Balance Diagnostics{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 py-2">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h4 class="mb-1">Trial Balance Diagnostics</h4>
+            <small class="text-muted">AI analysis for {{ data.period }}</small>
+        </div>
+        <div class="text-end">
+            <small class="badge bg-light text-dark border">
+                <i class="bi bi-clock me-1"></i>{{ data.generated_at | format_datetime }}
+            </small>
+        </div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="row g-2 mb-2">
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-danger">{{ data.summary.material_imbalances }}</div>
+                <small class="text-muted">Exceptions</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-success">{{ data.summary.auto_approved_entities }}</div>
+                <small class="text-muted">Auto-Approved</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{{ data.summary.average_confidence_score }}%</div>
+                <small class="text-muted">Avg. Confidence</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{{ data.diagnostics | length }}</div>
+                <small class="text-muted">Total Items</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{{ data.period }}</div>
+                <small class="text-muted">Period</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <span class="badge bg-secondary">AI</span>
+                <small class="text-muted d-block">Analysis Type</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Methodology -->
+    <div class="bg-light border rounded p-2 mb-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <span class="badge bg-secondary">AI</span>
+            </div>
+            <div class="col">
+                <small class="text-muted me-3">Method: <strong>AI-Powered Diagnostics</strong></small>
+                <small class="text-muted me-3">Threshold: <strong>{{ data.summary.materiality_threshold or '$1,000' }}</strong></small>
+                <small class="text-muted me-3">Confidence Floor: <strong>95%</strong></small>
+                <small class="text-muted">Source: <strong>Trial Balance Data</strong></small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="bg-light border rounded p-2 mb-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <select id="entityFilter" name="entity" class="form-select form-select-sm">
+                    <option value="">All Entities</option>
+                    {% for item in data.diagnostics %}
+                        <option value="{{ item.entity }}">{{ item.entity }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <select id="statusFilter" name="status" class="form-select form-select-sm">
+                    <option value="">All Status</option>
+                    <option value="balanced">Balanced</option>
+                    <option value="imbalanced">Imbalanced</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <select id="confidenceFilter" name="confidence" class="form-select form-select-sm">
+                    <option value="">Any Confidence</option>
+                    <option value="95">95%+</option>
+                    <option value="80">80%+</option>
+                    <option value="50">50%+</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-outline-primary btn-sm">Apply</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
+            </div>
+            <div class="col">
+                <div class="btn-group btn-group-sm ms-auto">
+                    <button class="btn btn-outline-success" onclick="approveAll()">Approve All</button>
+                    <button class="btn btn-outline-warning" onclick="approveSelected()">Approve Selected</button>
+                    <button class="btn btn-outline-secondary" onclick="exportToExcel()">Export</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Entity Diagnostics Table -->
+    {% if data.diagnostics %}
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Trial Balance Diagnostics</h6>
+                <span class="badge bg-primary">AI</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
+                            <th>Entity</th>
+                            <th class="text-end">Imbalance (USD)</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">AI Confidence</th>
+                            <th class="text-center">Auto-Approved</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in data.diagnostics %}
+                        <tr class="{{ 'table-danger' if not item.is_balanced else '' }}">
+                            <td><input type="checkbox" class="form-check-input row-select" data-entity="{{ item.entity }}"></td>
+                            <td><strong>{{ item.entity }}</strong></td>
+                            <td class="text-end font-monospace {{ 'text-danger fw-bold' if not item.is_balanced else 'text-success' }}">
+                                {{ item.imbalance_usd | format_currency }}
+                                {% if not item.is_balanced %}
+                                    <i class="fas fa-exclamation-triangle text-danger ms-1" title="Material Imbalance"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge {{ 'bg-danger' if not item.is_balanced else 'bg-success' }}">
+                                    <i class="fas {{ 'fa-times' if not item.is_balanced else 'fa-check' }} me-1"></i>
+                                    {{ 'Imbalanced' if not item.is_balanced else 'Balanced' }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <div class="progress me-2" style="width: 60px; height: 8px;">
+                                        <div class="progress-bar {{ 'bg-success' if item.confidence_score >= 0.95 else 'bg-warning' if item.confidence_score >= 0.7 else 'bg-danger' }}" role="progressbar" data-width="{{ item.confidence_score_pct }}%" aria-valuenow="{{ item.confidence_score_pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <span class="small fw-bold">{{ item.confidence_score_pct }}%</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {% if item.auto_approved %}
+                                    <span class="badge bg-success"><i class="fas fa-check me-1"></i>Yes</span>
+                                {% else %}
+                                    <span class="badge bg-warning"><i class="fas fa-clock me-1"></i>Pending</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    {% if not item.auto_approved %}
+                                        <button class="btn btn-outline-success" onclick="approve('{{ item.entity }}')"><i class="fas fa-check"></i></button>
+                                        <button class="btn btn-outline-danger" onclick="reject('{{ item.entity }}')"><i class="fas fa-times"></i></button>
+                                    {% endif %}
+                                    <button class="btn btn-outline-primary" onclick="showDetails('{{ item.entity }}')"><i class="fas fa-info"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Entity Details Modal Placeholder -->
+        <div class="modal fade" id="entityModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Entity Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="entityModalBody">
+                        <!-- Dynamic content loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <div class="text-success mb-3">
+                    <i class="fas fa-check-circle fa-3x"></i>
+                </div>
+                <h4 class="mb-2">All Clear!</h4>
+                <p class="text-muted">No material trial balance imbalances detected for this period.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Progress bar initialization
+    document.querySelectorAll('.progress-bar[data-width]').forEach(function(element) {
+        element.style.width = element.getAttribute('data-width');
+    });
+    
+    // Select all checkbox functionality
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const rowCheckboxes = document.querySelectorAll('.row-select');
+    
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+        
+        // Update select all when individual checkboxes change
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkedCount = document.querySelectorAll('.row-select:checked').length;
+                selectAllCheckbox.checked = checkedCount === rowCheckboxes.length;
+                selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < rowCheckboxes.length;
+            });
+        });
+    }
+});
+
+function approve(entity) {
+    if (confirm(`Approve trial balance for ${entity}?`)) {
+        console.log(`Approving ${entity}`);
+        // Implementation for approval
+    }
+}
+
+function reject(entity) {
+    if (confirm(`Reject trial balance for ${entity}?`)) {
+        console.log(`Rejecting ${entity}`);
+        // Implementation for rejection
+    }
+}
+
+function showDetails(entity) {
+    // Load entity details into modal
+    const modalBody = document.getElementById('entityModalBody');
+    modalBody.innerHTML = `
+        <div class="text-center py-3">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('entityModal'));
+    modal.show();
+    
+    // Simulate loading entity details
+    setTimeout(() => {
+        modalBody.innerHTML = `
+            <h6>Entity: ${entity}</h6>
+            <p>Detailed analysis and account breakdown would be loaded here...</p>
+        `;
+    }, 1000);
+}
+
+function approveAllBalanced() {
+    const checkedBoxes = document.querySelectorAll('.row-select:checked');
+    if (checkedBoxes.length === 0) {
+        alert('Please select entities to approve');
+        return;
+    }
+    if (confirm(`Approve ${checkedBoxes.length} selected entities?`)) {
+        console.log(`Bulk approving ${checkedBoxes.length} entities`);
+        // Implementation for bulk approval
+    }
+}
+
+function exportToExcel() {
+    console.log('Exporting to Excel...');
+    // Implementation for Excel export
+}
+</script>
+{% endblock %}

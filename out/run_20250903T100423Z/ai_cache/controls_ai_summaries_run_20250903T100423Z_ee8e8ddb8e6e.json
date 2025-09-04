@@ -1,0 +1,56 @@
+{
+  "generated_at": "2025-09-03T10:04:52Z",
+  "period": "2025-01",
+  "entity_scope": "ALL",
+  "owner_summaries": [
+    {
+      "owner_name": "John Doe",
+      "control_count": 5,
+      "risk_areas": [
+        "Financial Reporting",
+        "Currency Management"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "Control TB.BAL.001 and FX.COV.001 are not effective, leading to potential misstatements in financial reporting.",
+      "confidence": 0.75
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Entity-level TB balances are not zero, indicating potential misstatements in financial statements.",
+      "severity": "high",
+      "affected_processes": [
+        "General Ledger",
+        "Financial Reporting"
+      ],
+      "mitigation_recommendations": "Implement additional reconciliation procedures and review processes to ensure TB balances to zero.",
+      "confidence": 0.85
+    },
+    {
+      "risk_category": "compliance",
+      "description": "FX rates coverage does not meet policy requirements, risking non-compliance with financial regulations.",
+      "severity": "medium",
+      "affected_processes": [
+        "Treasury",
+        "Currency Management"
+      ],
+      "mitigation_recommendations": "Enhance FX rate validation controls and ensure policy adherence through regular audits.",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "operational",
+      "description": "High number of flux analysis exceptions indicates potential operational inefficiencies.",
+      "severity": "medium",
+      "affected_processes": [
+        "Variance Analysis",
+        "Budgeting"
+      ],
+      "mitigation_recommendations": "Investigate root causes of exceptions and improve data accuracy and analysis procedures.",
+      "confidence": 0.7
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250903T100423Z/controls_mapping_run_20250903T100423Z.json"
+  ]
+}

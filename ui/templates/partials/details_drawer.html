@@ -34,19 +34,40 @@
             <div>Var vs Prior: <span class="font-semibold {% if (d.metrics.var_vs_prior or 0) >= 0 %}text-emerald-700{% else %}text-rose-700{% endif %}">{{ '%.0f'|format(d.metrics.var_vs_prior or 0) }}</span></div>
             <div>Threshold USD: <span class="font-medium">{{ '%.0f'|format(d.threshold or 0) }}</span></div>
           </div>
-          {% if d.ai_narrative and (d.ai_narrative.narrative or d.ai_narrative.business_driver) %}
-            <div class="mt-3 p-3 border rounded bg-white">
-              <div class="text-xs uppercase text-gray-500 mb-1">AI Narrative</div>
-              {% if d.ai_narrative.narrative %}
-                <div class="text-sm text-gray-800">{{ d.ai_narrative.narrative }}</div>
-              {% endif %}
-              {% if d.ai_narrative.business_driver %}
-                <div class="text-xs text-gray-600 mt-2"><span class="font-semibold">Driver:</span> {{ d.ai_narrative.business_driver }}</div>
-              {% endif %}
-            </div>
-          {% endif %}
+        {% elif d.module == 'Bank' %}
+          <div class="grid grid-cols-2 gap-2 text-sm">
+            <div>Transaction ID: <span class="font-mono text-xs">{{ d.metrics.bank_txn_id }}</span></div>
+            <div>Amount: <span class="font-semibold {% if (d.metrics.amount or 0) >= 0 %}text-emerald-700{% else %}text-rose-700{% endif %}">{{ d.metrics.currency }} {{ '%.2f'|format(d.metrics.amount or 0) }}</span></div>
+            <div>Date: <span class="font-medium">{{ d.metrics.date }}</span></div>
+            <div>Type: <span class="font-medium">{{ d.metrics.transaction_type }}</span></div>
+            <div>Counterparty: <span class="font-medium">{{ d.metrics.counterparty }}</span></div>
+            <div>Classification: <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {% if d.metrics.classification == 'forensic_risk' %}bg-red-200 text-red-900{% else %}bg-yellow-200 text-yellow-900{% endif %}">{{ d.metrics.classification.replace('_', ' ').title() if d.metrics.classification else 'Unknown' }}</span></div>
+          </div>
         {% else %}
           <div class="text-sm text-gray-600">No metrics available.</div>
+        {% endif %}
+        
+        <!-- AI Analysis Section (for all modules) -->
+        {% if d.ai_narrative and (d.ai_narrative.narrative or d.ai_narrative.business_driver) %}
+          <div class="mt-3 p-3 border rounded bg-white">
+            <div class="flex items-center justify-between mb-2">
+              <div class="text-xs uppercase text-gray-500">AI Analysis</div>
+              {% if d.ai_narrative.confidence %}
+                <span class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-xs font-medium">{{ '%.0f'|format((d.ai_narrative.confidence * 100)|round) }}% confidence</span>
+              {% endif %}
+            </div>
+            {% if d.ai_narrative.narrative %}
+              <div class="text-sm text-gray-800 mb-2">{{ d.ai_narrative.narrative }}</div>
+            {% endif %}
+            <div class="flex flex-wrap gap-2 text-xs">
+              {% if d.ai_narrative.business_driver %}
+                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded">Driver: {{ d.ai_narrative.business_driver }}</span>
+              {% endif %}
+              {% if d.ai_narrative.risk_level %}
+                <span class="px-2 py-1 rounded {% if d.ai_narrative.risk_level == 'Critical' %}bg-red-100 text-red-800{% elif d.ai_narrative.risk_level == 'High' %}bg-orange-100 text-orange-800{% elif d.ai_narrative.risk_level == 'Medium' %}bg-yellow-100 text-yellow-800{% else %}bg-green-100 text-green-800{% endif %}">Risk: {{ d.ai_narrative.risk_level }}</span>
+              {% endif %}
+            </div>
+          </div>
         {% endif %}
       </section>
 

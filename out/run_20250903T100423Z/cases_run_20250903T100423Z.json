@@ -1,0 +1,20 @@
+[
+  {
+    "id": "CASE-202501-FLUX_EXCEPTIONS-001",
+    "created_at": "2025-09-03T10:04:49.677696Z",
+    "period": "2025-01",
+    "entity": "ALL",
+    "source": "flux_exceptions",
+    "severity": "medium",
+    "title": "Flux Exceptions: 51 items",
+    "description": "Automated detection opened this HITL case for category 'flux_exceptions' with 51 exception items in period 2025-01.",
+    "evidence_uris": [
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250903T100423Z/flux_analysis_run_20250903T100423Z.json",
+      "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250903T100423Z/ai_cache/flux_ai_narratives_run_20250903T100423Z_4f9793b51b68.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  }
+]

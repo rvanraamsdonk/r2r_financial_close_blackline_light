@@ -13,6 +13,62 @@ from ..audit.log import AuditLogger
 from ..state import R2RState
 
 
+def _generate_resolution_suggestion(
+    top_accounts: List[Dict[str, Any]], imbalance_usd: float
+) -> Dict[str, str]:
+    """Generates a resolution suggestion based on common accounting patterns."""
+    # Rule 1: Check for suspense/clearing account usage
+    for acc in top_accounts:
+        acc_name = acc.get("account_name", "").lower()
+        if "suspense" in acc_name or "clearing" in acc_name:
+            return {
+                "suggestion": "Reclassify Suspense Account Balance",
+                "rationale": f"The top contributing account, {acc['account_name']}, appears to be a suspense/clearing account. Balances in these accounts should typically be zeroed out by period-end. Investigate and reclassify the remaining ${acc['balance_usd']:.2f} balance to the correct accounts.",
+            }
+
+    # Rule 2: Check if one account is the primary driver of the imbalance
+    if top_accounts:
+        primary_acc = top_accounts[0]
+        # If one account explains >95% of the imbalance
+        if abs(primary_acc["balance_usd"] - imbalance_usd) / abs(imbalance_usd) < 0.05:
+            return {
+                "suggestion": "Investigate Potential Misposting",
+                "rationale": f"The imbalance of ${imbalance_usd:.2f} is almost entirely driven by account {primary_acc['account_name']} (${primary_acc['balance_usd']:.2f}). This could indicate a one-sided journal entry or a misposted transaction. Review recent activity in this account.",
+            }
+
+    # Default suggestion
+    return {
+        "suggestion": "Review Top Contributing Accounts",
+        "rationale": "The imbalance is distributed across several accounts. Review the top contributing accounts to identify any potential misclassifications or errors.",
+    }
+
+
+def _get_entity_level_materiality_threshold(
+    entity: str, entities_df: pd.DataFrame, default_threshold: float = 1000.0
+) -> float:
+    """Calculates a materiality threshold for an entity's total imbalance."""
+    try:
+        entity_info = entities_df[entities_df["entity"] == entity]
+        entity_size_usd = (
+            entity_info["entity_size_usd"].iloc[0]
+            if not entity_info.empty
+            else 1_000_000
+        )
+        # Entity-level threshold: 0.01% of entity size, min $1,000
+        return max(entity_size_usd * 0.0001, 1000.0)
+    except (IndexError, KeyError):
+        return default_threshold
+
+
+def _calculate_confidence_score(diff: float, threshold: float) -> float:
+    """Calculates a confidence score based on the difference relative to the materiality threshold."""
+    if threshold == 0:
+        return 0.0 if diff != 0 else 1.0
+    ratio = min(abs(diff) / threshold, 1.0)
+    confidence = 1.0 - (0.5 * ratio)
+    return round(confidence, 4)
+
+
 def _hash_df(df: pd.DataFrame) -> str:
     data_bytes = pd.util.hash_pandas_object(df.fillna(""), index=True).values.tobytes()
     return sha256(data_bytes).hexdigest()
@@ -35,10 +91,27 @@ def tb_diagnostics(state: R2RState, audit: AuditLogger) -> R2RState:
 
     tb = state.tb_df.copy()
     coa = state.coa_df
+    ents = state.entities_df
 
     # Determine imbalance per entity
     by_ent = tb.groupby("entity")["balance_usd"].sum()
-    off = by_ent[by_ent.round(2) != 0.0]
+
+    # Materiality check
+    materially_off = {}
+    entity_confidence = {}
+    entity_auto_approved = {}
+
+    for ent, total in by_ent.items():
+        threshold = _get_entity_level_materiality_threshold(ent, ents)
+        confidence = _calculate_confidence_score(total, threshold)
+        entity_confidence[ent] = confidence
+        
+        if abs(total) > threshold:
+            materially_off[ent] = total
+        
+        entity_auto_approved[ent] = abs(total) <= threshold and confidence >= 0.95
+
+    off = pd.Series(materially_off)
 
     diagnostics: List[Dict[str, Any]] = []
     input_row_ids: List[str] = []
@@ -55,10 +128,15 @@ def tb_diagnostics(state: R2RState, audit: AuditLogger) -> R2RState:
                 contrib = contrib.merge(coa, on="account", how="left")
 
             top = contrib.head(10).to_dict(orient="records")
+            suggestion = _generate_resolution_suggestion(top, total)
             diagnostics.append(
                 {
                     "entity": ent,
                     "imbalance_usd": float(round(total, 2)),
+                    "materiality_threshold_usd": _get_entity_level_materiality_threshold(ent, ents),
+                    "confidence_score": entity_confidence.get(ent, 0.0),
+                    "auto_approved": entity_auto_approved.get(ent, False),
+                    "ai_resolution_suggestion": suggestion,
                     "top_accounts": top,
                 }
             )
@@ -71,8 +149,11 @@ def tb_diagnostics(state: R2RState, audit: AuditLogger) -> R2RState:
             )
 
     # Compute rollups and balance flags regardless of off state for summary
-    by_entity_totals = tb.groupby("entity")["balance_usd"].sum().round(2).to_dict()
-    entity_balanced = {ent: float(v) == 0.0 for ent, v in by_entity_totals.items()}
+    by_entity_totals = by_ent.round(2).to_dict()
+    entity_balanced = {
+        ent: abs(v) <= _get_entity_level_materiality_threshold(ent, ents)
+        for ent, v in by_entity_totals.items()
+    }
     by_account_type: Dict[str, float] | None = None
     if coa is not None and "account_type" in coa.columns:
         tb_join = tb.merge(coa[["account", "account_type"]], on="account", how="left")
@@ -88,9 +169,16 @@ def tb_diagnostics(state: R2RState, audit: AuditLogger) -> R2RState:
         "period": state.period,
         "entity_scope": state.entity,
         "diagnostics": diagnostics,
+        "summary": {
+            "entities_in_scope": len(by_entity_totals),
+            "material_imbalances": len(diagnostics),
+            "auto_approved_entities": sum(entity_auto_approved.values()),
+            "average_confidence_score": round(sum(entity_confidence.values()) / len(entity_confidence), 4) if entity_confidence else 0,
+        },
         "rollups": {
             "by_entity_total_usd": {k: float(v) for k, v in by_entity_totals.items()},
-            "entity_balanced": entity_balanced,
+            "entity_materially_balanced": entity_balanced,
+            "entity_confidence_scores": entity_confidence,
             **({"by_account_type_total_usd": {k: float(v) for k, v in by_account_type.items()}} if by_account_type else {}),
         },
     }

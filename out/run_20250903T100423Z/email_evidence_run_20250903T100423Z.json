@@ -1,0 +1,39 @@
+{
+  "generated_at": "2025-09-03T10:04:41.569815Z",
+  "period": "2025-01",
+  "entity_scope": "ALL",
+  "items": [
+    {
+      "email_id": "EMAIL-003",
+      "subject": "Late wire from Google",
+      "from": "treasury@techcorp.com",
+      "to": "accounting@techcorp.com",
+      "timestamp": "2025-09-01T09:45:12Z",
+      "body": "FYI - Google wire came in right at close of business yesterday. Bank timestamp shows 23:58 but our system posted it this morning. Might affect month-end numbers depending on cutoff policy. $45K amount.",
+      "summary": "Late Google payment affecting period cutoff",
+      "priority": "Medium",
+      "category": "Cash Management",
+      "requires_action": true,
+      "thread_id": "THREAD-003",
+      "attachments": [
+        "google_wire_receipt.pdf",
+        "system_posting_log.xlsx"
+      ],
+      "read_status": "read",
+      "resolution_status": "pending",
+      "ai_transaction_matches": [],
+      "ai_analysis": {
+        "status": "no_transaction_data",
+        "confidence": 0.0
+      }
+    }
+  ],
+  "summary": {
+    "total": 17,
+    "relevant": 1,
+    "requires_action": 1,
+    "by_category": {
+      "Cash Management": 1
+    }
+  }
+}

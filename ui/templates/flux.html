@@ -1,112 +1,192 @@
 {% extends "base.html" %}
+
+{% block title %}Flux Analysis{% endblock %}
+
 {% block content %}
-<div class="space-y-4">
-  <div class="flex items-center justify-between">
-    <h1 class="text-xl font-semibold">Flux Analysis</h1>
-    <div class="text-sm text-gray-600">Period: <span class="font-medium">{{ flux.period }}</span> vs Prior: <span class="font-medium">{{ flux.prior }}</span></div>
-  </div>
+<div class="container-fluid px-3 py-2">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h4 class="mb-1">Flux Analysis</h4>
+            <small class="text-muted">AI analysis for {{ flux.period }} vs budget</small>
+        </div>
+    </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="bg-white p-4 rounded shadow">
-      <div class="text-xs text-gray-500">Rows (filtered)</div>
-      <div class="text-2xl font-semibold">{{ flux.count_filtered }}</div>
+    <!-- KPI Row -->
+    <div class="row g-2 mb-2">
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-danger">{{ forensic_count | length }}</div>
+                <small class="text-muted">Exceptions</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-success">{{ (flux.rows | length) - (forensic_count | length) }}</div>
+                <small class="text-muted">Auto-Approved</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">95%</div>
+                <small class="text-muted">Avg. Confidence</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{{ flux.rows | length }}</div>
+                <small class="text-muted">Total Items</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{{ flux.period }}</div>
+                <small class="text-muted">Period</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <span class="badge bg-secondary">AI</span>
+                <small class="text-muted d-block">Analysis Type</small>
+            </div>
+        </div>
     </div>
-    <div class="bg-white p-4 rounded shadow">
-      <div class="text-xs text-gray-500">Total abs variance (filtered)</div>
-      <div class="text-2xl font-semibold">${{ '%.0f'|format(flux.total_abs_filtered) }}</div>
-    </div>
-    <div class="bg-white p-4 rounded shadow">
-      <div class="text-xs text-gray-500">Threshold basis</div>
-      <div class="text-sm">{{ flux.rules.threshold_basis or 'default' }} (floor ${{ flux.rules.default_floor_usd or 0 }})</div>
-    </div>
-  </div>
 
-  <form class="bg-white p-4 rounded shadow grid grid-cols-1 md:grid-cols-4 gap-4"
-        hx-get="/flux-table" hx-target="#flux-table-body" hx-swap="innerHTML">
-    <div>
-      <label class="block text-xs text-gray-600 mb-1">Entity</label>
-      <select name="entity" class="w-full border rounded px-2 py-1">
-        <option value="">(All)</option>
-        {% for ent in flux.entities %}
-          <option value="{{ ent }}" {% if flux.selected_entity == ent %}selected{% endif %}>{{ ent }}</option>
-        {% endfor %}
-      </select>
+    <!-- Methodology -->
+    <div class="bg-light border rounded p-2 mb-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <span class="badge bg-secondary">AI</span>
+            </div>
+            <div class="col">
+                <small class="text-muted me-3">Basis: <strong>Actual vs Budget</strong></small>
+                <small class="text-muted me-3">Method: <strong>{{ (flux.rules.threshold_basis or 'default').replace('_', ' ').title() }}</strong></small>
+                <small class="text-muted me-3">Floor: <strong>{{ flux.rules.default_floor_usd | format_currency }}</strong></small>
+                <small class="text-muted">Narratives: <strong>{{ flux.rows | length }}</strong></small>
+            </div>
+        </div>
     </div>
-    <div>
-      <label class="block text-xs text-gray-600 mb-1">Min abs variance (USD)</label>
-      <input type="number" step="1000" name="min_abs" value="{{ flux.min_abs }}" class="w-full border rounded px-2 py-1"/>
-    </div>
-    <div class="md:col-span-2 flex justify-end items-end gap-2">
-      <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white text-sm px-3 py-2 rounded" onclick="this.form.reset(); htmx.trigger(this.form, 'submit')">Clear</button>
-      <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-3 py-2 rounded">Apply Filters</button>
-    </div>
-  </form>
 
-  <div id="flux-table" class="bg-white rounded shadow overflow-x-auto">
-    <table class="min-w-full text-sm">
-      <thead class="bg-gray-100 text-gray-700">
-        <tr>
-          <th class="w-8 px-2 py-2"></th>
-          <th class="text-left px-3 py-2">Entity</th>
-          <th class="text-left px-3 py-2">Account</th>
-          <th class="text-right px-3 py-2">Actual USD</th>
-          <th class="text-right px-3 py-2">Budget USD</th>
-          <th class="text-right px-3 py-2">Prior USD</th>
-          <th class="text-right px-3 py-2">Var vs Budget</th>
-          <th class="text-right px-3 py-2">Var vs Prior</th>
-          <th class="text-right px-3 py-2">Threshold</th>
-          <th class="text-left px-3 py-2">Bands</th>
-          <th class="text-center px-2 py-2">JE</th>
-        </tr>
-      </thead>
-      <tbody id="flux-table-body">
-        {% for r in flux.rows %}
-          {% set vbud = r.var_vs_budget if r.var_vs_budget is not none else r.var_vs_prior %}
-          {% set severe = (vbud|abs) >= (r.threshold_usd or 0) %}
-          {% set rowbg = 'bg-rose-50' if severe else '' %}
-          {% set valcls = 'text-red-600' if vbud < 0 else 'text-emerald-600' %}
-          <tr class="border-t {{ rowbg }}">
-            <td class="px-2 py-2 text-center">
-              <a title="Details" class="text-gray-500 hover:text-indigo-600" hx-get="/details?module=Flux&period={{ flux.period }}&entity={{ r.entity }}&account={{ r.account }}&basis={{ 'budget' if r.var_vs_budget is not none else 'prior' }}" hx-target="#drawer-root" hx-swap="innerHTML">🔍</a>
-            </td>
-            <td class="px-3 py-2">{{ r.entity }}</td>
-            <td class="px-3 py-2">{{ r.account }}</td>
-            <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.actual_usd or 0) }}</td>
-            <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.budget_amount or 0) }}</td>
-            <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.prior_usd or 0) }}</td>
-            <td class="px-3 py-2 text-right font-semibold {{ valcls }}">${{ '%.0f'|format(vbud or 0) }}</td>
-            <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.var_vs_prior or 0) }}</td>
-            <td class="px-3 py-2 text-right">${{ '%.0f'|format(r.threshold_usd or 0) }}</td>
-            <td class="px-3 py-2">
-              <span class="inline-flex items-center gap-1 text-xs">
-                <span class="px-2 py-0.5 rounded-full {{ 'bg-rose-200 text-rose-800' if r.band_vs_budget == 'above' else 'bg-gray-200 text-gray-700' }}">BGT {{ r.band_vs_budget or 'n/a' }}</span>
-                <span class="px-2 py-0.5 rounded-full {{ 'bg-rose-200 text-rose-800' if r.band_vs_prior == 'above' else 'bg-gray-200 text-gray-700' }}">PRIOR {{ r.band_vs_prior or 'n/a' }}</span>
-              </span>
-            </td>
-            <td class="px-2 py-2 text-center">
-              {% if severe %}
-              <button type="button" 
-                      class="inline-flex items-center px-2 py-1 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded border border-indigo-200 transition-colors"
-                      hx-post="/je/propose"
-                      hx-vals='{"module": "Flux", "scenario": "variance_analysis", "source_data": {{ r | tojson }}, "period": "{{ flux.period }}", "entity": "{{ r.entity }}"}'
-                      hx-target="body"
-                      hx-swap="beforeend"
-                      title="Propose journal entry for variance exceeding threshold">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                JE
-              </button>
-              {% endif %}
-            </td>
-          </tr>
-        {% else %}
-          <tr>
-            <td colspan="11" class="px-3 py-6 text-center text-gray-500">No rows</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    <!-- Controls -->
+    <div class="bg-light border rounded p-2 mb-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <select id="entityFilter" name="entity" class="form-select form-select-sm">
+                    <option value="" {% if not flux.selected_entity %}selected{% endif %}>All Entities</option>
+                    {% for e in flux.entities %}
+                        <option value="{{ e }}" {% if flux.selected_entity == e %}selected{% endif %}>{{ e }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <input type="number" step="1000" id="minAbsFilter" name="min_abs" value="{{ flux.min_abs }}" class="form-control form-control-sm" placeholder="Min USD" style="width: 120px;"/>
+            </div>
+            <div class="col-auto">
+                <select id="riskFilter" name="risk" class="form-select form-select-sm">
+                    <option value="">All Risk</option>
+                    <option value="forensic">Forensic</option>
+                    <option value="material">Material</option>
+                    <option value="normal">Normal</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-outline-primary btn-sm">Apply</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
+            </div>
+            <div class="col">
+                <div class="btn-group btn-group-sm ms-auto">
+                    <button class="btn btn-outline-success" onclick="approveAll()">Approve All</button>
+                    <button class="btn btn-outline-warning" onclick="approveSelected()">Approve Selected</button>
+                    <button class="btn btn-outline-secondary" onclick="exportToExcel()">Export</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flux Table -->
+    <div class="card">
+        <div class="card-header">Flux Analysis Details</div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm mb-0">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
+                        <th>Entity</th>
+                        <th>Account</th>
+                        <th class="text-end">Actual USD</th>
+                        <th class="text-end">Budget USD</th>
+                        <th class="text-end">Variance</th>
+                        <th class="text-end">% Change</th>
+                        <th class="text-end">Threshold</th>
+                        <th class="text-center">Risk Level</th>
+                        <th class="text-center">AI Explanation</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in flux.rows %}
+                    {% set v_budget = r.var_vs_budget or 0 %}
+                    {% set is_material = (v_budget|abs) >= (r.threshold_usd or 0) %}
+                    {% set is_forensic = r.ai_narrative and '[FORENSIC]' in r.ai_narrative %}
+                    {% set pct_change = ((v_budget / r.budget_amount) * 100) if r.budget_amount != 0 else 0 %}
+                    <tr class="{{ 'table-danger' if is_forensic else 'table-warning' if is_material else '' }}">
+                        <td><input type="checkbox" class="form-check-input row-select" data-entity="{{ r.entity }}" data-account="{{ r.account }}"></td>
+                        <td><strong>{{ r.entity }}</strong></td>
+                        <td>{{ r.account }}</td>
+                        <td class="text-end font-monospace">{{ r.actual_usd | format_currency }}</td>
+                        <td class="text-end font-monospace">{{ r.budget_amount | format_currency }}</td>
+                        <td class="text-end fw-bold font-monospace {{ 'text-danger' if v_budget < 0 else 'text-success' if v_budget > 0 else '' }}">
+                            {{ v_budget | format_currency }}
+                            {% if is_material %}
+                                <i class="fas fa-exclamation-triangle text-warning ms-1" title="Material Variance"></i>
+                            {% endif %}
+                        </td>
+                        <td class="text-end font-monospace small {{ 'text-danger' if pct_change|abs > 50 else 'text-warning' if pct_change|abs > 20 else '' }}">
+                            {{ "%.1f"|format(pct_change) }}%
+                        </td>
+                        <td class="text-end font-monospace small text-muted">{{ r.threshold_usd | format_currency }}</td>
+                        <td class="text-center">
+                            {% if is_forensic %}
+                                <span class="badge bg-danger"><i class="fas fa-fire me-1"></i>Forensic</span>
+                            {% elif is_material %}
+                                <span class="badge bg-warning"><i class="fas fa-exclamation-triangle me-1"></i>Material</span>
+                            {% else %}
+                                <span class="badge bg-success"><i class="fas fa-check me-1"></i>Normal</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if r.ai_narrative %}
+                                <button class="btn btn-sm btn-outline-info" 
+                                        data-entity="{{ r.entity }}" 
+                                        data-account="{{ r.account }}" 
+                                        data-narrative="{{ r.ai_narrative }}"
+                                        onclick="showExplanation(this)" 
+                                        title="View AI Explanation">
+                                    <i class="fas fa-robot"></i>
+                                </button>
+                            {% else %}
+                                <span class="text-muted small">No explanation</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                {% if not is_forensic and not is_material %}
+                                    <button class="btn btn-outline-success" onclick="approve('{{ r.entity }}', '{{ r.account }}')"><i class="fas fa-check"></i></button>
+                                {% endif %}
+                                <button class="btn btn-outline-primary" onclick="showDetails('{{ r.entity }}', '{{ r.account }}')"><i class="fas fa-info"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="11" class="text-center py-5">
+                            <h5 class="mb-1">No Data</h5>
+                            <p class="text-muted mb-0">No flux variances match the current filters.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}

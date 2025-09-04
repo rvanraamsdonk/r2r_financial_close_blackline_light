@@ -1,0 +1,43 @@
+{
+  "generated_at": "2025-09-03T10:04:52.604336Z",
+  "period": "2025-01",
+  "entity_scope": "ALL",
+  "mappings": {
+    "tb_balanced_by_entity": {
+      "control_id": "TB.BAL.001",
+      "description": "Entity-level TB balances to 0 in USD",
+      "value": false
+    },
+    "fx_coverage_ok": {
+      "control_id": "FX.COV.001",
+      "description": "FX rates coverage meets policy",
+      "value": false
+    },
+    "accruals_exception_count": {
+      "control_id": "ACCR.REV.006",
+      "description": "Accruals exception count (incl. reversals)",
+      "value": 0
+    },
+    "flux_exceptions_count": {
+      "control_id": "FLUX.ANAL.008",
+      "description": "Flux analysis exception count across accounts",
+      "value": 51
+    },
+    "gatekeeping_risk_level": {
+      "control_id": "GATE.RISK.009",
+      "description": "Gatekeeping overall risk level",
+      "value": "low"
+    },
+    "gatekeeping_block_close": {
+      "control_id": "GATE.BLOCK.010",
+      "description": "Gatekeeping block close flag",
+      "value": false
+    },
+    "hitl_cases_open_count": {
+      "control_id": "HITL.CASE.011",
+      "description": "Open HITL cases count",
+      "value": 1
+    }
+  },
+  "count": 7
+}

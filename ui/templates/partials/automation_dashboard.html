@@ -1,0 +1,116 @@
+<!-- AI-First Automation Dashboard -->
+<div class="space-y-6">
+  <!-- Automation Status Header -->
+  <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold text-gray-900">🤖 AI-First Financial Close</h2>
+      <div class="flex items-center space-x-2">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+          ✅ {{ automation_data.automation_status.auto_closed_count|default(0) }} Auto-Closed
+        </span>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          🎯 {{ automation_data.automation_status.confidence_score|default(0) }}% Confidence
+        </span>
+      </div>
+    </div>
+    <div class="text-sm text-gray-600">
+      Period {{ automation_data.period|default('N/A') }} · Generated {{ automation_data.generated_at|default('') }}
+    </div>
+  </div>
+
+  <!-- Automation Metrics -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Auto-Journals Summary -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+            <span class="text-green-600 font-bold">✓</span>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500">Auto-Journals</p>
+          <p class="text-2xl font-bold text-green-600">{{ automation_data.automation_status.auto_journals_count|default(0) }}</p>
+          <p class="text-sm text-gray-500">${{ automation_data.automation_status.auto_journals_amount|default(0.0) | float | round(0) | int }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Confidence -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+            <span class="text-blue-600 font-bold">🎯</span>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500">AI Confidence</p>
+          <p class="text-2xl font-bold text-blue-600">{{ automation_data.automation_status.auto_journals_confidence|default(automation_data.automation_status.confidence_score|default(0)) }}%</p>
+          <p class="text-sm text-gray-500">Confidence of auto decisions</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exception Cases -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+            <span class="text-amber-600 font-bold">⚠</span>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-500">Exceptions</p>
+          <p class="text-2xl font-bold text-amber-600">{{ automation_data.exceptions.total_count|default(0) }}</p>
+          <p class="text-sm text-gray-500">Require review</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auto-Journal Details -->
+  <div class="bg-white border border-gray-200 rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Auto-Journal Breakdown</h3>
+    <div class="grid grid-cols-2 gap-6">
+      <div>
+        <h4 class="font-medium text-gray-900 mb-2">FX Translation Adjustments</h4>
+        <div class="text-3xl font-bold text-green-600">{{ automation_data.automation_status.auto_journals_count|default(0) }}</div>
+        <div class="text-sm text-gray-500">Routine currency adjustments</div>
+      </div>
+      <div>
+        <h4 class="font-medium text-gray-900 mb-2">Flux Variance Accruals</h4>
+        <div class="text-3xl font-bold text-blue-600">—</div>
+        <div class="text-sm text-gray-500">Budget variance adjustments</div>
+      </div>
+    </div>
+    <div class="mt-4 p-4 bg-gray-50 rounded">
+      <div class="text-sm text-gray-600">
+        <strong>AI Rationale:</strong> {{ automation_data.automation_status.ai_rationale|default('No AI rationale available') }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Exception Summary -->
+  <div class="bg-white border border-gray-200 rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">⚠️ Exception Summary</h3>
+    <div class="text-center py-8">
+      {% if (automation_data.exceptions.total_count|default(0)) == 0 %}
+        <div class="text-green-600 text-lg font-medium">✅ All Clear</div>
+        <div class="text-gray-500 text-sm">No exceptions require review</div>
+      {% else %}
+        <div class="text-amber-600 text-lg font-medium">⚠️ {{ automation_data.exceptions.total_count }} exceptions</div>
+        <div class="text-gray-500 text-sm">Critical: {{ automation_data.exceptions.critical|length if automation_data.exceptions.critical is defined else 0 }} · Medium: {{ automation_data.exceptions.medium|length if automation_data.exceptions.medium is defined else 0 }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Reconciliation Progress (HTMX) -->
+  <div class="bg-white border border-gray-200 rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">🔄 Reconciliation Progress</h3>
+    <div hx-get="/partials/recon-progress" hx-trigger="load" hx-swap="innerHTML">
+      <div class="text-sm text-gray-500">Loading reconciliation progress…</div>
+    </div>
+  </div>
+
+</div>

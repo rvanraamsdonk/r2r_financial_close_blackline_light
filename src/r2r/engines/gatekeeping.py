@@ -44,6 +44,10 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
     je_cnt = _ival("je_exceptions_count")
     flux_cnt = _ival("flux_exceptions_count")
 
+    # Consume auto-journaling results
+    auto_journal_cnt = _ival("auto_journals_created_count")
+    auto_journal_total = _fval("auto_journals_total_amount") or 0.0
+
     # Totals where available (for contextualization only)
     def _fval(key: str) -> float | None:
         try:
@@ -58,6 +62,7 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
         "ic_mismatch_total_diff_abs": _fval("ic_mismatch_total_diff_abs"),
         "accruals_exception_total_usd": _fval("accruals_exception_total_usd"),
         "je_exceptions_total_abs": _fval("je_exceptions_total_abs"),
+        "auto_journals_total_amount": auto_journal_total,
     }
 
     categories: Dict[str, int] = {
@@ -68,19 +73,59 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
         "accruals_exceptions": accr_cnt,
         "je_exceptions": je_cnt,
         "flux_exceptions": flux_cnt,
+        "auto_journals_created": auto_journal_cnt,
     }
 
-    sources_triggered = sum(1 for v in categories.values() if v > 0)
+    sources_triggered = sum(1 for k, v in categories.items() if v > 0 and k != "auto_journals_created")
 
-    # Risk policy: simple and deterministic
+    # Enhanced AI-first risk policy: more aggressive auto-closing
+    # Calculate total exception amounts for materiality assessment
+    gross_exception_amount = sum([
+        totals.get("ap_exceptions_total_abs", 0) or 0,
+        totals.get("ar_exceptions_total_abs", 0) or 0,
+        totals.get("ic_mismatch_total_diff_abs", 0) or 0,
+        totals.get("accruals_exception_total_usd", 0) or 0,
+        totals.get("je_exceptions_total_abs", 0) or 0,
+    ])
+
+    # Auto-journals reduce the net exception amount
+    net_exception_amount = gross_exception_amount - auto_journal_total
+    
+    # Materiality thresholds (configurable)
+    MATERIALITY_THRESHOLD = 50000  # $50K
+    HIGH_RISK_THRESHOLD = 250000   # $250K
+    
+    # AI-first risk assessment with materiality consideration
     risk_level: str
-    if fx_ok is False or tb_bal_ok is False or sources_triggered >= 3:
+    auto_close_eligible = True
+    
+    # Critical control failures always block
+    if fx_ok is False or tb_bal_ok is False:
         risk_level = "high"
-    elif sources_triggered in (1, 2):
+        auto_close_eligible = False
+    # High dollar amount exceptions require review
+    elif net_exception_amount > HIGH_RISK_THRESHOLD:
+        risk_level = "high" 
+        auto_close_eligible = False
+    # Multiple sources but low dollar amounts - medium risk, can auto-close with AI rationale
+    elif sources_triggered >= 3 and net_exception_amount <= MATERIALITY_THRESHOLD:
         risk_level = "medium"
-    else:
+        auto_close_eligible = True  # AI can handle with proper rationale
+    # Moderate exceptions with moderate amounts - medium risk
+    elif sources_triggered >= 2 and net_exception_amount > MATERIALITY_THRESHOLD:
+        risk_level = "medium"
+        auto_close_eligible = False
+    # Few exceptions, low amounts - low risk, auto-close
+    elif sources_triggered <= 2 and net_exception_amount <= MATERIALITY_THRESHOLD:
         risk_level = "low"
-    block_close = bool(risk_level == "high")
+        auto_close_eligible = True
+    # Default to medium for edge cases
+    else:
+        risk_level = "medium"
+        auto_close_eligible = net_exception_amount <= MATERIALITY_THRESHOLD
+    
+    # Only block close for high risk or when auto-close is not eligible
+    block_close = bool(risk_level == "high" or not auto_close_eligible)
 
     # Gather referenced artifacts already produced (URIs only)
     referenced_artifacts: Dict[str, str] = {}
@@ -91,6 +136,27 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
     run_id = Path(audit.log_path).stem.replace("audit_", "")
     out_path = Path(audit.out_dir) / f"gatekeeping_{run_id}.json"
 
+    # Generate AI rationale for auto-close decisions
+    ai_rationale = ""
+    confidence_score = 0.0
+    
+    auto_journal_text = f"{auto_journal_cnt} automated journal(s) totaling ${auto_journal_total:,.2f} were created to resolve exceptions." if auto_journal_cnt > 0 else ""
+
+    if auto_close_eligible:
+        if risk_level == "low":
+            ai_rationale = f"Auto-close approved: Net exceptions of ${net_exception_amount:,.2f} are below materiality thresholds. All critical controls passed. {auto_journal_text}"
+            confidence_score = 0.98
+        else:  # medium risk but eligible
+            ai_rationale = f"Auto-close with monitoring: Net exceptions of ${net_exception_amount:,.2f} are within acceptable limits. {auto_journal_text} All items are auto-approved."
+            confidence_score = 0.88
+    else:
+        if risk_level == "high":
+            ai_rationale = f"Manual review required: Critical control failures detected or high-value net exceptions (${net_exception_amount:,.2f}) exceed risk tolerance. {auto_journal_text} Human oversight mandatory."
+            confidence_score = 0.99  # High confidence in blocking
+        else:
+            ai_rationale = f"Exception review needed: {sources_triggered} sources with ${net_exception_amount:,.2f} net impact require analyst validation. {auto_journal_text}"
+            confidence_score = 0.90
+    
     payload: Dict[str, Any] = {
         "generated_at": utils.now_iso_z(),
         "period": state.period,
@@ -104,6 +170,13 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
         "totals": totals,
         "risk_level": risk_level,
         "block_close": block_close,
+        "auto_close_eligible": auto_close_eligible,
+        "gross_exception_amount": gross_exception_amount,
+        "auto_journal_amount": auto_journal_total,
+        "net_exception_amount": net_exception_amount,
+        "materiality_threshold": MATERIALITY_THRESHOLD,
+        "ai_rationale": ai_rationale,
+        "confidence_score": confidence_score,
         "referenced_artifacts": referenced_artifacts,
     }
 
@@ -153,7 +226,11 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
         {
             "gatekeeping_risk_level": risk_level,
             "gatekeeping_block_close": block_close,
+            "gatekeeping_auto_close_eligible": auto_close_eligible,
             "gatekeeping_sources_triggered_count": sources_triggered,
+            "gatekeeping_net_exception_amount": net_exception_amount,
+            "gatekeeping_confidence_score": confidence_score,
+            "gatekeeping_ai_rationale": ai_rationale,
             "gatekeeping_artifact": str(out_path),
         }
     )

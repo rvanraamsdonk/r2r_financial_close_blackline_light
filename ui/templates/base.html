@@ -4,35 +4,63 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>R2R Close Dashboard</title>
-    <!-- Tailwind via CDN for simplicity -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <style>
+        .bg-success-soft {
+            background-color: rgba(25, 135, 84, 0.1);
+            color: #198754;
+            border: 1px solid rgba(25, 135, 84, 0.2);
+        }
+        .bg-danger-soft {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+        .bg-warning-soft {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+        .bg-primary-soft {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+            border: 1px solid rgba(13, 110, 253, 0.2);
+        }
+    </style>
   </head>
-  <body class="bg-gray-50 text-gray-900">
-    <div class="min-h-screen">
-      <nav class="bg-indigo-700 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex items-center justify-between h-14">
-            <div class="flex items-center space-x-3">
-              <a href="/" class="font-bold tracking-wide hover:underline">R2R</a>
-              <a href="/" class="opacity-80 hover:underline">Home</a>
-              <a href="/fx" class="opacity-80 hover:underline">FX</a>
-              <a href="/flux" class="opacity-80 hover:underline">Flux</a>
-              <a href="/exceptions" class="opacity-80 hover:underline">Exceptions</a>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">R2R Auto-Close</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/tb">TB</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/fx">FX</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/flux">Flux</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/bank">Bank</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/hitl">Review Queue</a></li>
+                </ul>
+                <div class="d-flex">
+                    <div class="text-light small" id="clock" hx-get="/partials/clock" hx-trigger="load, every 30s" hx-swap="outerHTML">Loading…</div>
+                </div>
             </div>
-            <div class="flex items-center space-x-4">
-              <a href="/" class="text-xs bg-white/10 hover:bg-white/20 px-2 py-1 rounded">Home</a>
-              <div class="text-xs opacity-80" id="clock" hx-get="/partials/clock" hx-trigger="load, every 30s" hx-swap="outerHTML">Loading…</div>
-            </div>
-          </div>
         </div>
-      </nav>
+    </nav>
 
-      <main class="max-w-7xl mx-auto p-4">
+    <main>
         {% block content %}{% endblock %}
-      </main>
-    </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Drawer root for slide-out details -->
     <div id="drawer-root"></div>
     

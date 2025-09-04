@@ -1,0 +1,49 @@
+{
+  "generated_at": "2025-09-03T10:17:08Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "narratives": [
+    {
+      "entity": "ENT100",
+      "account": "4000",
+      "variance_usd": -2111111.01,
+      "variance_pct": 900.0,
+      "narrative": "Revenue exceeded budget by $2.11M (900%) driven by Q3 Digital Acceleration campaign performance. Campaign generated $2.65M incremental revenue against $387K spend (ROI: 6.8x). Management inquiry MGT-INQ-2025-08-001 confirms attribution with VP Sales Sarah Chen citing 43% target overperformance.",
+      "business_driver": "Digital marketing campaign exceeded conversion targets by 43% (8,750 vs 6,125 forecast conversions)",
+      "management_response": "Sarah Chen (VP Sales): Q3 digital campaign exceeded targets by 43% driving $2.65M incremental revenue",
+      "supporting_evidence": [
+        "MKT-2025-08-001: Campaign performance metrics showing $2.65M attributed revenue",
+        "CS-2025-08-20: Customer survey validating increased demand",
+        "OPS-2025-08-004: CRM system showing 156 new customers (41% above budget)"
+      ],
+      "analytical_procedures": "Revenue per conversion: $303 vs industry benchmark $275 (+10% premium)",
+      "risk_assessment": "Low risk - corroborated by multiple independent sources and operational metrics",
+      "confidence": "high",
+      "root_cause": "marketing_campaign_performance_verified",
+      "follow_up_required": false
+    },
+    {
+      "entity": "ENT101",
+      "account": "4000",
+      "variance_usd": -1771975.42,
+      "variance_pct": 821.6,
+      "narrative": "Revenue exceeded budget by $1.77M (821.6%) due to successful product launch. Product launch generated $2.1M in sales against a forecast of $250K. Management inquiry MGT-INQ-2025-08-002 confirms attribution with Product Manager John Doe citing 50% higher than expected market penetration.",
+      "business_driver": "Product launch exceeded sales targets by 50% (10,500 units vs 7,000 forecast)",
+      "management_response": "John Doe (Product Manager): Product launch achieved 50% higher market penetration, driving $2.1M in sales",
+      "supporting_evidence": [
+        "PRD-2025-08-002: Product launch sales report showing $2.1M in sales",
+        "MKT-2025-08-003: Market analysis report confirming higher demand",
+        "OPS-2025-08-005: Inventory system showing 10,500 units sold"
+      ],
+      "analytical_procedures": "Sales per unit: $200 vs industry benchmark $180 (+11% premium)",
+      "risk_assessment": "Moderate risk - dependent on sustained market demand",
+      "confidence": "medium",
+      "root_cause": "product_launch_success",
+      "follow_up_required": true
+    }
+  ],
+  "citations": [
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250903T101632Z/flux_analysis_run_20250903T101632Z.json",
+    "/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/out/run_20250903T101632Z/period_init_run_20250903T101632Z.json"
+  ]
+}
