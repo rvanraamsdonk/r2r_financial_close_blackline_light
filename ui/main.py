@@ -672,13 +672,96 @@ def _load_bank_reconciliation_data() -> Dict[str, Any]:
         "summary": {"count": 0, "total_abs_amount": 0, "by_entity_abs_amount": {}},
     }
 
+def _find_latest_intercompany_file(base_out: str = None) -> Optional[str]:
+    if base_out is None:
+        base_out = "out" if os.path.exists("out") else "../out" if os.path.exists("../out") else None
+        if not base_out:
+            return None
+    
+    pattern = os.path.join(base_out, "run_*", "intercompany_reconciliation_run_*.json")
+    candidates = glob.glob(pattern)
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+def _load_intercompany_data() -> Dict[str, Any]:
+    path = _find_latest_intercompany_file()
+    if path and os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                data = json.load(f)
+                
+                # Transform data structure to match template expectations
+                if 'summary' in data:
+                    # Map by_pair_diff_abs to by_entity_abs_amount for template compatibility
+                    if 'by_pair_diff_abs' in data['summary']:
+                        data['summary']['by_entity_abs_amount'] = {}
+                        for pair, amount in data['summary']['by_pair_diff_abs'].items():
+                            entity = pair.split('->')[0] if '->' in pair else pair
+                            data['summary']['by_entity_abs_amount'][entity] = amount
+                    
+                    # Add missing fields expected by template
+                    if 'total_abs_amount' not in data['summary']:
+                        data['summary']['total_abs_amount'] = data['summary'].get('total_diff_abs', 0)
+                    if 'avg_confidence' not in data['summary']:
+                        data['summary']['avg_confidence'] = None
+                
+                # Transform exceptions to match template field expectations
+                if 'exceptions' in data:
+                    for exception in data['exceptions']:
+                        # Map fields for template compatibility
+                        if 'entity_src' in exception and 'entity_amount' not in exception:
+                            exception['entity_amount'] = exception.get('amount', 0)
+                        if 'entity_dst' in exception and 'counterparty' not in exception:
+                            exception['counterparty'] = exception['entity_dst']
+                        if 'counterparty_amount' not in exception:
+                            exception['counterparty_amount'] = exception.get('amount_dst', exception.get('amount', 0))
+                        if 'difference' not in exception:
+                            exception['difference'] = exception.get('diff_abs', 0)
+                        if 'account' not in exception:
+                            exception['account'] = exception.get('doc_id', 'N/A')
+                        if 'status' not in exception:
+                            exception['status'] = 'unmatched'
+                        if 'confidence' not in exception:
+                            exception['confidence'] = 'medium'
+                        if 'id' not in exception:
+                            exception['id'] = exception.get('doc_id', f"ic_{hash(str(exception))}")
+                
+                return data
+        except Exception:
+            pass
+    return {
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "period": "N/A",
+        "exceptions": [],
+        "rows": [],
+        "summary": {
+            "count": 0, 
+            "total_abs_amount": 0,
+            "by_entity_abs_amount": {},
+            "avg_confidence": None
+        }
+    }
+
 # Removed duplicate bank endpoint - using the one with proper viewmodel below
 
 
 @app.get("/intercompany", response_class=HTMLResponse)
 async def intercompany_page(request: Request):
-    # This is a placeholder endpoint. Data will be loaded from the engine later.
-    return templates.TemplateResponse("intercompany.html", {"request": request})
+    # Load intercompany reconciliation data
+    try:
+        data = _load_intercompany_data()
+        logger.info(f"Intercompany data loaded. Found {len(data.get('rows', []))} rows.")
+    except Exception as e:
+        logger.error(f"Error loading intercompany data: {e}")
+        data = {
+            "generated_at": datetime.utcnow().isoformat() + "Z",
+            "period": "N/A",
+            "rows": [],
+            "summary": {"count": 0, "total_abs_amount": 0}
+        }
+    return templates.TemplateResponse("intercompany.html", {"request": request, "data": data})
 
 
 @app.get("/hitl", response_class=HTMLResponse)

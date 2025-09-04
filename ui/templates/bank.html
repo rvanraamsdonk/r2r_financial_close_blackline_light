@@ -21,13 +21,13 @@
         </div>
         <div class="col-2">
             <div class="bg-light border rounded p-2 text-center">
-                <div class="fw-bold text-success">{{ (bank.exceptions | length) - bank.forensic_count }}</div>
+                <div class="fw-bold text-success">{{ bank.exceptions | selectattr('classification', 'equalto', 'auto_approved') | list | length }}</div>
                 <small class="text-muted">Auto-Approved</small>
             </div>
         </div>
         <div class="col-2">
             <div class="bg-light border rounded p-2 text-center">
-                <div class="fw-bold">100%</div>
+                <div class="fw-bold">{% if bank.avg_confidence %}{{ bank.avg_confidence }}%{% else %}N/A{% endif %}</div>
                 <small class="text-muted">Avg. Confidence</small>
             </div>
         </div>
@@ -59,8 +59,8 @@
             </div>
             <div class="col">
                 <small class="text-muted me-3">Method: <strong>AI-Powered Reconciliation</strong></small>
-                <small class="text-muted me-3">Threshold: <strong>${{ bank.total_amount | format_currency }}</strong></small>
-                <small class="text-muted me-3">Auto-Match Rate: <strong>99.8%</strong></small>
+                <small class="text-muted me-3">Threshold: <strong>{% if bank.total_amount %}{{ bank.total_amount | format_currency }}{% else %}N/A{% endif %}</strong></small>
+                <small class="text-muted me-3">Auto-Match Rate: <strong>{% if bank.exceptions and (bank.exceptions | length) > 0 %}{{ ((bank.exceptions | selectattr('classification', 'equalto', 'auto_approved') | list | length) / (bank.exceptions | length) * 100) | round(1) }}%{% else %}N/A{% endif %}</strong></small>
                 <small class="text-muted">Source: <strong>Bank Statement Data</strong></small>
             </div>
         </div>
@@ -119,7 +119,7 @@
             <span class="badge bg-secondary">{{ bank.exceptions | length }} items</span>
         </div>
         <div class="table-responsive">
-            <table class="table table-hover table-sm mb-0">
+            <table class="table table-hover table-sm mb-0 fs-6">
                 <thead class="table-light">
                     <tr>
                         <th><input type="checkbox" class="form-check-input" id="selectAll"></th>

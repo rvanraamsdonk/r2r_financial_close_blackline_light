@@ -3,95 +3,278 @@
 {% block title %}Intercompany Reconciliation{% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4 py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid px-3 py-2">
+    <div class="d-flex justify-content-between align-items-center mb-2">
         <div>
-            <h1 class="mt-4">Intercompany Reconciliation</h1>
-            <p class="text-muted">Review and resolve intercompany balances.</p>
-        </div>
-        <div>
-            <span class="badge bg-success-soft me-2">0 Matched</span>
-            <span class="badge bg-warning-soft me-2">0 Mismatched</span>
-            <span class="badge bg-danger-soft">0 Unmatched</span>
+            <h4 class="mb-1">Intercompany Reconciliation</h4>
+            <small class="text-muted">Exceptions for {{ data.period }}</small>
         </div>
     </div>
 
-    <!-- Filter and Action Bar -->
-    <div class="card mb-4">
-        <div class="card-body d-flex justify-content-between">
-            <div>
-                <select class="form-select-sm me-2">
-                    <option selected>Entity: All</option>
-                    <option>Entity A</option>
-                    <option>Entity B</option>
-                </select>
-                <select class="form-select-sm">
-                    <option selected>Status: All</option>
-                    <option>Matched</option>
-                    <option>Mismatched</option>
-                    <option>Unmatched</option>
-                </select>
+    <!-- KPI Row -->
+    <div class="row g-2 mb-2">
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-danger">{{ data.summary.count }}</div>
+                <small class="text-muted">Exceptions</small>
             </div>
-            <div>
-                <button class="btn btn-primary">Run Matching Engine</button>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-success">{{ data.exceptions | selectattr('status', 'equalto', 'auto_approved') | list | length }}</div>
+                <small class="text-muted">Auto-Approved</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{% if data.summary.avg_confidence %}{{ data.summary.avg_confidence }}%{% else %}N/A{% endif %}</div>
+                <small class="text-muted">Avg. Confidence</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{{ data.exceptions | length }}</div>
+                <small class="text-muted">Total Items</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{{ data.period }}</div>
+                <small class="text-muted">Period</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <span class="badge bg-secondary">AI</span>
+                <small class="text-muted d-block">Analysis Type</small>
             </div>
         </div>
     </div>
+
+    <!-- Methodology -->
+    <div class="bg-light border rounded p-2 mb-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <span class="badge bg-secondary">AI</span>
+            </div>
+            <div class="col">
+                <small class="text-muted me-3">Method: <strong>AI-Powered Intercompany Reconciliation</strong></small>
+                <small class="text-muted me-3">Threshold: <strong>${{ "${:,.0f}".format(data.summary.total_abs_amount) if data.summary.total_abs_amount else "N/A" }}</strong></small>
+                <small class="text-muted me-3">Auto-Match Rate: <strong>{% if data.exceptions | length > 0 %}{{ ((data.exceptions | selectattr('status', 'equalto', 'matched') | list | length) / data.exceptions | length * 100) | round | int }}%{% else %}N/A{% endif %}</strong></small>
+                <small class="text-muted">Source: <strong>Intercompany Transaction Data</strong></small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <form method="GET" action="/intercompany">
+        <div class="bg-light border rounded p-2 mb-2">
+            <div class="row g-2 align-items-center">
+                <div class="col-auto">
+                    <select name="entity" class="form-select form-select-sm">
+                        <option value="">All Entities</option>
+                        {% for entity in data.summary.by_entity_abs_amount.keys() %}
+                        <option value="{{ entity }}" {% if request.query_params.get('entity') == entity %}selected{% endif %}>{{ entity }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="">All Status</option>
+                        <option value="matched" {% if request.query_params.get('status') == 'matched' %}selected{% endif %}>Matched</option>
+                        <option value="mismatched" {% if request.query_params.get('status') == 'mismatched' %}selected{% endif %}>Mismatched</option>
+                        <option value="unmatched" {% if request.query_params.get('status') == 'unmatched' %}selected{% endif %}>Unmatched</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select name="counterparty" class="form-select form-select-sm">
+                        <option value="">All Counterparties</option>
+                        {% for counterparty in data.exceptions | map(attribute='counterparty') | unique %}
+                        <option value="{{ counterparty }}" {% if request.query_params.get('counterparty') == counterparty %}selected{% endif %}>{{ counterparty }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <input type="number" step="1000" name="min_amount" class="form-control form-control-sm" placeholder="Min Amount" style="width: 120px;"/>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Apply</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
+                </div>
+                <div class="col">
+                    <div class="btn-group btn-group-sm ms-auto">
+                        <button type="button" class="btn btn-outline-success" onclick="approveAll()">Approve All</button>
+                        <button type="button" class="btn btn-outline-warning" onclick="approveSelected()">Approve Selected</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="exportToExcel()">Export</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 
     <!-- Data Table -->
     <div class="card">
-        <div class="card-header">
-            Intercompany Balances
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Intercompany Reconciliation Exceptions</h6>
+            <span class="badge bg-secondary">{{ data.exceptions | length }} items</span>
         </div>
-        <div class="card-body">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Entity</th>
-                        <th>Counterparty</th>
-                        <th>Account</th>
-                        <th>Amount (Entity)</th>
-                        <th>Amount (Counterparty)</th>
-                        <th>Difference</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Placeholder Row -->
-                    <tr>
-                        <td>Entity A</td>
-                        <td>Entity B</td>
-                        <td>140100 - Intercompany AR</td>
-                        <td>$100,000.00</td>
-                        <td>$95,000.00</td>
-                        <td class="text-danger">($5,000.00)</td>
-                        <td><span class="badge bg-warning-soft">Mismatched</span></td>
-                        <td><button class="btn btn-sm btn-outline-primary">Investigate</button></td>
-                    </tr>
-                    <tr>
-                        <td>Entity C</td>
-                        <td>Entity D</td>
-                        <td>210200 - Intercompany AP</td>
-                        <td>$50,000.00</td>
-                        <td>$50,000.00</td>
-                        <td>$0.00</td>
-                        <td><span class="badge bg-success-soft">Matched</span></td>
-                        <td><button class="btn btn-sm btn-outline-secondary" disabled>View</button></td>
-                    </tr>
-                     <tr>
-                        <td>Entity A</td>
-                        <td>Entity C</td>
-                        <td>140100 - Intercompany AR</td>
-                        <td>$25,000.00</td>
-                        <td>-</td>
-                        <td class="text-danger">($25,000.00)</td>
-                        <td><span class="badge bg-danger-soft">Unmatched</span></td>
-                        <td><button class="btn btn-sm btn-outline-primary">Investigate</button></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm mb-0 fs-6">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="40">
+                                <input type="checkbox" id="selectAll" class="form-check-input">
+                            </th>
+                            <th>Entity</th>
+                            <th>Counterparty</th>
+                            <th>Account</th>
+                            <th class="text-end">Entity Amount</th>
+                            <th class="text-end">Counterparty Amount</th>
+                            <th class="text-end">Difference</th>
+                            <th>Status</th>
+                            <th>Confidence</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exception in data.exceptions %}
+                        <tr class="{% if exception.status == 'matched' %}table-success{% elif exception.status == 'mismatched' %}table-warning{% else %}table-danger{% endif %}">
+                            <td>
+                                <input type="checkbox" class="form-check-input row-select" value="{{ exception.id }}">
+                            </td>
+                            <td>{{ exception.entity }}</td>
+                            <td>{{ exception.counterparty }}</td>
+                            <td>{{ exception.account }}</td>
+                            <td class="text-end">USD {{ "{:,.2f}".format(exception.entity_amount) }}</td>
+                            <td class="text-end">
+                                {% if exception.counterparty_amount %}
+                                USD {{ "{:,.2f}".format(exception.counterparty_amount) }}
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end {% if exception.difference < 0 %}text-danger{% elif exception.difference > 0 %}text-success{% else %}text-muted{% endif %}">
+                                {% if exception.difference != 0 %}
+                                ({{ "{:,.2f}".format(exception.difference|abs) }})
+                                {% else %}
+                                0.00
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {% if exception.status == 'matched' %}bg-success{% elif exception.status == 'mismatched' %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ exception.status|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if exception.confidence == 'high' %}bg-success{% elif exception.confidence == 'medium' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    {{ exception.confidence|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="viewEvidence('{{ exception.id }}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-success" onclick="approveItem('{{ exception.id }}')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="10" class="text-center py-4 text-muted">
+                                No intercompany transactions match current filters.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Intercompany page JavaScript loaded');
+    
+    // Select all checkbox functionality
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const rowCheckboxes = document.querySelectorAll('.row-select');
+    
+    console.log('Found selectAll:', !!selectAllCheckbox);
+    console.log('Found row checkboxes:', rowCheckboxes.length);
+    
+    if (selectAllCheckbox && rowCheckboxes.length > 0) {
+        selectAllCheckbox.addEventListener('change', function() {
+            console.log('Select all clicked:', this.checked);
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+        
+        // Update select all when individual checkboxes change
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkedCount = document.querySelectorAll('.row-select:checked').length;
+                selectAllCheckbox.checked = checkedCount === rowCheckboxes.length;
+                selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < rowCheckboxes.length;
+            });
+        });
+    } else {
+        console.warn('Select all functionality not initialized - missing elements');
+    }
+});
+
+// Filter functions
+function clearFilters() {
+    console.log('Clear filters clicked');
+    window.location.href = '/intercompany';
+}
+
+// Bulk actions
+function approveAll() {
+    const allRows = document.querySelectorAll('.row-select');
+    if (allRows.length === 0) {
+        alert('No items to approve');
+        return;
+    }
+    if (confirm(`Approve all ${allRows.length} items?`)) {
+        console.log('Approving all items');
+        // Implementation for bulk approval
+    }
+}
+
+function approveSelected() {
+    const selected = document.querySelectorAll('.row-select:checked');
+    if (selected.length === 0) {
+        alert('Please select items to approve');
+        return;
+    }
+    if (confirm(`Approve ${selected.length} selected items?`)) {
+        console.log('Approving', selected.length, 'items');
+        // Implementation for bulk approval
+    }
+}
+
+function exportToExcel() {
+    console.log('Exporting to Excel');
+    // Implementation for Excel export
+}
+
+function viewEvidence(id) {
+    console.log('Viewing evidence for:', id);
+    // Implementation for evidence viewer
+}
+
+function approveItem(id) {
+    console.log('Approving item:', id);
+    if (confirm('Approve this item?')) {
+        // Implementation for single item approval
+    }
+}
+</script>
+{% endblock %}
+
 {% endblock %}

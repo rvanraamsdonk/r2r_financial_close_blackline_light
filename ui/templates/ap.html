@@ -3,141 +3,272 @@
 {% block title %}AP Reconciliation{% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4 py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid px-3 py-2">
+    <div class="d-flex justify-content-between align-items-center mb-2">
         <div>
-            <h1 class="mt-4">AP Reconciliation</h1>
-            <p class="text-muted">Review and resolve Accounts Payable exceptions for period {{ data.period }}.</p>
+            <h4 class="mb-1">AP Reconciliation</h4>
+            <small class="text-muted">Exceptions for {{ data.period }}</small>
         </div>
     </div>
 
-    <!-- Summary Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-primary text-white mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="fs-4 fw-bold">{{ data.summary.count }}</div>
-                            <p class="mb-0">Total Exceptions</p>
-                        </div>
-                        <div class="fs-1"><i class="fas fa-file-invoice-dollar"></i></div>
-                    </div>
-                </div>
+    <!-- KPI Row -->
+    <div class="row g-2 mb-2">
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-danger">{{ data.summary.count }}</div>
+                <small class="text-muted">Exceptions</small>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-warning text-white mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="fs-4 fw-bold">${ "{:,.0f}".format(data.summary.total_abs_amount) }}</div>
-                            <p class="mb-0">Total Exception Amount</p>
-                        </div>
-                        <div class="fs-1"><i class="fas fa-dollar-sign"></i></div>
-                    </div>
-                </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold text-success">{{ data.exceptions | selectattr('status', 'equalto', 'auto_approved') | list | length }}</div>
+                <small class="text-muted">Auto-Approved</small>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-info text-white mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="fs-4 fw-bold">{{ data.exceptions | selectattr('reason', 'equalto', 'duplicate_payment_pattern') | list | length }}</div>
-                            <p class="mb-0">Duplicate Payments</p>
-                        </div>
-                        <div class="fs-1"><i class="fas fa-copy"></i></div>
-                    </div>
-                </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{% if data.summary.avg_confidence %}{{ data.summary.avg_confidence }}%{% else %}N/A{% endif %}</div>
+                <small class="text-muted">Avg. Confidence</small>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-danger text-white mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="fs-4 fw-bold">{{ data.exceptions | rejectattr('ai_rationale', 'undefined') | selectattr('ai_rationale', 'match', '^\[FORENSIC\]') | list | length }}</div>
-                            <p class="mb-0">Forensic Flags</p>
-                        </div>
-                        <div class="fs-1"><i class="fas fa-fire"></i></div>
-                    </div>
-                </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{{ data.exceptions | length }}</div>
+                <small class="text-muted">Total Items</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <div class="fw-bold">{{ data.period }}</div>
+                <small class="text-muted">Period</small>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="bg-light border rounded p-2 text-center">
+                <span class="badge bg-secondary">AI</span>
+                <small class="text-muted d-block">Analysis Type</small>
             </div>
         </div>
     </div>
 
-    <!-- Filters -->
-    <div class="card mb-4">
-        <div class="card-header">Filters</div>
-        <div class="card-body">
-            <form class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label for="entityFilter" class="form-label">Entity</label>
-                    <select id="entityFilter" class="form-select">
-                        <option selected>All</option>
+    <!-- Methodology -->
+    <div class="bg-light border rounded p-2 mb-2">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <span class="badge bg-secondary">AI</span>
+            </div>
+            <div class="col">
+                <small class="text-muted me-3">Method: <strong>AI-Powered AP Reconciliation</strong></small>
+                <small class="text-muted me-3">Threshold: <strong>{% if data.summary.total_amount %}${{ "{:,.0f}".format(data.summary.total_amount) }}{% else %}N/A{% endif %}</strong></small>
+                <small class="text-muted me-3">Auto-Match Rate: <strong>{% if data.summary.match_rate is not none %}{{ data.summary.match_rate }}%{% elif data.exceptions and (data.exceptions | length) > 0 %}{{ ((data.exceptions | selectattr('status', 'equalto', 'auto_approved') | list | length) / (data.exceptions | length) * 100) | round(1) }}%{% else %}N/A{% endif %}</strong></small>
+                <small class="text-muted">Source: <strong>AP Subledger Data</strong></small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <form method="GET" action="/ap">
+        <div class="bg-light border rounded p-2 mb-2">
+            <div class="row g-2 align-items-center">
+                <div class="col-auto">
+                    <select name="entity" class="form-select form-select-sm">
+                        <option value="">All Entities</option>
                         {% for entity in data.summary.by_entity_abs_amount.keys() %}
-                        <option>{{ entity }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="reasonFilter" class="form-label">Reason</label>
-                    <select id="reasonFilter" class="form-select">
-                        <option selected>All</option>
-                        {% for reason in data.exceptions | map(attribute='reason') | unique %}
-                        <option>{{ reason.replace('_', ' ')|title }}</option>
+                        <option value="{{ entity }}" {% if request.query_params.get('entity') == entity %}selected{% endif %}>{{ entity }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-auto">
-                    <button type="submit" class="btn btn-primary">Apply</button>
-                    <button type="reset" class="btn btn-secondary">Clear</button>
+                    <select name="reason" class="form-select form-select-sm">
+                        <option value="">All Reasons</option>
+                        {% for reason in data.exceptions | map(attribute='reason') | unique %}
+                        <option value="{{ reason }}" {% if request.query_params.get('reason') == reason %}selected{% endif %}>{{ reason.replace('_', ' ')|title }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </form>
+                <div class="col-auto">
+                    <select name="amount_range" class="form-select form-select-sm">
+                        <option value="">All Amounts</option>
+                        <option value="high" {% if request.query_params.get('amount_range') == 'high' %}selected{% endif %}>&gt; $10,000</option>
+                        <option value="medium" {% if request.query_params.get('amount_range') == 'medium' %}selected{% endif %}>$1,000 - $10,000</option>
+                        <option value="low" {% if request.query_params.get('amount_range') == 'low' %}selected{% endif %}>&lt; $1,000</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <input type="number" step="1000" name="min_amount" class="form-control form-control-sm" placeholder="Min Amount" style="width: 120px;"/>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Apply</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
+                </div>
+                <div class="col">
+                    <div class="btn-group btn-group-sm ms-auto">
+                        <button type="button" class="btn btn-outline-success" onclick="approveAll()">Approve All</button>
+                        <button type="button" class="btn btn-outline-warning" onclick="approveSelected()">Approve Selected</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="exportToExcel()">Export</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </form>
 
-    <!-- AP Rec Table -->
+    <!-- Data Table -->
     <div class="card">
-        <div class="card-header">AP Reconciliation Exceptions</div>
-        <div class="card-body">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">Entity</th>
-                        <th scope="col">Vendor</th>
-                        <th scope="col">Bill Date</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Reason</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="ap-rec-table-body">
-                    {% for ex in data.exceptions %}
-                    <tr>
-                        <td>{{ ex.entity }}</td>
-                        <td>{{ ex.vendor_name }}</td>
-                        <td>{{ ex.bill_date }}</td>
-                        <td>{{ ex.currency }} {{ "{:,.2f}".format(ex.amount) }}</td>
-                        <td>
-                            <span class="badge {% if ex.ai_rationale and ex.ai_rationale.startswith('[FORENSIC]') %}bg-danger{% else %}bg-warning{% endif %}">
-                                {{ ex.reason.replace('_', ' ')|title }}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-primary">Create Case</button>
-                            <button class="btn btn-sm btn-secondary">View Details</button>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center">No AP reconciliation exceptions found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">AP Reconciliation Exceptions</h6>
+            <span class="badge bg-secondary">{{ data.exceptions | length }} items</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm mb-0 fs-6">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="40">
+                                <input type="checkbox" id="selectAll" class="form-check-input">
+                            </th>
+                            <th>Entity</th>
+                            <th>Vendor</th>
+                            <th>Bill Date</th>
+                            <th>Amount</th>
+                            <th>Reason</th>
+                            <th>Confidence</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ex in data.exceptions %}
+                        <tr class="{% if ex.ai_rationale and ex.ai_rationale.startswith('[FORENSIC]') %}table-danger{% elif ex.confidence == 'low' %}table-warning{% endif %}">
+                            <td>
+                                <input type="checkbox" class="form-check-input row-select" value="{{ ex.id or loop.index }}">
+                            </td>
+                            <td>{{ ex.entity }}</td>
+                            <td>{{ ex.vendor_name }}</td>
+                            <td>{{ ex.bill_date }}</td>
+                            <td class="text-end">{{ ex.currency }} {{ "{:,.2f}".format(ex.amount) }}</td>
+                            <td>
+                                <span class="badge {% if ex.ai_rationale and ex.ai_rationale.startswith('[FORENSIC]') %}bg-danger{% else %}bg-warning{% endif %}">
+                                    {{ ex.reason.replace('_', ' ')|title }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if ex.confidence %}
+                                <span class="badge {% if ex.confidence == 'high' %}bg-success{% elif ex.confidence == 'medium' %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ ex.confidence|title }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="viewEvidence('{{ ex.id or loop.index }}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" onclick="approveItem('{{ ex.id or loop.index }}')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">No AP reconciliation exceptions found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('AP page JavaScript loaded');
+    
+    // Select all checkbox functionality
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const rowCheckboxes = document.querySelectorAll('.row-select');
+    
+    console.log('Found selectAll:', !!selectAllCheckbox);
+    console.log('Found row checkboxes:', rowCheckboxes.length);
+    
+    if (selectAllCheckbox && rowCheckboxes.length > 0) {
+        selectAllCheckbox.addEventListener('change', function() {
+            console.log('Select all clicked:', this.checked);
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+        
+        // Update select all when individual checkboxes change
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkedCount = document.querySelectorAll('.row-select:checked').length;
+                selectAllCheckbox.checked = checkedCount === rowCheckboxes.length;
+                selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < rowCheckboxes.length;
+            });
+        });
+    } else {
+        console.warn('Select all functionality not initialized - missing elements');
+    }
+});
+
+// Filter functions
+function clearFilters() {
+    console.log('Clear filters clicked');
+    window.location.href = '/ap';
+}
+
+// Bulk actions
+function approveAll() {
+    const allRows = document.querySelectorAll('.row-select');
+    if (allRows.length === 0) {
+        alert('No items to approve');
+        return;
+    }
+    if (confirm(`Approve all ${allRows.length} items?`)) {
+        console.log('Approving all items');
+        // Implementation for bulk approval
+    }
+}
+
+function approveSelected() {
+    const selected = document.querySelectorAll('.row-select:checked');
+    if (selected.length === 0) {
+        alert('Please select items to approve');
+        return;
+    }
+    if (confirm(`Approve ${selected.length} selected items?`)) {
+        console.log('Approving', selected.length, 'items');
+        // Implementation for bulk approval
+    }
+}
+
+function exportToExcel() {
+    console.log('Exporting to Excel');
+    // Implementation for Excel export
+}
+
+function viewEvidence(id) {
+    console.log('Viewing evidence for:', id);
+    // Implementation for evidence viewer
+}
+
+function approveItem(id) {
+    console.log('Approving item:', id);
+    if (confirm('Approve this item?')) {
+        // Implementation for single item approval
+        fetch('/approve-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id })
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(error));
+    }
+}
+</script>
+{% endblock %}
+
 {% endblock %}
