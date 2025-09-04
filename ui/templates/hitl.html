@@ -358,12 +358,23 @@ document.addEventListener('DOMContentLoaded', function () {
         const checkboxes = document.querySelectorAll('.row-select');
         checkboxes.forEach(cb => cb.checked = this.checked);
     });
+    
+    // Update select all when individual checkboxes change
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('row-select')) {
+            const checkboxes = document.querySelectorAll('.row-select');
+            const checkedCount = document.querySelectorAll('.row-select:checked').length;
+            selectAllCheckbox.checked = checkedCount === checkboxes.length;
+            selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+        }
+    });
 
     // Clear filters
     clearBtn.addEventListener('click', () => {
         statusFilter.value = '';
         priorityFilter.value = '';
         moduleFilter.value = '';
+        document.getElementById('assignee-filter').value = '';
         fetchCases();
     });
 
@@ -420,6 +431,36 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
         caseDetailsModal.show();
     };
+
+    // Bulk actions
+    document.getElementById('bulk-assign-btn').addEventListener('click', () => {
+        const allRows = document.querySelectorAll('.row-select');
+        if (allRows.length === 0) {
+            alert('No items to approve');
+            return;
+        }
+        if (confirm(`Approve all ${allRows.length} items?`)) {
+            console.log('Approving all items');
+            // Implementation for bulk approval
+        }
+    });
+    
+    document.getElementById('bulk-resolve-btn').addEventListener('click', () => {
+        const selected = document.querySelectorAll('.row-select:checked');
+        if (selected.length === 0) {
+            alert('Please select items to approve');
+            return;
+        }
+        if (confirm(`Approve ${selected.length} selected items?`)) {
+            console.log('Approving', selected.length, 'items');
+            // Implementation for bulk approval
+        }
+    });
+    
+    document.getElementById('export-btn').addEventListener('click', () => {
+        console.log('Exporting to Excel');
+        // Implementation for Excel export
+    });
 
     confirmAssignBtn.addEventListener('click', async () => {
         const caseId = assignCaseIdInput.value;

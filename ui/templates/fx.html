@@ -72,40 +72,42 @@
     </div>
 
     <!-- Controls -->
-    <div class="bg-light border rounded p-2 mb-2">
-        <div class="row g-2 align-items-center">
-            <div class="col-auto">
-                <select id="entityFilter" name="entity" class="form-select form-select-sm">
-                    <option value="" {% if not fx.selected_entity %}selected{% endif %}>All Entities</option>
-                    {% for e in fx.entities %}
-                        <option value="{{ e }}" {% if fx.selected_entity == e %}selected{% endif %}>{{ e }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-auto">
-                <select id="currencyFilter" name="currency" class="form-select form-select-sm">
-                    <option value="">All Currencies</option>
-                    <option value="EUR">EUR</option>
-                    <option value="GBP">GBP</option>
-                    <option value="USD">USD</option>
-                </select>
-            </div>
-            <div class="col-auto">
-                <input type="number" step="1000" id="minVarianceFilter" name="min_variance" class="form-control form-control-sm" placeholder="Min Variance" style="width: 120px;"/>
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-outline-primary btn-sm">Apply</button>
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
-            </div>
-            <div class="col">
-                <div class="btn-group btn-group-sm ms-auto">
-                    <button class="btn btn-outline-success" onclick="approveAll()">Approve All</button>
-                    <button class="btn btn-outline-warning" onclick="approveSelected()">Approve Selected</button>
-                    <button class="btn btn-outline-secondary" onclick="exportToExcel()">Export</button>
+    <form method="GET" action="/fx">
+        <div class="bg-light border rounded p-2 mb-2">
+            <div class="row g-2 align-items-center">
+                <div class="col-auto">
+                    <select id="entityFilter" name="entity" class="form-select form-select-sm">
+                        <option value="" {% if not fx.selected_entity %}selected{% endif %}>All Entities</option>
+                        {% for e in fx.entities %}
+                            <option value="{{ e }}" {% if fx.selected_entity == e %}selected{% endif %}>{{ e }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select id="currencyFilter" name="currency" class="form-select form-select-sm">
+                        <option value="">All Currencies</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <input type="number" step="1000" id="minVarianceFilter" name="min_variance" class="form-control form-control-sm" placeholder="Min Variance" style="width: 120px;"/>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Apply</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
+                </div>
+                <div class="col">
+                    <div class="btn-group btn-group-sm ms-auto">
+                        <button type="button" class="btn btn-outline-success" onclick="approveAll()">Approve All</button>
+                        <button type="button" class="btn btn-outline-warning" onclick="approveSelected()">Approve Selected</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="exportToExcel()">Export</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 
     <!-- FX Details Table -->
     <div class="card">
@@ -181,24 +183,34 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('FX page JavaScript loaded');
+    
     // Select all checkbox functionality
     const selectAllCheckbox = document.getElementById('selectAll');
     const rowCheckboxes = document.querySelectorAll('.row-select');
     
-    selectAllCheckbox.addEventListener('change', function() {
-        rowCheckboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
-        });
-    });
+    console.log('Found selectAll:', !!selectAllCheckbox);
+    console.log('Found row checkboxes:', rowCheckboxes.length);
     
-    // Update select all when individual checkboxes change
-    rowCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const checkedCount = document.querySelectorAll('.row-select:checked').length;
-            selectAllCheckbox.checked = checkedCount === rowCheckboxes.length;
-            selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < rowCheckboxes.length;
+    if (selectAllCheckbox && rowCheckboxes.length > 0) {
+        selectAllCheckbox.addEventListener('change', function() {
+            console.log('Select all clicked:', this.checked);
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
         });
-    });
+        
+        // Update select all when individual checkboxes change
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkedCount = document.querySelectorAll('.row-select:checked').length;
+                selectAllCheckbox.checked = checkedCount === rowCheckboxes.length;
+                selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < rowCheckboxes.length;
+            });
+        });
+    } else {
+        console.warn('Select all functionality not initialized - missing elements');
+    }
 });
 
 function approve(entity, account) {
@@ -220,15 +232,32 @@ function showDetails(entity, account) {
     console.log(`Showing details for ${entity} - ${account}`);
 }
 
+function clearFilters() {
+    console.log('Clear filters clicked');
+    window.location.href = '/fx';
+}
+
 function approveAll() {
+    const allRows = document.querySelectorAll('.row-select');
+    if (allRows.length === 0) {
+        alert('No items to approve');
+        return;
+    }
+    if (confirm(`Approve all ${allRows.length} items?`)) {
+        console.log('Approving all items');
+        // Implementation for bulk approval
+    }
+}
+
+function approveSelected() {
     const checkedBoxes = document.querySelectorAll('.row-select:checked');
     if (checkedBoxes.length === 0) {
         alert('Please select items to approve');
         return;
     }
     if (confirm(`Approve ${checkedBoxes.length} selected items?`)) {
-        // Implementation for bulk approval
         console.log(`Bulk approving ${checkedBoxes.length} items`);
+        // Implementation for bulk approval
     }
 }
 

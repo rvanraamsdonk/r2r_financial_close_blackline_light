@@ -72,44 +72,46 @@
     </div>
 
     <!-- Controls -->
-    <div class="bg-light border rounded p-2 mb-2">
-        <div class="row g-2 align-items-center">
-            <div class="col-auto">
-                <select id="entityFilter" name="entity" class="form-select form-select-sm">
-                    <option value="">All Entities</option>
-                    {% for item in data.diagnostics %}
-                        <option value="{{ item.entity }}">{{ item.entity }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-auto">
-                <select id="statusFilter" name="status" class="form-select form-select-sm">
-                    <option value="">All Status</option>
-                    <option value="balanced">Balanced</option>
-                    <option value="imbalanced">Imbalanced</option>
-                </select>
-            </div>
-            <div class="col-auto">
-                <select id="confidenceFilter" name="confidence" class="form-select form-select-sm">
-                    <option value="">Any Confidence</option>
-                    <option value="95">95%+</option>
-                    <option value="80">80%+</option>
-                    <option value="50">50%+</option>
-                </select>
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-outline-primary btn-sm">Apply</button>
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
-            </div>
-            <div class="col">
-                <div class="btn-group btn-group-sm ms-auto">
-                    <button class="btn btn-outline-success" onclick="approveAll()">Approve All</button>
-                    <button class="btn btn-outline-warning" onclick="approveSelected()">Approve Selected</button>
-                    <button class="btn btn-outline-secondary" onclick="exportToExcel()">Export</button>
+    <form method="GET" action="/tb">
+        <div class="bg-light border rounded p-2 mb-2">
+            <div class="row g-2 align-items-center">
+                <div class="col-auto">
+                    <select id="entityFilter" name="entity" class="form-select form-select-sm">
+                        <option value="">All Entities</option>
+                        {% for item in data.diagnostics %}
+                            <option value="{{ item.entity }}">{{ item.entity }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select id="statusFilter" name="status" class="form-select form-select-sm">
+                        <option value="">All Status</option>
+                        <option value="balanced">Balanced</option>
+                        <option value="imbalanced">Imbalanced</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select id="confidenceFilter" name="confidence" class="form-select form-select-sm">
+                        <option value="">All Confidence</option>
+                        <option value="high">High (>90%)</option>
+                        <option value="medium">Medium (70-90%)</option>
+                        <option value="low">Low (<70%)</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Apply</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
+                </div>
+                <div class="col">
+                    <div class="btn-group btn-group-sm ms-auto">
+                        <button type="button" class="btn btn-outline-success" onclick="approveAll()">Approve All</button>
+                        <button type="button" class="btn btn-outline-warning" onclick="approveSelected()">Approve Selected</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="exportToExcel()">Export</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 
     <!-- Entity Diagnostics Table -->
     {% if data.diagnostics %}
@@ -210,17 +212,18 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Progress bar initialization
-    document.querySelectorAll('.progress-bar[data-width]').forEach(function(element) {
-        element.style.width = element.getAttribute('data-width');
-    });
+    console.log('TB page JavaScript loaded');
     
     // Select all checkbox functionality
     const selectAllCheckbox = document.getElementById('selectAll');
     const rowCheckboxes = document.querySelectorAll('.row-select');
     
-    if (selectAllCheckbox) {
+    console.log('Found selectAll:', !!selectAllCheckbox);
+    console.log('Found row checkboxes:', rowCheckboxes.length);
+    
+    if (selectAllCheckbox && rowCheckboxes.length > 0) {
         selectAllCheckbox.addEventListener('change', function() {
+            console.log('Select all clicked:', this.checked);
             rowCheckboxes.forEach(checkbox => {
                 checkbox.checked = this.checked;
             });
@@ -234,8 +237,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < rowCheckboxes.length;
             });
         });
+    } else {
+        console.warn('Select all functionality not initialized - missing elements');
     }
+    
+    // Initialize progress bars
+    document.querySelectorAll('.progress-bar[data-width]').forEach(bar => {
+        const width = bar.getAttribute('data-width');
+        bar.style.width = width;
+    });
 });
+
+// Filter functions
+function clearFilters() {
+    console.log('Clear filters clicked');
+    window.location.href = '/tb';
+}
+
+// Bulk actions
+function approveAll() {
+    const allRows = document.querySelectorAll('.row-select');
+    if (allRows.length === 0) {
+        alert('No items to approve');
+        return;
+    }
+    if (confirm(`Approve all ${allRows.length} items?`)) {
+        console.log('Approving all items');
+        // Implementation for bulk approval
+    }
+}
+
+function approveSelected() {
+    const selected = document.querySelectorAll('.row-select:checked');
+    if (selected.length === 0) {
+        alert('Please select items to approve');
+        return;
+    }
+    if (confirm(`Approve ${selected.length} selected items?`)) {
+        console.log('Approving', selected.length, 'items');
+        // Implementation for bulk approval
+    }
+}
+
+function exportToExcel() {
+    console.log('Exporting to Excel');
+    // Implementation for Excel export
+}
 
 function approve(entity) {
     if (confirm(`Approve trial balance for ${entity}?`)) {
@@ -244,52 +291,9 @@ function approve(entity) {
     }
 }
 
-function reject(entity) {
-    if (confirm(`Reject trial balance for ${entity}?`)) {
-        console.log(`Rejecting ${entity}`);
-        // Implementation for rejection
-    }
-}
-
 function showDetails(entity) {
-    // Load entity details into modal
-    const modalBody = document.getElementById('entityModalBody');
-    modalBody.innerHTML = `
-        <div class="text-center py-3">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-    `;
-    
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('entityModal'));
-    modal.show();
-    
-    // Simulate loading entity details
-    setTimeout(() => {
-        modalBody.innerHTML = `
-            <h6>Entity: ${entity}</h6>
-            <p>Detailed analysis and account breakdown would be loaded here...</p>
-        `;
-    }, 1000);
-}
-
-function approveAllBalanced() {
-    const checkedBoxes = document.querySelectorAll('.row-select:checked');
-    if (checkedBoxes.length === 0) {
-        alert('Please select entities to approve');
-        return;
-    }
-    if (confirm(`Approve ${checkedBoxes.length} selected entities?`)) {
-        console.log(`Bulk approving ${checkedBoxes.length} entities`);
-        // Implementation for bulk approval
-    }
-}
-
-function exportToExcel() {
-    console.log('Exporting to Excel...');
-    // Implementation for Excel export
+    console.log(`Showing details for ${entity}`);
+    // Implementation for showing details modal
 }
 </script>
 {% endblock %}
