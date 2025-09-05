@@ -1,0 +1,1823 @@
+from fastapi import APIRouter, Request, Form, HTTPException, Response
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from datetime import datetime
+from typing import Dict, Any, List, Optional
+from enum import Enum
+from pydantic import BaseModel, Field
+import json
+import os
+import glob
+import uuid
+from pathlib import Path
+import traceback
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+router = APIRouter()
+
+def format_datetime_filter(value, format='%Y-%m-%d %H:%M:%S UTC'):
+    """Format an ISO 8601 string to a more readable date and time."""
+    if not value:
+        return ""
+    try:
+        # Handle Z suffix for UTC
+        if value.endswith('Z'):
+            value = value[:-1] + '+00:00'
+        dt_object = datetime.fromisoformat(value)
+        return dt_object.strftime(format)
+    except (ValueError, TypeError):
+        return value
+
+if os.path.exists("ui/templates"):
+    templates = Jinja2Templates(directory="ui/templates")
+else:
+    templates = Jinja2Templates(directory="templates")
+
+def format_currency_filter(value, currency='$'):
+    """Formats a number into a currency string like $1,234."""
+    if value is None:
+        return ""
+    try:
+        return f"{currency}{value:,.0f}"
+    except (ValueError, TypeError):
+        return str(value)
+
+templates.env.filters['format_datetime'] = format_datetime_filter
+templates.env.filters['format_currency'] = format_currency_filter
+
+
+# ---- HITL Data Models ------------------------------------------------------
+
+class HITLCaseStatus(str, Enum):
+    OPEN = "open"
+    ASSIGNED = "assigned"
+    RESOLVED = "resolved"
+
+class HITLCase(BaseModel):
+    case_id: str = Field(default_factory=lambda: f"case_{uuid.uuid4().hex[:8]}")
+    module: str
+    reason: str
+    priority: str
+    status: HITLCaseStatus = HITLCaseStatus.OPEN
+    assignee: Optional[str] = None
+    created_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    updated_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    ai_summary: str
+    raw_data: Dict[str, Any]
+
+# In-memory HITL case storage (in production, this would be a database)
+_hitl_store: Dict[str, HITLCase] = {}
+
+from .business_logic import (
+    JournalEntry,
+    JELine,
+    JEStatus,
+    _je_store,
+    _create_fx_je,
+    _create_flux_je,
+    _create_bank_je,
+)
+from .data_access import (
+    _load_automation_dashboard,
+    _load_intercompany_data,
+    _load_fx_data,
+    _fallback_automation_data,
+    _latest_run_id_from_path,
+    _find_latest_intercompany_file,
+)
+
+
+# ---- Mock data generator ----------------------------------------------------
+
+
+def _find_latest_hitl_file(base_out: str = None) -> Optional[str]:
+    if base_out is None:
+        base_out = "out" if os.path.exists("out") else "../out" if os.path.exists("../out") else None
+        if not base_out:
+            return None
+    
+    pattern = os.path.join(base_out, "run_*", "hitl_cases_run_*.jsonl")
+    candidates = glob.glob(pattern)
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+
+def _load_initial_hitl_cases():
+    """Load initial HITL cases from the latest artifact file into the in-memory store."""
+    global _hitl_store
+    path = _find_latest_hitl_file()
+    
+    # Try to load from audit file first
+    if path and os.path.exists(path):
+        try:
+            temp_cases = {}
+            with open(path, "r") as f:
+                for line in f:
+                    data = json.loads(line)
+                    if data.get("type") == "hitl_case":
+                        case = HITLCase(**data)
+                        temp_cases[case.case_id] = case
+            if temp_cases:
+                _hitl_store = temp_cases
+                print(f"Successfully loaded {len(_hitl_store)} HITL cases from audit file.")
+                return
+        except Exception as e:
+            print(f"Error loading HITL cases from audit file: {e}")
+    
+    # Generate sample HITL cases from forensic scenarios if no real cases found
+    print("No HITL cases found in audit file. Generating sample cases from forensic scenarios.")
+    _generate_sample_hitl_cases()
+
+def _generate_sample_hitl_cases():
+    """Generate sample HITL cases from forensic scenarios in the data."""
+    global _hitl_store
+    sample_cases = []
+    
+    # Bank reconciliation forensic cases
+    try:
+        bank_data = _load_bank_reconciliation_data()
+        for exception in bank_data.get("exceptions", [])[:3]:  # Take first 3
+            if exception.get("classification") == "forensic_risk":
+                case = HITLCase(
+                    module="Bank Reconciliation",
+                    reason=f"Forensic Risk: {exception.get('reason', '').replace('_', ' ').title()}",
+                    priority="high",
+                    ai_summary=exception.get("ai_rationale", "Forensic risk detected in bank reconciliation"),
+                    raw_data=exception
+                )
+                sample_cases.append(case)
+    except Exception:
+        pass
+    
+    # Flux analysis forensic cases
+    try:
+        flux_data = _load_flux_data()
+        for row in flux_data.get("rows", [])[:2]:  # Take first 2
+            if row.get("ai_narrative") and "[FORENSIC]" in row.get("ai_narrative", ""):
+                case = HITLCase(
+                    module="Flux Analysis",
+                    reason=f"Material Variance: {row.get('entity')}/{row.get('account')}",
+                    priority="medium",
+                    ai_summary=row.get("ai_narrative", "Material variance requiring explanation"),
+                    raw_data=row
+                )
+                sample_cases.append(case)
+    except Exception:
+        pass
+    
+    # Convert to dict and store
+    _hitl_store = {case.case_id: case for case in sample_cases}
+    print(f"Generated {len(_hitl_store)} sample HITL cases.")
+
+
+@router.on_event("startup")
+async def startup_event():
+    # In a real app, you might connect to a database, etc.
+    print("Application startup")
+    _load_initial_hitl_cases()
+
+
+
+
+# ---- Pages ------------------------------------------------------------------
+
+@router.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    logger.info("Request received for index page")
+    try: 
+    # Load automation dashboard data from latest run
+        automation_data = _load_automation_dashboard()
+        logger.info(f"Automation data loaded. Keys: {automation_data.keys()}")
+    except Exception as e:
+        logger.error(f"Error loading automation data: {e}", exc_info=True)
+        automation_data = _fallback_automation_data()
+
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "automation_data": automation_data
+    })
+
+
+# ---- API Endpoints for HITL -------------------------------------------------
+
+class AssignRequest(BaseModel):
+    assignee: str
+
+@router.get("/api/hitl/cases", response_model=List[HITLCase])
+async def get_hitl_cases(
+    status: Optional[HITLCaseStatus] = None,
+    priority: Optional[str] = None,
+    module: Optional[str] = None,
+    sort_by: str = 'priority',
+    sort_order: str = 'asc',
+):
+    """
+    API endpoint to get HITL cases with filtering and sorting.
+    """
+    cases = list(_hitl_store.values())
+
+    # Filtering
+    if status:
+        cases = [case for case in cases if case.status == status]
+    if priority:
+        cases = [case for case in cases if case.priority.lower() == priority.lower()]
+    if module:
+        cases = [case for case in cases if case.module.lower() == module.lower()]
+
+    # Sorting
+    reverse = sort_order == 'desc'
+    priority_map = {"high": 0, "medium": 1, "low": 2}
+    
+    if sort_by == 'priority':
+        cases.sort(key=lambda c: (priority_map.get(c.priority, 3), c.created_at), reverse=reverse)
+    elif sort_by == 'created_at':
+        cases.sort(key=lambda c: c.created_at, reverse=reverse)
+    
+    return cases
+
+@router.post("/api/hitl/cases/{case_id}/assign", response_model=HITLCase)
+async def assign_hitl_case(case_id: str, payload: AssignRequest):
+    if case_id not in _hitl_store:
+        raise HTTPException(status_code=404, detail="Case not found")
+    
+    case = _hitl_store[case_id]
+    case.assignee = payload.assignee
+    case.status = HITLCaseStatus.ASSIGNED
+    case.updated_at = datetime.utcnow().isoformat()
+    _hitl_store[case_id] = case
+    return case
+
+@router.post("/api/hitl/cases/{case_id}/resolve", response_model=HITLCase)
+async def resolve_hitl_case(case_id: str):
+    if case_id not in _hitl_store:
+        raise HTTPException(status_code=404, detail="Case not found")
+
+    case = _hitl_store[case_id]
+    case.status = HITLCaseStatus.RESOLVED
+    case.updated_at = datetime.utcnow().isoformat()
+    _hitl_store[case_id] = case
+    return case
+
+
+def _find_latest_ar_reconciliation_file(base_out: str = None) -> Optional[str]:
+    if base_out is None:
+        base_out = "out" if os.path.exists("out") else "../out" if os.path.exists("../out") else None
+        if not base_out:
+            return None
+    
+    pattern = os.path.join(base_out, "run_*", "ar_reconciliation_run_*.json")
+    candidates = glob.glob(pattern)
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+def _load_ar_reconciliation_data() -> Dict[str, Any]:
+    path = _find_latest_ar_reconciliation_file()
+    if path and os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "period": "N/A",
+        "exceptions": [],
+        "summary": {"count": 0, "total_abs_amount": 0, "by_entity_abs_amount": {}},
+    }
+
+@router.get("/ar", response_class=HTMLResponse)
+async def ar_page(request: Request):
+    logger.info("Request received for AR page")
+    ar_data = _load_ar_reconciliation_data()
+    logger.info(f"AR data loaded. Found {len(ar_data.get('exceptions', []))} exceptions.")
+    return templates.TemplateResponse("ar.html", {"request": request, "data": ar_data})
+
+
+def _find_latest_ap_reconciliation_file(base_out: str = None) -> Optional[str]:
+    if base_out is None:
+        base_out = "out" if os.path.exists("out") else "../out" if os.path.exists("../out") else None
+        if not base_out:
+            return None
+    
+    pattern = os.path.join(base_out, "run_*", "ap_reconciliation_run_*.json")
+    candidates = glob.glob(pattern)
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+def _load_ap_reconciliation_data() -> Dict[str, Any]:
+    path = _find_latest_ap_reconciliation_file()
+    if path and os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "period": "N/A",
+        "exceptions": [],
+        "summary": {"count": 0, "total_abs_amount": 0, "by_entity_abs_amount": {}},
+    }
+
+@router.get("/ap", response_class=HTMLResponse)
+async def ap_page(request: Request):
+    logger.info("Request received for AP page")
+    ap_data = _load_ap_reconciliation_data()
+    logger.info(f"AP data loaded. Found {len(ap_data.get('exceptions', []))} exceptions.")
+    return templates.TemplateResponse("ap.html", {"request": request, "data": ap_data})
+
+
+def _find_latest_bank_reconciliation_file(base_out: str = None) -> Optional[str]:
+    if base_out is None:
+        base_out = "out" if os.path.exists("out") else "../out" if os.path.exists("../out") else None
+        if not base_out:
+            return None
+    
+    pattern = os.path.join(base_out, "run_*", "bank_reconciliation_run_*.json")
+    candidates = glob.glob(pattern)
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+def _load_bank_reconciliation_data() -> Dict[str, Any]:
+    path = _find_latest_bank_reconciliation_file()
+    if path and os.path.exists(path):
+        logger.info(f"Found bank reconciliation file: {path}")
+        try:
+            with open(path, "r") as f:
+                data = json.load(f)
+                logger.info(f"Successfully loaded and parsed JSON from {path}")
+                return data
+        except Exception as e:
+            logger.error(f"Error loading or parsing bank reconciliation data from {path}: {e}", exc_info=True)
+    else:
+        logger.warning("Could not find any bank reconciliation artifact file.")
+
+    logger.warning("Returning fallback/empty bank reconciliation data.")
+    return {
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "period": "N/A",
+        "exceptions": [],
+        "summary": {"count": 0, "total_abs_amount": 0, "by_entity_abs_amount": {}},
+    }
+
+
+# Removed duplicate bank endpoint - using the one with proper viewmodel below
+
+
+@router.get("/intercompany", response_class=HTMLResponse)
+async def intercompany_page(request: Request):
+    # Load intercompany reconciliation data
+    try:
+        data = _load_intercompany_data()
+        logger.info(f"Intercompany data loaded. Found {len(data.get('rows', []))} rows.")
+    except Exception as e:
+        logger.error(f"Error loading intercompany data: {e}")
+        data = {
+            "generated_at": datetime.utcnow().isoformat() + "Z",
+            "period": "N/A",
+            "rows": [],
+            "summary": {"count": 0, "total_abs_amount": 0}
+        }
+    return templates.TemplateResponse("intercompany.html", {"request": request, "data": data})
+
+
+@router.get("/hitl", response_class=HTMLResponse)
+async def hitl_page(request: Request):
+    # Convert store to list for template
+    hitl_cases = list(_hitl_store.values()) 
+    # Sort by priority (high > medium > low) and then by creation time
+    priority_map = {"high": 0, "medium": 1, "low": 2}
+    sorted_cases = sorted(
+        hitl_cases, 
+        key=lambda c: (priority_map.get(c.priority, 3), c.created_at)
+    )
+    
+    return templates.TemplateResponse("hitl.html", {
+        "request": request,
+        "cases": sorted_cases,
+        "case_count": len(sorted_cases)
+    })
+    
+
+# ---- HTMX partials ----------------------------------------------------------
+
+
+@router.get("/partials/kpis", response_class=HTMLResponse)
+async def kpis_partial(request: Request):
+    """Render KPI cards from latest run artifacts (metrics.json + gatekeeping)."""
+    try:
+        # Locate latest run directory by gatekeeping artifact
+        base_out = "out" if os.path.exists("out") else "../out" if os.path.exists("../out") else None
+        if not base_out:
+            return Response(status_code=204)
+        candidates = glob.glob(os.path.join(base_out, "run_*", "gatekeeping_run_*.json"))
+        if not candidates:
+            return Response(status_code=204)
+        latest_gatekeeping = sorted(candidates, reverse=True)[0]
+        run_dir = str(Path(latest_gatekeeping).parent)
+
+        # Load metrics.json (primary) and gatekeeping (secondary)
+        metrics_path = os.path.join(run_dir, "metrics.json")
+        gatekeeping = {}
+        metrics = {}
+        try:
+            with open(metrics_path, "r") as f:
+                metrics = json.load(f)
+        except Exception:
+            metrics = {}
+        try:
+            with open(latest_gatekeeping, "r") as f:
+                gatekeeping = json.load(f)
+        except Exception:
+            gatekeeping = {}
+
+        # Derive totals
+        recs_total = int(metrics.get("bank_duplicates_count", 0)) + int(metrics.get("ic_mismatch_count", 0))
+        tasks_total = int(metrics.get("ap_exceptions_count", 0)) + int(metrics.get("ar_exceptions_count", 0)) + int(metrics.get("accruals_exception_count", 0)) + int(metrics.get("flux_exceptions_count", 0))
+        grand_total = recs_total + tasks_total
+
+        # Compute state distribution heuristically
+        block_close = bool(gatekeeping.get("block_close", metrics.get("gatekeeping_block_close", False)))
+        auto_close_eligible = bool(gatekeeping.get("auto_close_eligible", metrics.get("gatekeeping_auto_close_eligible", False)))
+
+        # Basic breakdown: if blocked -> most items not prepared; if eligible -> most completed; else in progress
+        if grand_total == 0:
+            not_prepared_recs = not_prepared_tasks = in_progress_recs = in_progress_tasks = completed_recs = completed_tasks = 0
+        else:
+            if block_close:
+                not_prepared_recs = int(recs_total * 0.6)
+                not_prepared_tasks = int(tasks_total * 0.6)
+                completed_recs = int(recs_total * 0.1)
+                completed_tasks = int(tasks_total * 0.1)
+            elif auto_close_eligible:
+                not_prepared_recs = int(recs_total * 0.05)
+                not_prepared_tasks = int(tasks_total * 0.05)
+                completed_recs = int(recs_total * 0.75)
+                completed_tasks = int(tasks_total * 0.75)
+            else:
+                not_prepared_recs = int(recs_total * 0.2)
+                not_prepared_tasks = int(tasks_total * 0.2)
+                completed_recs = int(recs_total * 0.3)
+                completed_tasks = int(tasks_total * 0.3)
+            in_progress_recs = max(0, recs_total - not_prepared_recs - completed_recs)
+            in_progress_tasks = max(0, tasks_total - not_prepared_tasks - completed_tasks)
+
+        def pct(n: int, d: int) -> int:
+            return int(round((n / d * 100))) if d > 0 else 0
+
+        states = {
+            "not_prepared": {
+                "recs": not_prepared_recs,
+                "tasks": not_prepared_tasks,
+                "pct": pct(not_prepared_recs + not_prepared_tasks, grand_total)
+            },
+            "in_progress": {
+                "recs": in_progress_recs,
+                "tasks": in_progress_tasks,
+                "pct": pct(in_progress_recs + in_progress_tasks, grand_total)
+            },
+            "completed": {
+                "recs": completed_recs,
+                "tasks": completed_tasks,
+                "pct": pct(completed_recs + completed_tasks, grand_total)
+            }
+        }
+
+        # Compute days remaining in close window based on period end
+        period = gatekeeping.get("period") or metrics.get("period")
+        days_remaining = 0
+        try:
+            if period:
+                from calendar import monthrange
+                year, month = map(int, period.split("-"))
+                last_day = monthrange(year, month)[1]
+                period_end = datetime(year, month, last_day)
+                now = datetime.utcnow()
+                days_remaining = max(0, (period_end - now).days)
+        except Exception:
+            days_remaining = 0
+
+        data = {
+            "close_clock_days_remaining": days_remaining,
+            "totals": {"recs": recs_total, "tasks": tasks_total},
+            "states": states
+        }
+
+        return templates.TemplateResponse("partials/kpis.html", {"request": request, "data": data})
+    except Exception as e:
+        print(f"[KPIs] Error: {e}")
+        print(traceback.format_exc())
+        return Response(status_code=204)
+
+
+@router.get("/partials/recon-progress", response_class=HTMLResponse)
+async def recon_progress_partial(request: Request):
+    """Render reconciliation progress bar and stats from latest run artifacts.
+
+    Expects template `partials/recon_progress.html` to receive context:
+    { "data": { "reconciliations": { completion_pct, completed, count, segments[], cards[] } } }
+    """
+    try:
+        # Locate latest run via gatekeeping artifact
+        base_out = "out" if os.path.exists("out") else "../out" if os.path.exists("../out") else None
+        if not base_out:
+            return Response(status_code=204)
+        candidates = glob.glob(os.path.join(base_out, "run_*", "gatekeeping_run_*.json"))
+        if not candidates:
+            return Response(status_code=204)
+        latest_gatekeeping = sorted(candidates, reverse=True)[0]
+        run_dir = str(Path(latest_gatekeeping).parent)
+
+        # Load metrics (primary) and gatekeeping (secondary)
+        metrics_path = os.path.join(run_dir, "metrics.json")
+        metrics = {}
+        gatekeeping = {}
+        try:
+            with open(metrics_path, "r") as f:
+                metrics = json.load(f)
+        except Exception:
+            metrics = {}
+        try:
+            with open(latest_gatekeeping, "r") as f:
+                gatekeeping = json.load(f)
+        except Exception:
+            gatekeeping = {}
+
+        # Reconciliation scope: bank + intercompany as primary recon modules
+        bank_ex = int(metrics.get("bank_duplicates_count", 0))
+        ic_ex = int(metrics.get("ic_mismatch_count", 0))
+
+        # Attempt to get totals if provided; otherwise estimate using gatekeeping context
+        # Prefer explicit totals if available in metrics
+        total_bank = int(metrics.get("bank_total_items", 0))
+        total_ic = int(metrics.get("intercompany_total_items", 0))
+
+        # If totals missing, estimate using fx rows proxy (same heuristic as dashboard)
+        if (total_bank + total_ic) == 0:
+            fx_proxy = _load_fx_data()
+            proxy_rows = len(fx_proxy.get("rows", []))
+            # Heuristic split across modules
+            total_bank = max(0, int(proxy_rows * 1.5))
+            total_ic = max(0, int(proxy_rows * 1.0))
+
+        total_recons = max(0, total_bank + total_ic)
+        total_ex = max(0, bank_ex + ic_ex)
+        completed = max(0, total_recons - total_ex)
+
+        # Derive state distribution influenced by gatekeeping signals
+        block_close = bool(gatekeeping.get("block_close", metrics.get("gatekeeping_block_close", False)))
+        auto_close_eligible = bool(gatekeeping.get("auto_close_eligible", metrics.get("gatekeeping_auto_close_eligible", False)))
+
+        # Split completed/in-progress/not-started
+        if total_recons == 0:
+            comp = ip = ns = 0
+        else:
+            comp = completed
+            # Heuristic: exceptions imply in-progress; remaining are not-started
+            ip = min(total_ex, max(0, total_recons - comp))
+            ns = max(0, total_recons - comp - ip)
+            # If blocked, bias more towards not-started
+            if block_close:
+                shift = int(ns * 0.1)
+                ns = min(total_recons, ns + shift)
+                comp = max(0, comp - shift)
+            # If eligible, bias towards completed
+            elif auto_close_eligible:
+                boost = int(max(1, total_recons * 0.05))
+                moved = min(boost, ns)
+                comp += moved
+                ns -= moved
+
+        def pct(n: int, d: int) -> int:
+            return int(round((n / d * 100))) if d > 0 else 0
+
+        segments = [
+            {"label": "Completed", "count": comp, "pct": pct(comp, total_recons), "color": "bg-green-500"},
+            {"label": "In Progress", "count": ip, "pct": pct(ip, total_recons), "color": "bg-yellow-400"},
+            {"label": "Not Started", "count": ns, "pct": pct(ns, total_recons), "color": "bg-gray-300"},
+        ]
+
+        cards = [
+            {"title": "Bank Exceptions", "value": bank_ex},
+            {"title": "Intercompany Exceptions", "value": ic_ex},
+            {"title": "Blocked to Close", "value": "Yes" if block_close else "No"},
+            {"title": "Auto-Close Eligible", "value": "Yes" if auto_close_eligible else "No"},
+        ]
+
+        reconciliations = {
+            "completion_pct": pct(comp, total_recons),
+            "completed": comp,
+            "count": total_recons,
+            "segments": segments,
+            "cards": cards,
+        }
+
+        data = {"reconciliations": reconciliations}
+        return templates.TemplateResponse("partials/recon_progress.html", {"request": request, "data": data})
+    except Exception as e:
+        print(f"[Recon-Progress] Error: {e}")
+        print(traceback.format_exc())
+        return Response(status_code=204)
+
+
+@router.get("/partials/clock", response_class=HTMLResponse)
+async def clock_partial(request: Request):
+    now = datetime.utcnow().isoformat() + "Z"
+    return templates.TemplateResponse(
+        "partials/clock.html",
+        {"request": request, "ts": now}
+    )
+
+
+@router.get("/partials/tab/close-ops", response_class=HTMLResponse)
+async def tab_close_ops(request: Request):
+    return Response(status_code=204)
+
+
+@router.get("/partials/tab/my-work", response_class=HTMLResponse)
+async def tab_my_work(request: Request):
+    return Response(status_code=204)
+
+
+@router.get("/partials/tab/analytics", response_class=HTMLResponse)
+async def tab_analytics(request: Request):
+    return Response(status_code=204)
+
+
+@router.get("/health")
+async def health():
+    return {"status": "ok", "ts": datetime.utcnow().isoformat() + "Z"}
+
+
+
+# ---- TB Diagnostics -----------------------------------------------------------
+
+def _find_latest_tb_diagnostics_file(base_out: str = None) -> Optional[str]:
+    if base_out is None:
+        base_out = "out" if os.path.exists("out") else "../out" if os.path.exists("../out") else None
+        if not base_out:
+            return None
+    
+    pattern = os.path.join(base_out, "run_*", "tb_diagnostics_run_*.json")
+    candidates = glob.glob(pattern)
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+
+def _load_tb_diagnostics_data() -> Dict[str, Any]:
+    path = _find_latest_tb_diagnostics_file()
+    if path and os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "period": "2025-08",
+        "diagnostics": [],
+        "summary": {"material_imbalances": 0, "auto_approved_entities": 0, "average_confidence_score": 0},
+    }
+
+def _tb_diagnostics_viewmodel(raw: Dict[str, Any]) -> Dict[str, Any]:
+    diagnostics = raw.get("diagnostics", [])
+    rollups = raw.get("rollups", {})
+
+    # Safely add derived fields to diagnostics
+    for diag in diagnostics:
+        # For deterministic calculations, confidence is always 100%
+        diag["confidence_score"] = 1.0
+        diag["confidence_score_pct"] = 100.0
+        diag["is_balanced"] = abs(diag.get("imbalance_usd", 0)) < 0.01
+        
+        # Add confidence scores to top accounts as well
+        for account in diag.get("top_accounts", []):
+            account["confidence_score"] = 1.0
+            account["confidence_score_pct"] = 100.0
+
+    # Calculate summary metrics from rollups
+    entity_balanced_map = rollups.get("entity_balanced", {})
+    material_imbalances = sum(1 for is_balanced in entity_balanced_map.values() if not is_balanced)
+    auto_approved_entities = sum(1 for is_balanced in entity_balanced_map.values() if is_balanced)
+
+    # If confidence scores are ever added, this would calculate the average
+    avg_confidence = sum(d.get("confidence_score", 0) for d in diagnostics)
+    avg_confidence_score = (avg_confidence / len(diagnostics)) if diagnostics else 0
+
+    summary = {
+        "material_imbalances": material_imbalances,
+        "auto_approved_entities": auto_approved_entities,
+        "average_confidence_score": round(avg_confidence_score * 100, 1)
+    }
+
+    return {
+        "generated_at": raw.get("generated_at"),
+        "period": raw.get("period"),
+        "diagnostics": diagnostics,
+        "summary": summary
+    }
+
+
+@router.get("/tb", response_class=HTMLResponse)
+async def tb_page(request: Request):
+    raw_data = _load_tb_diagnostics_data()
+    view_model = _tb_diagnostics_viewmodel(raw_data)
+    return templates.TemplateResponse("tb.html", {
+        "request": request,
+        "data": view_model
+    })
+
+
+# ---- AP/AR Reconciliation -----------------------------------------------------
+
+
+
+# ---- Bank Reconciliation --------------------------------------------------------
+
+
+# ---- FX Analysis ------------------------------------------------------------
+
+
+
+def _fx_viewmodel(raw: Dict[str, Any], entity: Optional[str], currency: Optional[str]) -> Dict[str, Any]:
+    rows: List[Dict[str, Any]] = raw.get("rows", [])
+    entities = sorted({r.get("entity") for r in rows})
+    currencies = sorted({r.get("currency") for r in rows if r.get("currency") != "USD"})
+    
+    # Filter
+    if entity:
+        rows = [r for r in rows if r.get("entity") == entity]
+    if currency:
+        rows = [r for r in rows if r.get("currency") == currency]
+    
+    # Process AI insights for each row - deterministic calculations have 100% confidence
+    for r in rows:
+        r['confidence_score'] = 1.0
+        r['confidence_score_pct'] = 100.0
+        # Add materiality flag based on diff amount
+        diff_abs = abs(float(r.get("diff_usd", 0.0)))
+        r['is_material'] = diff_abs > raw.get("policy", {}).get("tolerance_usd", 0.01)
+        r['auto_approved'] = not r['is_material']
+
+    # Sort by absolute diff desc
+    rows_sorted = sorted(rows, key=lambda r: abs(float(r.get("diff_usd", 0.0))), reverse=True)
+    
+    # Calculate metrics
+    total_diff = sum(abs(float(r.get("diff_usd", 0.0))) for r in rows)
+    material_rows = [r for r in rows if r.get('is_material', False)]
+    
+    summary = raw.get("summary", {})
+    summary['average_confidence_score'] = 1.0
+    summary['average_confidence_score_pct'] = 100.0
+
+    # Create proper summary metrics
+    summary_metrics = {
+        "material_diff_count": len(material_rows),
+        "auto_approved_count": len([r for r in rows if r.get('auto_approved', False)]),
+        "average_confidence_score_pct": 100.0,
+        "total_abs_diff_usd": total_diff,
+    }
+
+    return {
+        "period": raw.get("period"),
+        "generated_at": raw.get("generated_at"),
+        "entities": entities,
+        "currencies": currencies,
+        "selected_entity": entity or "",
+        "selected_currency": currency or "",
+        "rows": rows_sorted,
+        "count_filtered": len(rows_sorted),
+        "total_diff": total_diff,
+        "material_count": len(material_rows),
+        "policy": raw.get("policy", {}),
+        "summary": summary_metrics,
+    }
+
+
+def _find_latest_flux_file(base_out: str = None) -> Optional[str]:
+    if base_out is None:
+        if os.path.exists("out"):
+            base_out = "out"
+        elif os.path.exists("../out"):
+            base_out = "../out"
+        else:
+            return None
+    
+    pattern = os.path.join(base_out, "run_*", "flux_analysis_run_*.json")
+    candidates = glob.glob(pattern)
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+
+def _load_flux_data() -> Dict[str, Any]:
+    path = _find_latest_flux_file()
+    if path and os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            raise RuntimeError(f"Failed to load flux data from {path}: {e}")
+    else:
+        raise RuntimeError("No flux analysis artifacts found. Run the close process first.")
+
+
+def _flux_viewmodel(raw: Dict[str, Any], entity: Optional[str], min_abs: Optional[float]) -> Dict[str, Any]:
+    rows: List[Dict[str, Any]] = raw.get("rows", [])
+    entities = sorted({r.get("entity") for r in rows})
+    
+    # Filter
+    filtered_rows = rows
+    if entity:
+        filtered_rows = [r for r in filtered_rows if r.get("entity") == entity]
+    if min_abs is not None:
+        filtered_rows = [r for r in filtered_rows if abs(float(r.get("var_vs_budget", 0.0))) >= min_abs]
+    
+    # Sort by absolute variance vs budget desc (since var_vs_prior is mostly 0)
+    rows_sorted = sorted(filtered_rows, key=lambda r: abs(float(r.get("var_vs_budget", 0.0))), reverse=True)
+    
+    # Calculate metrics from filtered rows using budget variance
+    total_variance = sum(abs(float(r.get("var_vs_budget", 0.0))) for r in rows_sorted)
+    
+    return {
+        "period": raw.get("period"),
+        "prior": raw.get("prior"),
+        "entities": entities,
+        "selected_entity": entity or "",
+        "min_abs": min_abs or "",
+        "rows": rows_sorted,
+        "count_filtered": len(rows_sorted),
+        "total_variance": total_variance,
+        "rules": raw.get("rules", {"threshold_basis": "default", "default_floor_usd": 1000.0}),
+    }
+
+
+def _select_ap_row(period: Optional[str], entity: Optional[str], bill_id: Optional[str]) -> Dict[str, Any]:
+    raw = _load_ap_data()
+    exception = next((e for e in raw.get("exceptions", []) if (not period or raw.get("period") == period) and e.get("entity") == entity and e.get("bill_id") == bill_id), None)
+    
+    # Load AI cache for detailed analysis
+    ai_cache = _load_ai_cache_file("ap_ar_ai_suggestions")
+    detailed_ai = _find_ai_analysis_for_ap(ai_cache, bill_id) if ai_cache else None
+    
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, bill_id)
+    
+    # Enhanced AI analysis
+    ai_analysis = {}
+    if exception:
+        reason = exception.get("reason", "unknown")
+        amount = exception.get("amount", 0.0)
+        vendor = exception.get("vendor_name", "Unknown")
+        age_days = exception.get("age_days", 0)
+        ai_rationale = exception.get("ai_rationale", "")
+        
+        # Extract forensic flag and confidence from ai_rationale
+        is_forensic = "[FORENSIC]" in ai_rationale
+        
+        ai_analysis = {
+            "narrative": ai_rationale or f"AP exception: {reason.replace('_', ' ').title()}",
+            "business_driver": "Forensic Risk" if is_forensic else "Payment processing delay" if reason == "overdue" else "Aging management" if reason == "aged_over_60" else "Duplicate control",
+            "confidence": 0.95 if is_forensic else 0.85 if reason == "potential_duplicate" else 0.75,
+            "risk_level": "Critical" if is_forensic else "High" if age_days > 90 else "Medium" if age_days > 60 else "Low",
+            "forensic_flag": is_forensic
+        }
+    
+    # Source artifacts
+    primary_artifact = _find_latest_ap_file()
+    ai_artifact = _find_ai_cache_path("ap_ar_ai_suggestions")
+    
+    return {
+        "module": "AP",
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
+        "header": {"period": period or raw.get("period"), "entity": entity, "bill_id": bill_id, "basis": "ap_exception"},
+        "metrics": exception or {},
+        "threshold": 0.0,
+        "evidence": related_emails,
+        "ai_narrative": ai_analysis,
+        "detailed_ai": detailed_ai,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "AP Reconciliation Data"},
+            {"path": ai_artifact, "type": "ai_analysis", "description": "AI Analysis Cache"}
+        ],
+        "cross_module_matches": _find_cross_module_matches(ai_cache, bill_id) if ai_cache else [],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
+    }
+
+
+def _select_ar_row(period: Optional[str], entity: Optional[str], invoice_id: Optional[str]) -> Dict[str, Any]:
+    raw = _load_ar_data()
+    exception = next((e for e in raw.get("exceptions", []) if (not period or raw.get("period") == period) and e.get("entity") == entity and e.get("invoice_id") == invoice_id), None)
+    
+    # Load AI cache for detailed analysis
+    ai_cache = _load_ai_cache_file("ap_ar_ai_suggestions")
+    detailed_ai = _find_ai_analysis_for_ar(ai_cache, invoice_id) if ai_cache else None
+    
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, invoice_id)
+    
+    # Enhanced AI analysis
+    ai_analysis = {}
+    if exception:
+        reason = exception.get("reason", "unknown")
+        amount = exception.get("amount", 0.0)
+        customer = exception.get("customer_name", "Unknown")
+        age_days = exception.get("age_days", 0)
+        ai_rationale = exception.get("ai_rationale", "")
+        
+        # Extract forensic flag
+        is_forensic = "[FORENSIC]" in ai_rationale
+        
+        ai_analysis = {
+            "narrative": ai_rationale or f"AR exception: {reason.replace('_', ' ').title()}",
+            "business_driver": "Forensic Risk" if is_forensic else "Collection delay" if reason == "overdue" else "Aging management" if reason == "aged_over_60" else "Credit risk",
+            "confidence": 0.95 if is_forensic else 0.80 if reason == "aged_over_120" else 0.70,
+            "risk_level": "Critical" if is_forensic else "High" if age_days > 120 else "Medium" if age_days > 60 else "Low",
+            "forensic_flag": is_forensic
+        }
+    
+    # Source artifacts
+    primary_artifact = _find_latest_ar_file()
+    ai_artifact = _find_ai_cache_path("ap_ar_ai_suggestions")
+    
+    return {
+        "module": "AR",
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
+        "header": {"period": period or raw.get("period"), "entity": entity, "invoice_id": invoice_id, "basis": "ar_exception"},
+        "metrics": exception or {},
+        "threshold": 0.0,
+        "evidence": related_emails,
+        "ai_narrative": ai_analysis,
+        "detailed_ai": detailed_ai,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "AR Reconciliation Data"},
+            {"path": ai_artifact, "type": "ai_analysis", "description": "AI Analysis Cache"}
+        ],
+        "cross_module_matches": _find_cross_module_matches(ai_cache, invoice_id) if ai_cache else [],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
+    }
+
+
+def _select_fx_row(period: Optional[str], entity: Optional[str], account: Optional[str]) -> Dict[str, Any]:
+    raw = _load_fx_data()
+    row = next((r for r in raw.get("rows", []) if (not period or raw.get("period") == period) and r.get("entity") == entity and r.get("account") == account), None)
+    
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, f"{entity}_{account}")
+    
+    # Enhanced AI analysis
+    ai_analysis = {}
+    if row:
+        diff_usd = row.get("diff_usd", 0.0)
+        rate = row.get("rate", 1.0)
+        currency = row.get("currency", "USD")
+        
+        # Check for significant differences
+        is_significant = abs(diff_usd) > 50000
+        
+        ai_analysis = {
+            "narrative": f"FX translation difference: {entity}/{account} in {currency}. Difference: ${diff_usd:,.2f} at rate {rate}.",
+            "business_driver": "Currency volatility" if abs(diff_usd) > 10000 else "Rate precision",
+            "confidence": 0.90 if abs(diff_usd) > 50000 else 0.75,
+            "risk_level": "High" if abs(diff_usd) > 100000 else "Medium" if abs(diff_usd) > 10000 else "Low",
+            "forensic_flag": is_significant
+        }
+    
+    # Source artifacts
+    primary_artifact = _find_latest_fx_file()
+    
+    return {
+        "module": "FX",
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
+        "header": {"period": period or raw.get("period"), "entity": entity, "account": account, "basis": "fx_translation"},
+        "metrics": row or {},
+        "threshold": raw.get("policy", {}).get("tolerance_usd", 0.01),
+        "evidence": related_emails,
+        "ai_narrative": ai_analysis,
+        "detailed_ai": None,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "FX Translation Data"}
+        ],
+        "cross_module_matches": [],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
+    }
+
+
+def _select_flux_row(period: Optional[str], entity: Optional[str], account: Optional[str]) -> Dict[str, Any]:
+    raw = _load_flux_data()
+    row = next((r for r in raw.get("rows", []) if (not period or raw.get("period") == period) and r.get("entity") == entity and r.get("account") == account), None)
+    
+    # Load AI cache for detailed analysis
+    ai_cache = _load_ai_cache_file("flux_ai_narratives")
+    detailed_ai = _find_ai_analysis_for_flux(ai_cache, entity, account) if ai_cache else None
+    
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, f"{entity}_{account}")
+    
+    # Enhanced AI analysis
+    ai_analysis = {}
+    if row:
+        var_vs_budget = row.get("var_vs_budget", 0.0)
+        var_vs_prior = row.get("var_vs_prior", 0.0)
+        actual_usd = row.get("actual_usd", 0.0)
+        ai_narrative = row.get("ai_narrative", "")
+        
+        # Check for significant variances
+        is_significant = abs(var_vs_budget) > 500000
+        
+        ai_analysis = {
+            "narrative": ai_narrative or f"Flux variance: {entity}/{account}. Budget variance: ${var_vs_budget:,.0f}",
+            "business_driver": "Budget overrun" if var_vs_budget > 0 else "Operational efficiency" if var_vs_budget < 0 else "Seasonal variation",
+            "confidence": 0.85 if abs(var_vs_budget) > 100000 else 0.70,
+            "risk_level": "High" if abs(var_vs_budget) > 500000 else "Medium" if abs(var_vs_budget) > 100000 else "Low",
+            "forensic_flag": is_significant
+        }
+    
+    # Source artifacts
+    primary_artifact = _find_latest_flux_file()
+    ai_artifact = _find_ai_cache_path("flux_ai_narratives")
+    
+    return {
+        "module": "FLUX",
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
+        "header": {"period": period or raw.get("period"), "entity": entity, "account": account, "basis": "flux_analysis"},
+        "metrics": row or {},
+        "threshold": row.get("threshold_usd", 0.0) if row else 0.0,
+        "evidence": related_emails,
+        "ai_narrative": ai_analysis,
+        "detailed_ai": detailed_ai,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "Flux Analysis Data"},
+            {"path": ai_artifact, "type": "ai_analysis", "description": "AI Analysis Cache"}
+        ],
+        "cross_module_matches": [],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
+    }
+
+
+def _select_bank_row(period: Optional[str], entity: Optional[str], bank_txn_id: Optional[str]) -> Dict[str, Any]:
+    raw = _load_bank_data()
+    exception = next((e for e in raw.get("exceptions", []) if (not period or raw.get("period") == period) and e.get("entity") == entity and e.get("bank_txn_id") == bank_txn_id), None)
+    
+    # Load AI cache for detailed analysis
+    ai_cache = _load_ai_cache_file("bank_ai_rationales")
+    detailed_ai = _find_ai_analysis_for_bank(ai_cache, bank_txn_id) if ai_cache else None
+    
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, bank_txn_id)
+    
+    # Enhanced AI analysis
+    ai_analysis = {}
+    if exception:
+        reason = exception.get("reason", "unknown")
+        amount = exception.get("amount", 0.0)
+        counterparty = exception.get("counterparty", "Unknown")
+        classification = exception.get("classification", "unknown")
+        ai_rationale = exception.get("ai_rationale", "")
+        
+        # Extract forensic flag
+        is_forensic = "[FORENSIC]" in ai_rationale or classification == "forensic_risk"
+        
+        ai_analysis = {
+            "narrative": ai_rationale or f"Bank exception: {reason.replace('_', ' ').title()}",
+            "business_driver": "Forensic Risk" if is_forensic else "Timing difference" if reason == "timing_difference" else "Operational issue",
+            "confidence": 0.95 if is_forensic else 0.80,
+            "risk_level": "Critical" if is_forensic else "High" if classification == "forensic_risk" else "Medium",
+            "forensic_flag": is_forensic
+        }
+    
+    # Source artifacts
+    primary_artifact = _find_latest_bank_file()
+    ai_artifact = _find_ai_cache_path("bank_ai_rationales")
+    
+    return {
+        "module": "BANK",
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
+        "header": {"period": period or raw.get("period"), "entity": entity, "bank_txn_id": bank_txn_id, "basis": "bank_exception"},
+        "metrics": exception or {},
+        "threshold": 0.0,
+        "evidence": related_emails,
+        "ai_narrative": ai_analysis,
+        "detailed_ai": detailed_ai,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "Bank Reconciliation Data"},
+            {"path": ai_artifact, "type": "ai_analysis", "description": "AI Analysis Cache"}
+        ],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
+    }
+
+
+
+
+def _load_ai_cache_file(cache_type: str) -> Optional[Dict[str, Any]]:
+    """Load AI cache file by type"""
+    try:
+        run_dir = _latest_run_dir()
+        if not run_dir:
+            return None
+        
+        cache_pattern = f"{run_dir}/ai_cache/{cache_type}_*"
+        cache_files = glob.glob(cache_pattern)
+        if cache_files:
+            with open(cache_files[0], 'r') as f:
+                return json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading AI cache {cache_type}: {e}")
+    return None
+
+def _find_ai_cache_path(cache_type: str) -> Optional[str]:
+    """Find AI cache file path"""
+    try:
+        run_dir = _latest_run_dir()
+        if not run_dir:
+            return None
+        
+        cache_pattern = f"{run_dir}/ai_cache/{cache_type}_*"
+        cache_files = glob.glob(cache_pattern)
+        return cache_files[0] if cache_files else None
+    except Exception:
+        return None
+
+def _find_ai_analysis_for_ap(ai_cache: Dict[str, Any], bill_id: str) -> Optional[Dict[str, Any]]:
+    """Find detailed AI analysis for AP bill"""
+    if not ai_cache or "matches" not in ai_cache:
+        return None
+    
+    for match in ai_cache["matches"]:
+        if match.get("ap_bill_id") == bill_id:
+            return {
+                "confidence": match.get("confidence", 0.0),
+                "reason": match.get("reason", ""),
+                "support": match.get("support", {}),
+                "cross_module_correlation": True
+            }
+    return None
+
+def _find_ai_analysis_for_bank(ai_cache: Dict[str, Any], bank_txn_id: str) -> Optional[Dict[str, Any]]:
+    """Find detailed AI analysis for bank transaction"""
+    if not ai_cache or "rationales" not in ai_cache:
+        return None
+    
+    for rationale in ai_cache["rationales"]:
+        if rationale.get("bank_txn_id") == bank_txn_id:
+            return {
+                "ai_explanation": rationale.get("ai_explanation", ""),
+                "confidence": rationale.get("confidence", 0.0),
+                "risk_level": rationale.get("risk_level", "medium"),
+                "recommended_action": rationale.get("recommended_action", "")
+            }
+    return None
+
+def _find_ai_analysis_for_ar(ai_cache: Dict[str, Any], invoice_id: str) -> Optional[Dict[str, Any]]:
+    """Find detailed AI analysis for AR invoice"""
+    if not ai_cache or "matches" not in ai_cache:
+        return None
+    
+    for match in ai_cache["matches"]:
+        if match.get("ar_invoice_id") == invoice_id:
+            return {
+                "confidence": match.get("confidence", 0.0),
+                "reason": match.get("reason", ""),
+                "support": match.get("support", {}),
+                "cross_module_correlation": True
+            }
+    return None
+
+def _find_ai_analysis_for_flux(ai_cache: Dict[str, Any], entity: str, account: str) -> Optional[Dict[str, Any]]:
+    """Find detailed AI analysis for flux variance"""
+    if not ai_cache or "narratives" not in ai_cache:
+        return None
+    
+    for narrative in ai_cache["narratives"]:
+        if narrative.get("entity") == entity and narrative.get("account") == account:
+            return {
+                "narrative": narrative.get("narrative", ""),
+                "business_driver": narrative.get("business_driver", ""),
+                "management_response": narrative.get("management_response", ""),
+                "supporting_evidence": narrative.get("supporting_evidence", []),
+                "risk_assessment": narrative.get("risk_assessment", ""),
+                "confidence": narrative.get("confidence", "medium"),
+                "root_cause": narrative.get("root_cause", "")
+            }
+    return None
+
+def _find_cross_module_matches(ai_cache: Dict[str, Any], item_id: str) -> List[Dict[str, Any]]:
+    """Find cross-module AI matches"""
+    matches = []
+    if not ai_cache or "matches" not in ai_cache:
+        return matches
+    
+    for match in ai_cache["matches"]:
+        if match.get("ap_bill_id") == item_id or match.get("ar_invoice_id") == item_id:
+            matches.append({
+                "type": "AP/AR Cross-Match",
+                "confidence": match.get("confidence", 0.0),
+                "reason": match.get("reason", ""),
+                "signals": match.get("support", {}).get("signals", []),
+                "amount_delta": match.get("support", {}).get("amount_delta", 0.0)
+            })
+    return matches
+
+def _load_email_evidence() -> Dict[str, Any]:
+    """Load email evidence from backend"""
+    try:
+        run_dir = _latest_run_dir()
+        if not run_dir:
+            return {"items": []}
+        
+        email_file = f"{run_dir}/email_evidence_*.json"
+        email_files = glob.glob(email_file)
+        if email_files:
+            with open(email_files[0], 'r') as f:
+                return json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading email evidence: {e}")
+    return {"items": []}
+
+def _find_related_emails(email_data: Dict[str, Any], entity: str, item_id: str) -> List[Dict[str, Any]]:
+    """Find emails related to specific entity/item"""
+    related = []
+    items = email_data.get("items", [])
+    
+    for email in items:
+        # Check AI transaction matches
+        ai_matches = email.get("ai_transaction_matches", [])
+        if any(item_id in str(match) for match in ai_matches):
+            related.append({
+                "email_id": email.get("email_id"),
+                "subject": email.get("subject"),
+                "from": email.get("from"),
+                "timestamp": email.get("timestamp"),
+                "summary": email.get("summary"),
+                "ai_transaction_matches": ai_matches,
+                "confidence": len(ai_matches) * 0.2 + 0.6,  # Higher confidence with more matches
+                "correlation_strength": "Strong" if len(ai_matches) > 2 else "Moderate" if len(ai_matches) > 0 else "Weak"
+            })
+    
+    # If no direct matches, return some contextual emails
+    if not related and items:
+        related = items[:2]  # Return first 2 as contextual
+        for email in related:
+            email["correlation_strength"] = "Contextual"
+            email["confidence"] = 0.3
+    
+    return related
+
+def _fx_viewmodel(raw: Dict[str, Any], entity: Optional[str], currency: Optional[str]) -> Dict[str, Any]:
+    """FX view model"""
+    rows: List[Dict[str, Any]] = raw.get("rows", [])
+    entities = sorted({r.get("entity") for r in rows})
+    currencies = sorted({r.get("currency") for r in rows})
+    
+    # Filter
+    if entity:
+        rows = [r for r in rows if r.get("entity") == entity]
+    if currency:
+        rows = [r for r in rows if r.get("currency") == currency]
+    
+    # Sort by amount desc (absolute value)
+    rows_sorted = sorted(rows, key=lambda r: abs(float(r.get("diff_usd", 0.0))), reverse=True)
+    
+    # Calculate metrics
+    total_diff = sum(abs(float(r.get("diff_usd", 0.0))) for r in rows)
+    significant_diffs = [r for r in rows if abs(float(r.get("diff_usd", 0.0))) > 1000]
+    significant_diff_amount = sum(abs(float(r.get("diff_usd", 0.0))) for r in significant_diffs)
+    
+    return {
+        "period": raw.get("period"),
+        "entities": entities,
+        "currencies": currencies,
+        "selected_entity": entity or "",
+        "selected_currency": currency or "",
+        "rows": rows_sorted,
+        "count_filtered": len(rows_sorted),
+        "total_diff": total_diff,
+        "significant_diff_count": len(significant_diffs),
+        "significant_diff_amount": significant_diff_amount,
+    }
+
+@router.get("/fx", response_class=HTMLResponse)
+async def fx_analysis(request: Request, entity: Optional[str] = None, currency: Optional[str] = None):
+    raw = _load_fx_data()
+    vm = _fx_viewmodel(raw, entity, currency)
+    return templates.TemplateResponse(
+        "fx.html",
+        {"request": request, "fx": vm}
+    )
+
+
+@router.get("/fx-table", response_class=HTMLResponse)
+async def fx_table_partial(request: Request, entity: Optional[str] = None, currency: Optional[str] = None):
+    raw = _load_fx_data()
+    vm = _fx_viewmodel(raw, entity, currency)
+    return templates.TemplateResponse(
+        "partials/fx_table.html",
+        {"request": request, "fx": vm}
+    )
+
+
+@router.get("/bank-table", response_class=HTMLResponse)
+async def bank_table_partial(request: Request, entity: Optional[str] = None, classification: Optional[str] = None):
+    raw = _load_bank_data()
+    vm = _bank_viewmodel(raw, entity, classification)
+    return templates.TemplateResponse(
+        "partials/bank_table.html",
+        {"request": request, "bank": vm}
+    )
+
+
+def _ap_viewmodel(raw: Dict[str, Any], entity: Optional[str], reason: Optional[str]) -> Dict[str, Any]:
+    exceptions: List[Dict[str, Any]] = raw.get("exceptions", [])
+    entities = sorted({e.get("entity") for e in exceptions})
+    reasons = sorted({e.get("reason") for e in exceptions})
+    
+    # Filter
+    if entity:
+        exceptions = [e for e in exceptions if e.get("entity") == entity]
+    if reason:
+        exceptions = [e for e in exceptions if e.get("reason") == reason]
+    
+    # Sort by amount desc (absolute value)
+    exceptions_sorted = sorted(exceptions, key=lambda e: abs(float(e.get("amount_usd", 0.0))), reverse=True)
+    
+    # Calculate metrics
+    total_amount = sum(abs(float(e.get("amount_usd", 0.0))) for e in exceptions)
+    overdue_exceptions = [e for e in exceptions if e.get("reason") == "overdue"]
+    overdue_amount = sum(abs(float(e.get("amount_usd", 0.0))) for e in overdue_exceptions)
+    
+    return {
+        "period": raw.get("period"),
+        "entities": entities,
+        "reasons": reasons,
+        "selected_entity": entity or "",
+        "selected_reason": reason or "",
+        "exceptions": exceptions_sorted,
+        "count_filtered": len(exceptions_sorted),
+        "total_amount": total_amount,
+        "overdue_count": len(overdue_exceptions),
+        "overdue_amount": overdue_amount,
+    }
+
+
+def _ar_viewmodel(raw: Dict[str, Any], entity: Optional[str], reason: Optional[str]) -> Dict[str, Any]:
+    exceptions: List[Dict[str, Any]] = raw.get("exceptions", [])
+    entities = sorted({e.get("entity") for e in exceptions})
+    reasons = sorted({e.get("reason") for e in exceptions})
+    
+    # Filter
+    if entity:
+        exceptions = [e for e in exceptions if e.get("entity") == entity]
+    if reason:
+        exceptions = [e for e in exceptions if e.get("reason") == reason]
+    
+    # Sort by amount desc (absolute value)
+    exceptions_sorted = sorted(exceptions, key=lambda e: abs(float(e.get("amount_usd", 0.0))), reverse=True)
+    
+    # Calculate metrics
+    total_amount = sum(abs(float(e.get("amount_usd", 0.0))) for e in exceptions)
+    overdue_exceptions = [e for e in exceptions if e.get("reason") == "overdue"]
+    overdue_amount = sum(abs(float(e.get("amount_usd", 0.0))) for e in overdue_exceptions)
+    
+    return {
+        "period": raw.get("period"),
+        "entities": entities,
+        "reasons": reasons,
+        "selected_entity": entity or "",
+        "selected_reason": reason or "",
+        "exceptions": exceptions_sorted,
+        "count_filtered": len(exceptions_sorted),
+        "total_amount": total_amount,
+        "overdue_count": len(overdue_exceptions),
+        "overdue_amount": overdue_amount,
+    }
+
+
+@router.get("/ap", response_class=HTMLResponse)
+async def ap_reconciliation(request: Request, entity: Optional[str] = None, reason: Optional[str] = None):
+    raw = _load_ap_data()
+    vm = _ap_viewmodel(raw, entity, reason)
+    return templates.TemplateResponse(
+        "ap.html",
+        {"request": request, "ap": vm}
+    )
+
+
+@router.get("/ap-table", response_class=HTMLResponse)
+async def ap_table_partial(request: Request, entity: Optional[str] = None, reason: Optional[str] = None):
+    raw = _load_ap_data()
+    vm = _ap_viewmodel(raw, entity, reason)
+    return templates.TemplateResponse(
+        "partials/ap_table.html",
+        {"request": request, "ap": vm}
+    )
+
+
+@router.get("/ar", response_class=HTMLResponse)
+async def ar_reconciliation(request: Request, entity: Optional[str] = None, reason: Optional[str] = None):
+    raw = _load_ar_data()
+    vm = _ar_viewmodel(raw, entity, reason)
+    return templates.TemplateResponse(
+        "ar.html",
+        {"request": request, "ar": vm}
+    )
+
+
+@router.get("/ar-table", response_class=HTMLResponse)
+async def ar_table_partial(request: Request, entity: Optional[str] = None, reason: Optional[str] = None):
+    raw = _load_ar_data()
+    vm = _ar_viewmodel(raw, entity, reason)
+    return templates.TemplateResponse(
+        "partials/ar_table.html",
+        {"request": request, "ar": vm}
+    )
+
+
+@router.get("/flux", response_class=HTMLResponse)
+async def flux_page(
+    request: Request,
+    entity: Optional[str] = None,
+    min_abs: Optional[float] = None,
+):
+    """Flux analysis page, showing variances vs prior and budget."""
+    try:
+        raw_data = _load_flux_data()
+        view_model = _flux_viewmodel(raw_data, entity, min_abs)
+        return templates.TemplateResponse("flux.html", {
+            "request": request,
+            "flux": view_model
+        })
+    except Exception as e:
+        # Handle case where flux data isn't generated yet
+        return templates.TemplateResponse("flux.html", {
+            "request": request,
+            "flux": None,
+            "error": str(e)
+        })
+
+
+@router.get("/bank", response_class=HTMLResponse)
+async def bank_reconciliation(request: Request, entity: Optional[str] = None, classification: Optional[str] = None):
+    raw = _load_bank_reconciliation_data()
+    vm = _bank_viewmodel(raw, entity, classification)
+    return templates.TemplateResponse(
+        "bank.html",
+        {"request": request, "bank": vm}
+    )
+
+
+@router.get("/flux-table", response_class=HTMLResponse)
+async def flux_table_partial(request: Request, entity: Optional[str] = None, account: Optional[str] = None):
+    raw = _load_flux_data()
+    vm = _flux_viewmodel(raw, entity, account)
+    return templates.TemplateResponse(
+        "partials/flux_table.html",
+        {"request": request, "flux": vm}
+    )
+
+
+@router.get("/artifact/{file_path:path}")
+async def view_artifact(file_path: str):
+    """Direct JSON artifact viewer with syntax highlighting"""
+    try:
+        # Handle both absolute and relative paths
+        if file_path.startswith("/"):
+            full_path = file_path
+        else:
+            full_path = f"/Users/robertvanraamsdonk/Code/r2r_financial_close_blackline_light/{file_path}"
+        
+        with open(full_path, 'r') as f:
+            data = json.load(f)
+        return JSONResponse(data, headers={"Content-Type": "application/json"})
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Artifact not found: {str(e)}")
+
+@router.get("/details", response_class=HTMLResponse)
+async def details_drawer(request: Request, module: str, period: Optional[str] = None, entity: Optional[str] = None, 
+                        bank_txn_id: Optional[str] = None, bill_id: Optional[str] = None, 
+                        invoice_id: Optional[str] = None, account: Optional[str] = None, ic_id: Optional[str] = None,
+                        content_only: Optional[bool] = False):
+    """Details drawer for exception drill-through"""
+    
+    if module == "BANK":
+        details = _select_bank_row(period, entity, bank_txn_id)
+    elif module == "AP":
+        details = _select_ap_row(period, entity, bill_id)
+    elif module == "AR":
+        details = _select_ar_row(period, entity, invoice_id)
+    elif module == "FX":
+        details = _select_fx_row(period, entity, account)
+    elif module == "FLUX":
+        details = _select_flux_row(period, entity, account)
+    elif module == "INTERCOMPANY":
+        details = _select_intercompany_row(period, entity, ic_id)
+    elif module == "TB":
+        details = _select_tb_row(period, entity)
+    else:
+        details = {"error": f"Unknown module: {module}"}
+    
+    template_name = "partials/drawer_content.html" if content_only else "partials/details_drawer_enhanced.html"
+    return templates.TemplateResponse(
+        template_name,
+        {"request": request, "d": details}
+    )
+
+
+def _select_intercompany_row(period: Optional[str], entity: Optional[str], ic_id: Optional[str]) -> Dict[str, Any]:
+    raw = _load_intercompany_data()
+    # Try to match by unique id primarily; fall back to entity + account if needed
+    exception = None
+    for e in raw.get("exceptions", []):
+        period_match = (not period) or (raw.get("period") == period)
+        entity_match = (not entity) or (e.get("entity") == entity)
+        id_match = (not ic_id) or (e.get("id") == ic_id or e.get("doc_id") == ic_id)
+        if period_match and entity_match and id_match:
+            exception = e
+            break
+
+    # Load email evidence with AI matches
+    email_evidence = _load_email_evidence()
+    related_emails = _find_related_emails(email_evidence, entity, ic_id or "")
+
+    # Enhanced AI analysis
+    ai_analysis = {}
+    if exception:
+        diff = float(exception.get("difference", exception.get("diff_abs", 0.0)) or 0.0)
+        cp = exception.get("counterparty", "Unknown")
+        status = exception.get("status", "unmatched")
+        
+        # Check for significant differences
+        is_significant = abs(diff) > 100000
+        
+        ai_analysis = {
+            "narrative": f"Intercompany mismatch: {entity} vs {cp}. Difference: ${diff:,.2f}. Status: {status}.",
+            "business_driver": "Timing difference" if status == "timing" else "Process variance" if status == "variance" else "Reconciliation gap",
+            "confidence": 0.85 if abs(diff) > 10000 else 0.70,
+            "risk_level": "High" if abs(diff) > 100000 else "Medium" if abs(diff) > 10000 else "Low",
+            "forensic_flag": is_significant
+        }
+
+    # Source artifacts
+    primary_artifact = _find_latest_intercompany_file()
+
+    return {
+        "module": "INTERCOMPANY",
+        "artifact_path": primary_artifact,
+        "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock",
+        "header": {"period": period or raw.get("period"), "entity": entity, "ic_id": ic_id, "basis": "intercompany_reconciliation"},
+        "metrics": exception or {},
+        "threshold": 0.0,
+        "evidence": related_emails,
+        "ai_narrative": ai_analysis,
+        "detailed_ai": None,
+        "source_artifacts": [
+            {"path": primary_artifact, "type": "primary", "description": "Intercompany Reconciliation Data"}
+        ],
+        "cross_module_matches": [],
+        "provenance": {"model": "LangGraph Close Agents", "prompt": None, "run_id": _latest_run_id_from_path(primary_artifact) if primary_artifact else "mock"},
+    }
+
+
+def _find_latest_bank_file(base_out: str = None) -> Optional[str]:
+    # Auto-detect out directory location
+    if base_out is None:
+        if os.path.exists("out"):
+            base_out = "out"
+        elif os.path.exists("../out"):
+            base_out = "../out"
+        else:
+            return None
+    
+    pattern = os.path.join(base_out, "run_*", "bank_reconciliation_run_*.json")
+    candidates = glob.glob(pattern)
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+
+def _find_latest_ap_file() -> Optional[str]:
+    base_out = None
+    if os.path.exists("out"):
+        base_out = "out"
+    elif os.path.exists("../out"):
+        base_out = "../out"
+    else:
+        return None
+    
+    pattern = os.path.join(base_out, "run_*", "ap_reconciliation_run_*.json")
+    candidates = glob.glob(pattern)
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+
+def _find_latest_ar_file() -> Optional[str]:
+    base_out = None
+    if os.path.exists("out"):
+        base_out = "out"
+    elif os.path.exists("../out"):
+        base_out = "../out"
+    else:
+        return None
+    
+    pattern = os.path.join(base_out, "run_*", "ar_reconciliation_run_*.json")
+    candidates = glob.glob(pattern)
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+
+def _load_bank_data() -> Dict[str, Any]:
+    path = _find_latest_bank_file()
+    if path and os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            raise RuntimeError(f"Failed to load bank data from {path}: {e}")
+    else:
+        raise RuntimeError("No bank reconciliation artifacts found. Run the close process first.")
+
+
+def _bank_viewmodel(raw: Dict[str, Any], entity: Optional[str], classification: Optional[str]) -> Dict[str, Any]:
+    exceptions: List[Dict[str, Any]] = raw.get("exceptions", [])
+    entities = sorted({e.get("entity") for e in exceptions})
+    classifications = sorted({e.get("classification") for e in exceptions})
+    
+    # Filter
+    if entity:
+        exceptions = [e for e in exceptions if e.get("entity") == entity]
+    if classification:
+        exceptions = [e for e in exceptions if e.get("classification") == classification]
+    
+    # Sort by amount desc (absolute value)
+    exceptions_sorted = sorted(exceptions, key=lambda e: abs(float(e.get("amount", 0.0))), reverse=True)
+    
+    # Calculate metrics
+    total_amount = sum(abs(float(e.get("amount", 0.0))) for e in exceptions)
+    forensic_exceptions = [e for e in exceptions if e.get("classification") == "forensic_risk"]
+    forensic_amount = sum(abs(float(e.get("amount", 0.0))) for e in forensic_exceptions)
+    
+    return {
+        "period": raw.get("period"),
+        "entities": entities,
+        "classifications": classifications,
+        "selected_entity": entity or "",
+        "selected_classification": classification or "",
+        "exceptions": exceptions_sorted,
+        "count_filtered": len(exceptions_sorted),
+        "total_amount": total_amount,
+        "forensic_count": len(forensic_exceptions),
+        "forensic_amount": forensic_amount,
+        "rules": raw.get("rules", {}),
+        "summary": raw.get("summary", {}),
+    }
+
+
+def _load_ap_data() -> Dict[str, Any]:
+    path = _find_latest_ap_file()
+    if path and os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            raise RuntimeError(f"Failed to load AP data from {path}: {e}")
+    else:
+        raise RuntimeError("No AP reconciliation artifacts found. Run the close process first.")
+
+
+def _load_ar_data() -> Dict[str, Any]:
+    path = _find_latest_ar_file()
+    if path and os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            raise RuntimeError(f"Failed to load AR data from {path}: {e}")
+    else:
+        raise RuntimeError("No AR reconciliation artifacts found. Run the close process first.")
+
+
+@router.get("/partials/close-drawer", response_class=HTMLResponse)
+async def close_drawer():
+    return HTMLResponse(content="")
+
+
+# ---- Journal Entry Endpoints -----------------------------------------------
+
+@router.post("/je/propose", response_class=HTMLResponse)
+async def propose_je(request: Request, module: str = Form(), scenario: str = Form(), 
+                    source_data: str = Form(), period: str = Form(), entity: str = Form()):
+    """Create a new journal entry proposal."""
+    try:
+        source_dict = json.loads(source_data)
+    except:
+        source_dict = {"raw": source_data}
+    
+    # Create JE based on module
+    if module == "FX":
+        diff_usd = float(source_dict.get("diff_usd", 0.0))
+        account = source_dict.get("account", "1000")
+        je = _create_fx_je(entity, account, period, diff_usd, source_dict)
+    elif module == "Flux":
+        variance = float(source_dict.get("var_vs_budget", source_dict.get("var_vs_prior", 0.0)))
+        account = source_dict.get("account", "4000")
+        basis = source_dict.get("basis", "budget")
+        je = _create_flux_je(entity, account, period, variance, basis, source_dict)
+    else:
+        # Generic JE for other modules
+        je = JournalEntry(
+            id=str(uuid.uuid4())[:8],
+            module=module,
+            scenario=scenario,
+            entity=entity,
+            period=period,
+            description=f"{module} adjustment for {entity}",
+            source_data=source_dict
+        )
+    
+    # Store the JE
+    _je_store[je.id] = je
+    
+    # Return modal
+    return templates.TemplateResponse(
+        "partials/je_proposal_modal.html",
+        {"request": request, "je": je, "workflow_status": None, "can_approve": True}
+    )
+
+@router.post("/je/submit/{je_id}", response_class=HTMLResponse)
+async def submit_je(request: Request, je_id: str):
+    """Submit JE for approval."""
+    if je_id not in _je_store:
+        return HTMLResponse(content="<div>JE not found</div>", status_code=404)
+    
+    je = _je_store[je_id]
+    je.status = JEStatus.PENDING
+    
+    return templates.TemplateResponse(
+        "partials/je_proposal_modal.html",
+        {"request": request, "je": je, "workflow_status": None, "can_approve": True}
+    )
+
+@router.post("/je/approve/{je_id}", response_class=HTMLResponse)
+async def approve_je(request: Request, je_id: str, action: str = Form()):
+    """Approve or reject JE."""
+    if je_id not in _je_store:
+        return HTMLResponse(content="<div>JE not found</div>", status_code=404)
+    
+    je = _je_store[je_id]
+    
+    if action == "approve":
+        je.status = JEStatus.APPROVED
+    elif action == "reject":
+        je.status = JEStatus.REJECTED
+    
+    return templates.TemplateResponse(
+        "partials/je_proposal_modal.html",
+        {"request": request, "je": je, "workflow_status": None, "can_approve": True}
+    )
+
+@router.post("/je/post/{je_id}", response_class=HTMLResponse)
+async def post_je(request: Request, je_id: str):
+    """Post JE to GL system."""
+    if je_id not in _je_store:
+        return HTMLResponse(content="<div>JE not found</div>", status_code=404)
+    
+    je = _je_store[je_id]
+    je.status = JEStatus.POSTED
+    
+    return templates.TemplateResponse(
+        "partials/je_proposal_modal.html",
+        {"request": request, "je": je, "workflow_status": None, "can_approve": True}
+    )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8010)
