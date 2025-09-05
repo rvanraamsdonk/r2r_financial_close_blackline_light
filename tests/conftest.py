@@ -4,6 +4,7 @@ Pytest configuration and shared fixtures for R2R Financial Close testing.
 from __future__ import annotations
 
 import json
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, Generator
@@ -11,6 +12,9 @@ from unittest.mock import Mock, MagicMock
 
 import pandas as pd
 import pytest
+
+# Ensure the repository root is on sys.path so `src` imports resolve
+sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from src.r2r.state import R2RState
 from src.r2r.audit import AuditLogger
