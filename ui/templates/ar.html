@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% from "partials/action_buttons.html" import action_buttons %}
+
 {% block title %}AR Reconciliation{% endblock %}
 
 {% block content %}
@@ -133,7 +135,7 @@
                             <th>Amount</th>
                             <th>Reason</th>
                             <th>Confidence</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -159,17 +161,13 @@
                                 </span>
                                 {% endif %}
                             </td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary"
-                                   title="View Details"
-                                   hx-get="/details?module=AR&period={{ data.period }}&entity={{ ex.entity }}&invoice_id={{ ex.invoice_id }}"
-                                   hx-target="#drawer-root"
-                                   hx-swap="innerHTML">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                <button class="btn btn-sm btn-outline-success" onclick="approveItem('{{ ex.id or loop.index }}')">
-                                    <i class="bi bi-check-lg"></i>
-                                </button>
+                            <td class="text-center">
+                                {% set details_url = "/details?module=AR&period=" ~ data.period ~ "&entity=" ~ ex.entity ~ "&invoice_id=" ~ ex.invoice_id %}
+                                {{ action_buttons(details_url,
+                                                  "approve('" ~ ex.entity ~ "', '" ~ ex.invoice_id ~ "')",
+                                                  "reject('" ~ ex.entity ~ "', '" ~ ex.invoice_id ~ "')",
+                                                  show_approve=true,
+                                                  show_reject=true) }}
                             </td>
                         </tr>
                         {% else %}
@@ -262,6 +260,21 @@ function approveItem(id) {
     console.log('Approving item:', id);
     if (confirm('Approve this item?')) {
         // Implementation for single item approval
+    }
+}
+
+// Per-row actions (standardized)
+function approve(entity, id) {
+    if (confirm(`Approve item for ${entity} (${id})?`)) {
+        console.log('Approve', entity, id);
+        // TODO: Implement approval API call
+    }
+}
+
+function reject(entity, id) {
+    if (confirm(`Reject item for ${entity} (${id})?`)) {
+        console.log('Reject', entity, id);
+        // TODO: Implement rejection API call
     }
 }
 </script>

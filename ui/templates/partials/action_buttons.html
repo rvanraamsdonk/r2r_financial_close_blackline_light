@@ -1,0 +1,17 @@
+{% macro action_buttons(details_url, approve_onclick='', reject_onclick='', show_approve=True, show_reject=True) -%}
+<div class="btn-group btn-group-sm">
+  <a class="btn btn-outline-info"
+     title="View Details"
+     hx-get="{{ details_url }}"
+     hx-target="#drawer-root"
+     hx-swap="innerHTML">
+     <i class="bi bi-eye"></i>
+  </a>
+  {% if show_approve %}
+  <button class="btn btn-outline-success" onclick="{{ approve_onclick }}"><i class="bi bi-check-lg"></i></button>
+  {% endif %}
+  {% if show_reject %}
+  <button class="btn btn-outline-danger" onclick="{{ reject_onclick }}"><i class="bi bi-x-lg"></i></button>
+  {% endif %}
+</div>
+{%- endmacro %}

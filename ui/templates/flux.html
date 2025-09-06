@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% from "partials/action_buttons.html" import action_buttons %}
+
 {% block title %}Flux Analysis{% endblock %}
 
 {% block content %}
@@ -170,18 +172,12 @@
                             {% endif %}
                         </td>
                         <td class="text-center">
-                            <div class="btn-group btn-group-sm">
-                                <a class="btn btn-outline-info"
-                                   title="View Details"
-                                   hx-get="/details?module=FLUX&period={{ flux.period }}&entity={{ r.entity }}&account={{ r.account }}"
-                                   hx-target="#drawer-root"
-                                   hx-swap="innerHTML">
-                                   <i class="bi bi-eye"></i>
-                                </a>
-                                {% if not is_forensic and not is_material %}
-                                    <button class="btn btn-outline-success" onclick="approve('{{ r.entity }}', '{{ r.account }}')"><i class="bi bi-check-lg"></i></button>
-                                {% endif %}
-                            </div>
+                            {% set details_url = "/details?module=FLUX&period=" ~ flux.period ~ "&entity=" ~ r.entity ~ "&account=" ~ r.account %}
+                            {{ action_buttons(details_url,
+                                              "approve('" ~ r.entity ~ "', '" ~ r.account ~ "')",
+                                              "reject('" ~ r.entity ~ "', '" ~ r.account ~ "')",
+                                              show_approve=not is_forensic and not is_material,
+                                              show_reject=not is_forensic and not is_material) }}
                         </td>
                     </tr>
                     {% else %}
@@ -310,6 +306,13 @@ function approve(entity, account) {
     if (confirm(`Approve variance for ${entity} - ${account}?`)) {
         console.log(`Approving ${entity} - ${account}`);
         // Implementation for approval
+    }
+}
+
+function reject(entity, account) {
+    if (confirm(`Reject variance for ${entity} - ${account}?`)) {
+        console.log(`Rejecting ${entity} - ${account}`);
+        // Implementation for rejection
     }
 }
 

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% from "partials/action_buttons.html" import action_buttons %}
+
 {% block title %}Intercompany Reconciliation{% endblock %}
 
 {% block content %}
@@ -134,7 +136,7 @@
                             <th class="text-end">Difference</th>
                             <th>Status</th>
                             <th>Confidence</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -171,19 +173,13 @@
                                     {{ exception.confidence|title }}
                                 </span>
                             </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a class="btn btn-outline-info"
-                                       title="View Details"
-                                       hx-get="/details?module=INTERCOMPANY&period={{ data.period }}&entity={{ exception.entity }}&ic_id={{ exception.id }}"
-                                       hx-target="#drawer-root"
-                                       hx-swap="innerHTML">
-                                       <i class="bi bi-eye"></i>
-                                    </a>
-                                    <button class="btn btn-success" onclick="approveItem('{{ exception.id }}')">
-                                        <i class="bi bi-check-lg"></i>
-                                    </button>
-                                </div>
+                            <td class="text-center">
+                                {% set details_url = "/details?module=INTERCOMPANY&period=" ~ data.period ~ "&entity=" ~ exception.entity ~ "&ic_id=" ~ exception.id %}
+                                {{ action_buttons(details_url,
+                                                  "approve('" ~ exception.entity ~ "', '" ~ exception.id ~ "')",
+                                                  "reject('" ~ exception.entity ~ "', '" ~ exception.id ~ "')",
+                                                  show_approve=exception.status != 'matched',
+                                                  show_reject=exception.status != 'matched') }}
                             </td>
                         </tr>
                         {% else %}
@@ -274,10 +270,18 @@ function viewEvidence(id) {
     // Implementation for evidence viewer
 }
 
-function approveItem(id) {
-    console.log('Approving item:', id);
-    if (confirm('Approve this item?')) {
-        // Implementation for single item approval
+// Per-row actions (standardized)
+function approve(entity, id) {
+    if (confirm(`Approve item for ${entity} (${id})?`)) {
+        console.log('Approve', entity, id);
+        // TODO: Implement approval API call
+    }
+}
+
+function reject(entity, id) {
+    if (confirm(`Reject item for ${entity} (${id})?`)) {
+        console.log('Reject', entity, id);
+        // TODO: Implement rejection API call
     }
 }
 </script>

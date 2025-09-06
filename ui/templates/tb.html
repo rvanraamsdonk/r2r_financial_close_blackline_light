@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% from "partials/action_buttons.html" import action_buttons %}
+
 {% block title %}Trial Balance Diagnostics{% endblock %}
 
 {% block content %}
@@ -63,10 +65,10 @@
                 <span class="badge bg-secondary">AI</span>
             </div>
             <div class="col">
-                <small class="text-muted me-3">Method: <strong>AI-Powered Diagnostics</strong></small>
-                <small class="text-muted me-3">Threshold: <strong>{{ data.summary.materiality_threshold or '$1,000' }}</strong></small>
-                <small class="text-muted me-3">Confidence Floor: <strong>95%</strong></small>
-                <small class="text-muted">Source: <strong>Trial Balance Data</strong></small>
+                <small class="text-muted me-3">Method: <strong>{{ data.materiality_basis or 'AI-Powered Diagnostics' }}</strong></small>
+                <small class="text-muted me-3">Risk Entities: <strong>{{ data.summary.critical_risk_entities or 0 }}</strong></small>
+                <small class="text-muted me-3">CFO Alert: <strong>{{ 'Yes' if data.summary.requires_cfo_attention else 'No' }}</strong></small>
+                <small class="text-muted">Audit Committee: <strong>{{ 'Required' if data.summary.audit_committee_reporting else 'Not Required' }}</strong></small>
             </div>
         </div>
     </div>
@@ -138,20 +140,31 @@
                     </thead>
                     <tbody>
                         {% for item in data.diagnostics %}
-                        <tr class="{{ 'table-danger' if not item.is_balanced else '' }}">
+                        {% set risk_class = 'table-danger' if item.risk_level == 'critical' else 'table-warning' if item.risk_level in ['high', 'medium'] else '' %}
+                        <tr class="{{ risk_class }}">
                             <td><input type="checkbox" class="form-check-input row-select" data-entity="{{ item.entity }}"></td>
-                            <td>{{ item.entity }}</td>
+                            <td>
+                                {{ item.entity }}
+                                {% if item.requires_investigation %}
+                                    <i class="bi bi-exclamation-triangle-fill text-warning ms-1" title="Requires Investigation"></i>
+                                {% endif %}
+                            </td>
                             <td class="text-end {{ 'text-danger' if not item.is_balanced else 'text-success' }}">
                                 {{ item.imbalance_usd | format_currency }}
-                                {% if not item.is_balanced %}
-                                    <i class="bi bi-exclamation-triangle-fill text-danger ms-1" title="Material Imbalance"></i>
+                                {% if item.materiality_threshold %}
+                                    <small class="text-muted d-block">Threshold: {{ item.materiality_threshold | format_currency }}</small>
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                <span class="badge {{ 'bg-danger' if not item.is_balanced else 'bg-success' }}">
-                                    <i class="bi {{ 'bi-x-lg' if not item.is_balanced else 'bi-check-lg' }} me-1"></i>
-                                    {{ 'Imbalanced' if not item.is_balanced else 'Balanced' }}
-                                </span>
+                                {% if item.risk_level == 'critical' %}
+                                    <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Critical</span>
+                                {% elif item.risk_level == 'high' %}
+                                    <span class="badge bg-warning"><i class="bi bi-exclamation-triangle-fill me-1"></i>High Risk</span>
+                                {% elif item.risk_level == 'medium' %}
+                                    <span class="badge bg-info"><i class="bi bi-exclamation-triangle-fill me-1"></i>Medium Risk</span>
+                                {% else %}
+                                    <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Low Risk</span>
+                                {% endif %}
                             </td>
                             <td class="text-center">
                                 <div class="d-flex align-items-center justify-content-center">
@@ -159,29 +172,30 @@
                                         <div class="progress-bar {{ 'bg-success' if item.confidence_score >= 0.95 else 'bg-warning' if item.confidence_score >= 0.7 else 'bg-danger' }}" role="progressbar" data-width="{{ item.confidence_score_pct }}%" aria-valuenow="{{ item.confidence_score_pct }}" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                     <span class="small fw-bold">{{ item.confidence_score_pct }}%</span>
+                                    {% if item.ai_confidence %}
+                                        <small class="text-muted d-block">{{ item.ai_confidence.replace('_', ' ').title() }}</small>
+                                    {% endif %}
                                 </div>
                             </td>
                             <td class="text-center">
                                 {% if item.auto_approved %}
-                                    <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Yes</span>
+                                    <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Auto-Approved</span>
+                                {% elif item.requires_investigation %}
+                                    <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Investigation</span>
                                 {% else %}
-                                    <span class="badge bg-warning"><i class="bi bi-clock me-1"></i>Pending</span>
+                                    <span class="badge bg-warning"><i class="bi bi-clock me-1"></i>Review</span>
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                <div class="btn-group btn-group-sm">
-                                    <a class="btn btn-outline-info"
-                                       title="View Details"
-                                       hx-get="/details?module=TB&period={{ data.period }}&entity={{ item.entity }}"
-                                       hx-target="#drawer-root"
-                                       hx-swap="innerHTML">
-                                       <i class="bi bi-eye"></i>
-                                    </a>
-                                    {% if not item.auto_approved %}
-                                        <button class="btn btn-outline-success" onclick="approve('{{ item.entity }}')"><i class="bi bi-check-lg"></i></button>
-                                        <button class="btn btn-outline-danger" onclick="reject('{{ item.entity }}')"><i class="bi bi-x-lg"></i></button>
-                                    {% endif %}
-                                </div>
+                                {% set details_url = "/details?module=TB&period=" ~ data.period ~ "&entity=" ~ item.entity %}
+                                {{ action_buttons(details_url,
+                                                  "approve('" ~ item.entity ~ "')",
+                                                  "reject('" ~ item.entity ~ "')",
+                                                  show_approve=not item.auto_approved,
+                                                  show_reject=not item.auto_approved) }}
+                                {% if item.forensic_indicators %}
+                                    <button class="btn btn-outline-warning btn-sm ms-1" title="Forensic Indicators"><i class="bi bi-fire"></i></button>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -298,6 +312,21 @@ function approve(entity) {
     if (confirm(`Approve trial balance for ${entity}?`)) {
         console.log(`Approving ${entity}`);
         // Implementation for approval
+    }
+}
+
+function reject(entity) {
+    if (confirm(`Reject trial balance item for ${entity}?`)) {
+        console.log('Reject', entity);
+        // TODO: Implement rejection API call
+    }
+}
+
+function escalate(entity) {
+    if (confirm(`Escalate ${entity} to CFO/Audit Committee?`)) {
+        console.log(`Escalating ${entity} to senior management`);
+        // Implementation for escalation workflow
+        alert(`${entity} escalated to CFO for immediate review`);
     }
 }
 

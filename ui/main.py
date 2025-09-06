@@ -1065,6 +1065,16 @@ def _load_tb_diagnostics_data() -> Dict[str, Any]:
     }
 
 def _tb_diagnostics_viewmodel(raw: Dict[str, Any]) -> Dict[str, Any]:
+    # Import the enhanced analyzer
+    try:
+        from .enhanced_tb_analysis import generate_enhanced_tb_viewmodel
+        return generate_enhanced_tb_viewmodel(raw)
+    except ImportError:
+        # Fallback to basic viewmodel if enhanced analysis not available
+        return _basic_tb_viewmodel(raw)
+
+def _basic_tb_viewmodel(raw: Dict[str, Any]) -> Dict[str, Any]:
+    """Basic TB viewmodel - fallback when enhanced analysis unavailable"""
     diagnostics = raw.get("diagnostics", [])
     rollups = raw.get("rollups", {})
 

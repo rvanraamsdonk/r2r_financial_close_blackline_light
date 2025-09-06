@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% from "partials/action_buttons.html" import action_buttons %}
+
 {% block title %}Bank Reconciliation{% endblock %}
 
 {% block content %}
@@ -153,16 +155,12 @@
                         </td>
                         <td><span class="text-muted">{{ ex.reason.replace('_', ' ')|title }}</span></td>
                         <td class="text-center">
-                            <div class="btn-group btn-group-sm">
-                                <a class="btn btn-outline-info"
-                                   title="View Details"
-                                   hx-get="/details?module=BANK&period={{ bank.period }}&entity={{ ex.entity }}&bank_txn_id={{ ex.bank_txn_id }}"
-                                   hx-target="#drawer-root"
-                                   hx-swap="innerHTML">
-                                   <i class="bi bi-eye"></i>
-                                </a>
-                                <button class="btn btn-outline-primary" title="Propose JE"><i class="bi bi-plus-lg"></i></button>
-                            </div>
+                            {% set details_url = "/details?module=BANK&period=" ~ bank.period ~ "&entity=" ~ ex.entity ~ "&bank_txn_id=" ~ ex.bank_txn_id %}
+                            {{ action_buttons(details_url,
+                                              "approve('" ~ ex.entity ~ "', '" ~ ex.bank_txn_id ~ "')",
+                                              "reject('" ~ ex.entity ~ "', '" ~ ex.bank_txn_id ~ "')",
+                                              show_approve=true,
+                                              show_reject=true) }}
                         </td>
                     </tr>
                     {% else %}
@@ -244,6 +242,21 @@ function approveSelected() {
 function exportToExcel() {
     console.log('Exporting to Excel');
     // Implementation for Excel export
+}
+
+// Per-row actions (standardized)
+function approve(entity, id) {
+    if (confirm(`Approve item for ${entity} (${id})?`)) {
+        console.log('Approve', entity, id);
+        // TODO: Implement approval API call
+    }
+}
+
+function reject(entity, id) {
+    if (confirm(`Reject item for ${entity} (${id})?`)) {
+        console.log('Reject', entity, id);
+        // TODO: Implement rejection API call
+    }
 }
 </script>
 {% endblock %}
