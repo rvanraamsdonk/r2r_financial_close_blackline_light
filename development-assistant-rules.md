@@ -2,10 +2,6 @@
 trigger: manual
 ---
 
----
-trigger: manual
----
-
 # Development Assistant Rules
 
 ## Environment Management (Rules 1-4)
