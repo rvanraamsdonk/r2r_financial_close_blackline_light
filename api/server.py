@@ -109,7 +109,12 @@ def run_close_process(timestamp):
         })
         
         # Run the actual close script using .venv python (streaming stdout for progress)
-        venv_python = PROJECT_ROOT / '.venv' / 'bin' / 'python'
+        # Handle cross-platform venv layout: Windows uses 'Scripts/python.exe', Unix uses 'bin/python'
+        venv_dir = PROJECT_ROOT / '.venv'
+        if os.name == 'nt':
+            venv_python = venv_dir / 'Scripts' / 'python.exe'
+        else:
+            venv_python = venv_dir / 'bin' / 'python'
         proc = subprocess.Popen(
             [
                 str(venv_python), 'run_close.py',
