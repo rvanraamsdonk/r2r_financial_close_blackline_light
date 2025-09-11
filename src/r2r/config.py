@@ -66,7 +66,7 @@ def load_settings_with_env(**overrides) -> Settings:
         azure_openai_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
         azure_openai_api_key=os.getenv("AZURE_OPENAI_API_KEY"),
         azure_openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-        azure_openai_chat_deployment=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT"),
+        azure_openai_chat_deployment=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT") or os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME") or os.getenv("AZURE_OPENAI_DEPLOYMENT"),
         azure_openai_embeddings_deployment=os.getenv("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT"),
         openai_api_key=os.getenv("OPENAI_API_KEY"),
         repo_root=repo_root,

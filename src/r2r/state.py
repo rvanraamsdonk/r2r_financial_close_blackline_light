@@ -21,6 +21,7 @@ class R2RState(BaseModel):
     # Datasets
     entities_df: Optional[Any] = None
     coa_df: Optional[Any] = None
+    chart_of_accounts_df: Optional[Any] = None
     tb_df: Optional[Any] = None
     fx_df: Optional[Any] = None
 

@@ -1,0 +1,10 @@
+{
+  "generated_at": "2025-09-11T20:03:10Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "narratives": [],
+  "citations": [
+    "out\\run_20250911T200307Z\\flux_analysis_run_20250911T200307Z.json",
+    "out\\run_20250911T200307Z\\period_init_run_20250911T200307Z.json"
+  ]
+}

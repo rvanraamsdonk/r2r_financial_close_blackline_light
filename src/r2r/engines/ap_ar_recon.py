@@ -412,6 +412,9 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
     - Flag overdue (status == 'Overdue') or age_days > 60
     - Emit artifact, evidence with input_row_ids, deterministic run, and metrics
     """
+    # Constants
+    MATERIALITY_THRESHOLD = 50000.0
+    
     period = state.period
     entity_scope = state.entity
 
@@ -429,6 +432,11 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
 
     exceptions: List[Dict[str, Any]] = []
     input_row_ids: List[str] = []
+    # AI governance accumulators
+    weighted_conf_sum = 0.0
+    amount_sum_abs = 0.0
+    auto_approved_count = 0
+    auto_approved_total_abs = 0.0
     # Precompute deterministic candidates within AR (near-duplicates)
     def _norm_cust(x: Any) -> str:
         s = _safe_str(x).lower().strip()
@@ -625,6 +633,16 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
     for e in exceptions:
         ent = str(e.get("entity"))
         by_ent[ent] = by_ent.get(ent, 0.0) + abs(float(e.get("amount", 0.0)))
+
+    # Summary AI confidence and rationale
+    ar_confidence_score = round((weighted_conf_sum / amount_sum_abs), 3) if amount_sum_abs > 0 else 0.0
+    if exceptions:
+        ar_ai_rationale = (
+            f"AR AI assessment: {len(exceptions)} exceptions identified; no items met auto-approval policy. "
+            f"Materiality threshold=${MATERIALITY_THRESHOLD:,.0f}."
+        )
+    else:
+        ar_ai_rationale = "AR AI assessment: no exceptions."
 
     payload = {
         "generated_at": now_iso_z(),

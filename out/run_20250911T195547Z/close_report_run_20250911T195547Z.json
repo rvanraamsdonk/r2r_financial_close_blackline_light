@@ -1,0 +1,46 @@
+{
+  "generated_at": "2025-09-11T19:55:58Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "artifacts": {
+    "period_init_artifact": "out\\run_20250911T195547Z\\period_init_run_20250911T195547Z.json",
+    "fx_translation_artifact": "out\\run_20250911T195547Z\\fx_translation_run_20250911T195547Z.json",
+    "bank_reconciliation_artifact": "out\\run_20250911T195547Z\\bank_reconciliation_run_20250911T195547Z.json",
+    "bank_ai_artifact": "out\\run_20250911T195547Z\\ai_cache\\bank_ai_rationales_run_20250911T195547Z_0a719342068c.json",
+    "ap_reconciliation_artifact": "out\\run_20250911T195547Z\\ap_reconciliation_run_20250911T195547Z.json",
+    "ar_reconciliation_artifact": "out\\run_20250911T195547Z\\ar_reconciliation_run_20250911T195547Z.json",
+    "ap_ar_ai_artifact": "out\\run_20250911T195547Z\\ai_cache\\ap_ar_ai_suggestions_run_20250911T195547Z_d2dacd84dcd2.json",
+    "intercompany_reconciliation_artifact": "out\\run_20250911T195547Z\\intercompany_reconciliation_run_20250911T195547Z.json",
+    "ic_ai_artifact": "out\\run_20250911T195547Z\\ai_cache\\ic_ai_match_proposals_run_20250911T195547Z_d8b815805426.json",
+    "accruals_artifact": "out\\run_20250911T195547Z\\accruals_run_20250911T195547Z.json",
+    "accruals_ai_artifact": "out\\run_20250911T195547Z\\ai_cache\\accruals_ai_narratives_run_20250911T195547Z_42bc8e29efc6.json",
+    "flux_analysis_artifact": "out\\run_20250911T195547Z\\flux_analysis_run_20250911T195547Z.json",
+    "flux_ai_artifact": "out\\run_20250911T195547Z\\ai_cache\\flux_ai_narratives_run_20250911T195547Z_3c2cd7d14413.json",
+    "auto_journals_artifact": "out\\run_20250911T195547Z\\auto_journals_run_20250911T195547Z.json",
+    "gatekeeping_artifact": "out\\run_20250911T195547Z\\gatekeeping_run_20250911T195547Z.json",
+    "gatekeeping_ai_artifact": "out\\run_20250911T195547Z\\ai_cache\\gatekeeping_ai_rationales_run_20250911T195547Z_7970b53be246.json",
+    "validation_ai_artifact": "out\\run_20250911T195547Z\\ai_cache\\validation_ai_run_20250911T195547Z_19272c593b80.json",
+    "hitl_cases_artifact": "out\\run_20250911T195547Z\\cases_run_20250911T195547Z.json",
+    "hitl_manifest_artifact": "out\\run_20250911T195547Z\\cases_manifest_run_20250911T195547Z.json",
+    "hitl_ai_artifact": "out\\run_20250911T195547Z\\ai_cache\\hitl_ai_case_summaries_run_20250911T195547Z_2ca7d323f525.json",
+    "controls_mapping_artifact": "out\\run_20250911T195547Z\\controls_mapping_run_20250911T195547Z.json",
+    "controls_ai_artifact": "out\\run_20250911T195547Z\\ai_cache\\controls_ai_summaries_run_20250911T195547Z_6a12c01843ef.json"
+  },
+  "summary": {
+    "period": "2025-08",
+    "entity": "ALL",
+    "risk_level": "high",
+    "block_close": true,
+    "open_hitl_cases": 6,
+    "tb_balanced_by_entity": false,
+    "fx_coverage_ok": true,
+    "key_counts": {
+      "ap_exceptions": 19,
+      "ar_exceptions": 15,
+      "je_exceptions": 0,
+      "flux_exceptions": 47,
+      "accruals_exceptions": 9
+    }
+  },
+  "audit_log": "out\\run_20250911T195547Z\\audit_run_20250911T195547Z.jsonl"
+}

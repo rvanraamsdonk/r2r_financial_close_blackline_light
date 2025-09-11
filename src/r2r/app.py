@@ -69,6 +69,7 @@ def main(argv: list[str] | None = None) -> int:
         out_path=str(run_dir),
         entities_df=entities_df,
         coa_df=coa_df,
+        chart_of_accounts_df=coa_df,  # Use coa_df for both attributes
         tb_df=tb_df,
         fx_df=fx_df,
         ai_mode=settings.ai_mode,

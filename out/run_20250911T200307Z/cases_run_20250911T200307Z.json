@@ -1,0 +1,124 @@
+[
+  {
+    "id": "CASE-202508-BANK_DUPLICATES-001",
+    "created_at": "2025-09-11T20:03:17.981468Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "bank_duplicates",
+    "severity": "high",
+    "title": "Bank Duplicates: 13 items",
+    "description": "Automated detection opened this HITL case for category 'bank_duplicates' with 13 exception items in period 2025-08.",
+    "evidence_uris": [
+      "out\\run_20250911T200307Z\\bank_reconciliation_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\ai_cache\\bank_ai_rationales_run_20250911T200307Z_e7d145aca86f.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-AP_EXCEPTIONS-002",
+    "created_at": "2025-09-11T20:03:17.981468Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "ap_exceptions",
+    "severity": "high",
+    "title": "Ap Exceptions: 19 items",
+    "description": "Automated detection opened this HITL case for category 'ap_exceptions' with 19 exception items in period 2025-08.",
+    "evidence_uris": [
+      "out\\run_20250911T200307Z\\ap_reconciliation_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\ai_cache\\ap_ar_ai_suggestions_run_20250911T200307Z_b66cad2b4192.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-AR_EXCEPTIONS-003",
+    "created_at": "2025-09-11T20:03:17.981468Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "ar_exceptions",
+    "severity": "high",
+    "title": "Ar Exceptions: 15 items",
+    "description": "Automated detection opened this HITL case for category 'ar_exceptions' with 15 exception items in period 2025-08.",
+    "evidence_uris": [
+      "out\\run_20250911T200307Z\\period_init_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\fx_translation_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\bank_reconciliation_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\ai_cache\\bank_ai_rationales_run_20250911T200307Z_e7d145aca86f.json",
+      "out\\run_20250911T200307Z\\ap_reconciliation_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\ar_reconciliation_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\ai_cache\\ap_ar_ai_suggestions_run_20250911T200307Z_b66cad2b4192.json",
+      "out\\run_20250911T200307Z\\intercompany_reconciliation_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\ai_cache\\ic_ai_match_proposals_run_20250911T200307Z_eaef660c0db3.json",
+      "out\\run_20250911T200307Z\\accruals_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\ai_cache\\accruals_ai_narratives_run_20250911T200307Z_9e389fe5cd36.json",
+      "out\\run_20250911T200307Z\\flux_analysis_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\ai_cache\\flux_ai_narratives_run_20250911T200307Z_d5525b9fd5bd.json",
+      "out\\run_20250911T200307Z\\auto_journals_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\gatekeeping_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\ai_cache\\gatekeeping_ai_rationales_run_20250911T200307Z_1b4cbcebcf18.json",
+      "out\\run_20250911T200307Z\\ai_cache\\validation_ai_run_20250911T200307Z_4bfe6563e8ff.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-IC_MISMATCHES-004",
+    "created_at": "2025-09-11T20:03:17.981468Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "ic_mismatches",
+    "severity": "high",
+    "title": "Ic Mismatches: 6 items",
+    "description": "Automated detection opened this HITL case for category 'ic_mismatches' with 6 exception items in period 2025-08.",
+    "evidence_uris": [
+      "out\\run_20250911T200307Z\\ai_cache\\ic_ai_match_proposals_run_20250911T200307Z_eaef660c0db3.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-ACCRUALS_EXCEPTIONS-005",
+    "created_at": "2025-09-11T20:03:17.981468Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "accruals_exceptions",
+    "severity": "high",
+    "title": "Accruals Exceptions: 9 items",
+    "description": "Automated detection opened this HITL case for category 'accruals_exceptions' with 9 exception items in period 2025-08.",
+    "evidence_uris": [
+      "out\\run_20250911T200307Z\\accruals_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\ai_cache\\accruals_ai_narratives_run_20250911T200307Z_9e389fe5cd36.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-FLUX_EXCEPTIONS-006",
+    "created_at": "2025-09-11T20:03:17.981468Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "flux_exceptions",
+    "severity": "high",
+    "title": "Flux Exceptions: 47 items",
+    "description": "Automated detection opened this HITL case for category 'flux_exceptions' with 47 exception items in period 2025-08.",
+    "evidence_uris": [
+      "out\\run_20250911T200307Z\\flux_analysis_run_20250911T200307Z.json",
+      "out\\run_20250911T200307Z\\ai_cache\\flux_ai_narratives_run_20250911T200307Z_d5525b9fd5bd.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  }
+]

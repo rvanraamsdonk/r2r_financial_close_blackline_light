@@ -1,0 +1,17 @@
+{
+  "generated_at": "2025-09-11T20:03:17Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "summary": {
+    "schema_issues": 0,
+    "duplicate_rows": 0,
+    "fx_coverage_ok": null
+  },
+  "root_causes": [],
+  "remediations": [],
+  "citations": [
+    "out\\run_20250911T200307Z\\bank_reconciliation_run_20250911T200307Z.json",
+    "out\\run_20250911T200307Z\\ap_reconciliation_run_20250911T200307Z.json",
+    "out\\run_20250911T200307Z\\ar_reconciliation_run_20250911T200307Z.json"
+  ]
+}

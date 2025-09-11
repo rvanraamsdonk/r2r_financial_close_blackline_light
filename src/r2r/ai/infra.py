@@ -108,18 +108,29 @@ def render_template(name: str, context: Dict[str, Any]) -> str:
 
 def openai_enabled() -> bool:
     s = load_settings_with_env()
-    return bool(s.r2r_allow_network and (s.openai_api_key))
+    return bool(s.r2r_allow_network and (s.openai_api_key or s.azure_openai_api_key))
 
 
 def _make_openai_client():
     s = load_settings_with_env()
     if not s.r2r_allow_network:
         raise RuntimeError("Networking not allowed (R2R_ALLOW_NETWORK is False)")
-    if s.openai_api_key:
-        if OpenAI is None:
-            raise RuntimeError("openai package not installed. Add 'openai' to requirements and install.")
+    
+    if OpenAI is None:
+        raise RuntimeError("openai package not installed. Add 'openai' to requirements and install.")
+    
+    # Prefer Azure OpenAI if configured
+    if s.azure_openai_api_key and s.azure_openai_endpoint:
+        from openai import AzureOpenAI
+        return AzureOpenAI(
+            api_key=s.azure_openai_api_key,
+            azure_endpoint=s.azure_openai_endpoint,
+            api_version=s.azure_openai_api_version or "2024-02-15-preview"
+        )
+    elif s.openai_api_key:
         return OpenAI(api_key=s.openai_api_key)
-    raise RuntimeError("No OpenAI credentials found (OPENAI_API_KEY)")
+    
+    raise RuntimeError("No OpenAI credentials found (OPENAI_API_KEY or AZURE_OPENAI_API_KEY)")
 
 
 def call_openai_json(prompt: str, *, system: Optional[str] = None, model_env_var: str = "OPENAI_MODEL") -> Dict[str, Any]:
@@ -128,7 +139,13 @@ def call_openai_json(prompt: str, *, system: Optional[str] = None, model_env_var
     Uses OPENAI_MODEL env var or defaults to 'gpt-4o-mini'.
     """
     client = _make_openai_client()
-    model = os.getenv(model_env_var, "gpt-4o-mini").strip() or "gpt-4o-mini"
+    s = load_settings_with_env()
+    
+    # Use Azure deployment name if available, otherwise fall back to model env var
+    if s.azure_openai_chat_deployment:
+        model = s.azure_openai_chat_deployment
+    else:
+        model = os.getenv(model_env_var, "gpt-4o-mini").strip() or "gpt-4o-mini"
     messages = []
     if system:
         messages.append({"role": "system", "content": system})

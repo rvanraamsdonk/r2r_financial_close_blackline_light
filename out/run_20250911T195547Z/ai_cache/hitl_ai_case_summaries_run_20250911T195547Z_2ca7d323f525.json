@@ -1,0 +1,11 @@
+{
+  "generated_at": "2025-09-11T19:55:57Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "case_summaries": [],
+  "next_actions": [],
+  "citations": [
+    "out\\run_20250911T195547Z\\cases_run_20250911T195547Z.json",
+    "out\\run_20250911T195547Z\\cases_manifest_run_20250911T195547Z.json"
+  ]
+}

@@ -44,10 +44,6 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
     je_cnt = _ival("je_exceptions_count")
     flux_cnt = _ival("flux_exceptions_count")
 
-    # Consume auto-journaling results
-    auto_journal_cnt = _ival("auto_journals_created_count")
-    auto_journal_total = _fval("auto_journals_total_amount") or 0.0
-
     # Totals where available (for contextualization only)
     def _fval(key: str) -> float | None:
         try:
@@ -55,6 +51,10 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
             return float(v) if v is not None else None
         except Exception:
             return None
+
+    # Consume auto-journaling results
+    auto_journal_cnt = _ival("auto_journals_created_count")
+    auto_journal_total = _fval("auto_journals_total_amount") or 0.0
 
     totals = {
         "ap_exceptions_total_abs": _fval("ap_exceptions_total_abs"),

@@ -1,0 +1,256 @@
+{
+  "generated_at": "2025-09-11T19:51:02.940837Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "diagnostics": [
+    {
+      "entity": "ENT100",
+      "imbalance_usd": -832653.87,
+      "materiality_threshold_usd": 1000.0,
+      "confidence_score": 0.5,
+      "auto_approved": false,
+      "ai_resolution_suggestion": {
+        "suggestion": "Review Top Contributing Accounts",
+        "rationale": "The imbalance is distributed across several accounts. Review the top contributing accounts to identify any potential misclassifications or errors."
+      },
+      "top_accounts": [
+        {
+          "account": "4000",
+          "balance_usd": -2345678.9,
+          "account_name": "Product Revenue",
+          "account_type": "revenue"
+        },
+        {
+          "account": "1400",
+          "balance_usd": 1245678.9,
+          "account_name": "Inventory",
+          "account_type": "asset"
+        },
+        {
+          "account": "5000",
+          "balance_usd": 1234567.89,
+          "account_name": "Cost of Goods Sold",
+          "account_type": "expense"
+        },
+        {
+          "account": "3000",
+          "balance_usd": -1000000.0,
+          "account_name": "Share Capital",
+          "account_type": "equity"
+        },
+        {
+          "account": "2200",
+          "balance_usd": -567890.12,
+          "account_name": "Intercompany Payable",
+          "account_type": "liability"
+        },
+        {
+          "account": "4100",
+          "balance_usd": -567890.12,
+          "account_name": "Service Revenue",
+          "account_type": "revenue"
+        },
+        {
+          "account": "1000",
+          "balance_usd": 506054.12,
+          "account_name": "Cash and Cash Equivalents",
+          "account_type": "asset"
+        },
+        {
+          "account": "6200",
+          "balance_usd": 456789.01,
+          "account_name": "General & Administrative",
+          "account_type": "expense"
+        },
+        {
+          "account": "6000",
+          "balance_usd": 345678.9,
+          "account_name": "Sales & Marketing",
+          "account_type": "expense"
+        },
+        {
+          "account": "2000",
+          "balance_usd": -345678.9,
+          "account_name": "Accounts Payable",
+          "account_type": "liability"
+        }
+      ]
+    },
+    {
+      "entity": "ENT101",
+      "imbalance_usd": -578875.46,
+      "materiality_threshold_usd": 1000.0,
+      "confidence_score": 0.5,
+      "auto_approved": false,
+      "ai_resolution_suggestion": {
+        "suggestion": "Review Top Contributing Accounts",
+        "rationale": "The imbalance is distributed across several accounts. Review the top contributing accounts to identify any potential misclassifications or errors."
+      },
+      "top_accounts": [
+        {
+          "account": "4000",
+          "balance_usd": -1987654.32,
+          "account_name": "Product Revenue",
+          "account_type": "revenue"
+        },
+        {
+          "account": "1400",
+          "balance_usd": 1098765.43,
+          "account_name": "Inventory",
+          "account_type": "asset"
+        },
+        {
+          "account": "5000",
+          "balance_usd": 1023456.78,
+          "account_name": "Cost of Goods Sold",
+          "account_type": "expense"
+        },
+        {
+          "account": "3000",
+          "balance_usd": -800000.0,
+          "account_name": "Share Capital",
+          "account_type": "equity"
+        },
+        {
+          "account": "2200",
+          "balance_usd": -456789.01,
+          "account_name": "Intercompany Payable",
+          "account_type": "liability"
+        },
+        {
+          "account": "4100",
+          "balance_usd": -456789.01,
+          "account_name": "Service Revenue",
+          "account_type": "revenue"
+        },
+        {
+          "account": "1000",
+          "balance_usd": 423567.89,
+          "account_name": "Cash and Cash Equivalents",
+          "account_type": "asset"
+        },
+        {
+          "account": "6200",
+          "balance_usd": 378901.23,
+          "account_name": "General & Administrative",
+          "account_type": "expense"
+        },
+        {
+          "account": "6000",
+          "balance_usd": 289012.34,
+          "account_name": "Sales & Marketing",
+          "account_type": "expense"
+        },
+        {
+          "account": "2000",
+          "balance_usd": -289012.34,
+          "account_name": "Accounts Payable",
+          "account_type": "liability"
+        }
+      ]
+    },
+    {
+      "entity": "ENT102",
+      "imbalance_usd": -383398.9,
+      "materiality_threshold_usd": 1000.0,
+      "confidence_score": 0.5,
+      "auto_approved": false,
+      "ai_resolution_suggestion": {
+        "suggestion": "Review Top Contributing Accounts",
+        "rationale": "The imbalance is distributed across several accounts. Review the top contributing accounts to identify any potential misclassifications or errors."
+      },
+      "top_accounts": [
+        {
+          "account": "4000",
+          "balance_usd": -1567890.12,
+          "account_name": "Product Revenue",
+          "account_type": "revenue"
+        },
+        {
+          "account": "1400",
+          "balance_usd": 890123.45,
+          "account_name": "Inventory",
+          "account_type": "asset"
+        },
+        {
+          "account": "5000",
+          "balance_usd": 823456.78,
+          "account_name": "Cost of Goods Sold",
+          "account_type": "expense"
+        },
+        {
+          "account": "3000",
+          "balance_usd": -600000.0,
+          "account_name": "Share Capital",
+          "account_type": "equity"
+        },
+        {
+          "account": "2200",
+          "balance_usd": -367890.12,
+          "account_name": "Intercompany Payable",
+          "account_type": "liability"
+        },
+        {
+          "account": "4100",
+          "balance_usd": -367890.12,
+          "account_name": "Service Revenue",
+          "account_type": "revenue"
+        },
+        {
+          "account": "1000",
+          "balance_usd": 345678.9,
+          "account_name": "Cash and Cash Equivalents",
+          "account_type": "asset"
+        },
+        {
+          "account": "6200",
+          "balance_usd": 298765.43,
+          "account_name": "General & Administrative",
+          "account_type": "expense"
+        },
+        {
+          "account": "6000",
+          "balance_usd": 234567.89,
+          "account_name": "Sales & Marketing",
+          "account_type": "expense"
+        },
+        {
+          "account": "2000",
+          "balance_usd": -234567.89,
+          "account_name": "Accounts Payable",
+          "account_type": "liability"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "entities_in_scope": 3,
+    "material_imbalances": 3,
+    "auto_approved_entities": 0,
+    "average_confidence_score": 0.5
+  },
+  "rollups": {
+    "by_entity_total_usd": {
+      "ENT100": -832653.87,
+      "ENT101": -578875.46,
+      "ENT102": -383398.9
+    },
+    "entity_materially_balanced": {
+      "ENT100": false,
+      "ENT101": false,
+      "ENT102": false
+    },
+    "entity_confidence_scores": {
+      "ENT100": 0.5,
+      "ENT101": 0.5,
+      "ENT102": 0.5
+    },
+    "by_account_type_total_usd": {
+      "asset": 5305991.41,
+      "equity": -2969259.13,
+      "expense": 5734330.8,
+      "liability": -2572198.72,
+      "revenue": -7293792.59
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "generated_at": "2025-09-11T20:03:17Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "inputs": {
+    "fx_coverage_ok": null,
+    "tb_balanced_by_entity": null,
+    "tb_entity_sums_usd": null
+  },
+  "categories": {
+    "bank_duplicates": 13,
+    "ap_exceptions": 19,
+    "ar_exceptions": 15,
+    "ic_mismatches": 6,
+    "accruals_exceptions": 9,
+    "je_exceptions": 0,
+    "flux_exceptions": 47,
+    "auto_journals_created": 0
+  },
+  "totals": {
+    "ap_exceptions_total_abs": 653977.7,
+    "ar_exceptions_total_abs": 2586167.48,
+    "ic_mismatch_total_diff_abs": 0.0,
+    "accruals_exception_total_usd": 711808.57,
+    "je_exceptions_total_abs": null,
+    "auto_journals_total_amount": 0.0
+  },
+  "risk_level": "high",
+  "block_close": true,
+  "auto_close_eligible": false,
+  "gross_exception_amount": 3951953.7499999995,
+  "auto_journal_amount": 0.0,
+  "net_exception_amount": 3951953.7499999995,
+  "materiality_threshold": 50000,
+  "ai_rationale": "Manual review required: Critical control failures detected or high-value net exceptions ($3,951,953.75) exceed risk tolerance.  Human oversight mandatory.",
+  "confidence_score": 0.99,
+  "referenced_artifacts": {
+    "period_init_artifact": "out\\run_20250911T200307Z\\period_init_run_20250911T200307Z.json",
+    "fx_translation_artifact": "out\\run_20250911T200307Z\\fx_translation_run_20250911T200307Z.json",
+    "bank_reconciliation_artifact": "out\\run_20250911T200307Z\\bank_reconciliation_run_20250911T200307Z.json",
+    "bank_ai_artifact": "out\\run_20250911T200307Z\\ai_cache\\bank_ai_rationales_run_20250911T200307Z_e7d145aca86f.json",
+    "ap_reconciliation_artifact": "out\\run_20250911T200307Z\\ap_reconciliation_run_20250911T200307Z.json",
+    "ar_reconciliation_artifact": "out\\run_20250911T200307Z\\ar_reconciliation_run_20250911T200307Z.json",
+    "ap_ar_ai_artifact": "out\\run_20250911T200307Z\\ai_cache\\ap_ar_ai_suggestions_run_20250911T200307Z_b66cad2b4192.json",
+    "intercompany_reconciliation_artifact": "out\\run_20250911T200307Z\\intercompany_reconciliation_run_20250911T200307Z.json",
+    "ic_ai_artifact": "out\\run_20250911T200307Z\\ai_cache\\ic_ai_match_proposals_run_20250911T200307Z_eaef660c0db3.json",
+    "accruals_artifact": "out\\run_20250911T200307Z\\accruals_run_20250911T200307Z.json",
+    "accruals_ai_artifact": "out\\run_20250911T200307Z\\ai_cache\\accruals_ai_narratives_run_20250911T200307Z_9e389fe5cd36.json",
+    "flux_analysis_artifact": "out\\run_20250911T200307Z\\flux_analysis_run_20250911T200307Z.json",
+    "flux_ai_artifact": "out\\run_20250911T200307Z\\ai_cache\\flux_ai_narratives_run_20250911T200307Z_d5525b9fd5bd.json",
+    "auto_journals_artifact": "out\\run_20250911T200307Z\\auto_journals_run_20250911T200307Z.json"
+  }
+}
