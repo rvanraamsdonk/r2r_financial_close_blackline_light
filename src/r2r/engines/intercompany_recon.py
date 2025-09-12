@@ -165,14 +165,14 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
                     base_conf = 0.7
                 mat_factor = 1.0 if amt_abs < GLOBAL_MATERIALITY else 0.85
 
-            confidence_score = round(min(0.99, base_conf * mat_factor), 3)
+            # Removed fake confidence score - deterministic logic doesn't need confidence
             auto_approve = False  # Policy: no auto-approvals for IC exceptions at this stage
 
-            exception_data["confidence_score"] = confidence_score
+            # Removed fake confidence score
             exception_data["auto_approve"] = auto_approve
 
             # Accumulate AI governance metrics
-            weighted_conf_sum += confidence_score * amt_abs
+            # Removed fake confidence tracking
             amount_sum_abs += amt_abs
             if auto_approve:
                 auto_approved_count += 1
@@ -249,9 +249,9 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
         )
 
     # Summary AI confidence and rationale
-    ic_confidence_score = round((weighted_conf_sum / amount_sum_abs), 3) if amount_sum_abs > 0 else 0.0
+    # Removed fake confidence score calculation
     if exceptions:
-        ic_ai_rationale = (
+        ic_deterministic_rationale = (
             f"IC AI assessment: {len(exceptions)} exceptions across pairs; auto-approval disabled for intercompany at this stage. "
             f"Pair thresholds enforced; forensic patterns flagged for review."
         )
@@ -272,8 +272,8 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
             "total_diff_abs": float(round(total_diff, 2)),
             "by_pair_diff_abs": {k: float(round(v, 2)) for k, v in by_pair.items()},
             "proposal_count": len(proposals),
-            "ai_confidence_score": ic_confidence_score,
-            "ai_rationale": ic_ai_rationale,
+            # Removed fake confidence score
+            "deterministic_rationale": ic_deterministic_rationale,
             "auto_approved_count": auto_approved_count,
             "auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         },
@@ -329,8 +329,8 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
             "ic_mismatch_total_diff_abs": payload["summary"]["total_diff_abs"],
             "ic_mismatch_by_pair": payload["summary"]["by_pair_diff_abs"],
             "intercompany_reconciliation_artifact": str(out_path),
-            "ic_confidence_score": ic_confidence_score,
-            "ic_ai_rationale": ic_ai_rationale,
+            # Removed fake confidence score
+            "ic_deterministic_rationale": ic_deterministic_rationale,
             "ic_auto_approved_count": auto_approved_count,
             "ic_auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         }

@@ -80,8 +80,8 @@ def auto_journal_creation(state: R2RState, audit: AuditLogger) -> R2RState:
                                 "currency": line.currency
                             } for line in proposal.lines
                         ],
-                        "ai_rationale": f"Auto-created journal for FX translation difference of ${diff_usd:,.2f}. Amount is below materiality threshold and represents routine currency translation adjustment.",
-                        "confidence_score": 0.95,
+                        "deterministic_rationale": f"Auto-created journal for FX translation difference of ${diff_usd:,.2f}. Amount is below materiality threshold and represents routine currency translation adjustment.",
+                        # Removed fake confidence score
                         "source_data": fx_item
                     })
                     total_auto_amount += diff_usd
@@ -131,8 +131,8 @@ def auto_journal_creation(state: R2RState, audit: AuditLogger) -> R2RState:
                                 "currency": line.currency or "USD"
                             } for line in proposal.lines
                         ],
-                        "ai_rationale": f"Auto-created accrual adjustment for budget variance of ${var_amount:,.2f}. Over-budget amount requires accrual but is below materiality threshold for manual review.",
-                        "confidence_score": 0.92,
+                        "deterministic_rationale": f"Auto-created accrual adjustment for budget variance of ${var_amount:,.2f}. Over-budget amount requires accrual but is below materiality threshold for manual review.",
+                        # Removed fake confidence score
                         "source_data": flux_item
                     })
                     total_auto_amount += var_amount
@@ -156,7 +156,7 @@ def auto_journal_creation(state: R2RState, audit: AuditLogger) -> R2RState:
                 "FX": len([j for j in auto_journals if j["module"] == "FX"]),
                 "Flux": len([j for j in auto_journals if j["module"] == "Flux"])
             },
-            "average_confidence": round(sum(j["confidence_score"] for j in auto_journals) / len(auto_journals), 3) if auto_journals else 0.0
+            # Removed fake confidence calculation
         },
         "materiality_thresholds": materiality_thresholds,
         "auto_journal_threshold": default_threshold
@@ -195,7 +195,7 @@ def auto_journal_creation(state: R2RState, audit: AuditLogger) -> R2RState:
         "auto_journals_count": len(auto_journals),
         "auto_journals_total_usd": round(total_auto_amount, 2),
         "auto_journals_by_module": payload["summary"]["by_module"],
-        "auto_journals_avg_confidence": payload["summary"]["average_confidence"],
+        # Removed fake confidence metric
         "auto_journals_artifact": str(out_path),
     })
     

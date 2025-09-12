@@ -1,0 +1,1712 @@
+{
+  "generated_at": "2025-09-12T19:10:16Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "auto_journals": [
+    {
+      "je_id": "46f055df-79a3-46c6-b9c2-43fb2007eb9f",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 347.46929599996656,
+      "description": "FX translation adjustment - EUR 347.47 (ENT101/1000)",
+      "lines": [
+        {
+          "account": "1000",
+          "description": "FX translation adjustment - EUR",
+          "debit": 347.46929599996656,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "7201",
+          "description": "FX translation gain - EUR",
+          "debit": 0.0,
+          "credit": 347.46929599996656,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $347.47. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "1000",
+        "currency": "EUR",
+        "balance_local": 389234.56,
+        "rate": 1.0891,
+        "computed_usd": 423915.359296,
+        "reported_usd": 423567.89,
+        "diff_usd": 347.46929599996656,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "e943e7c0-1db6-4b0c-b2a8-88bc41ebf7a6",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 327.99998999998206,
+      "description": "FX translation adjustment - EUR 328.00 (ENT101/1100)",
+      "lines": [
+        {
+          "account": "1100",
+          "description": "FX translation adjustment - EUR",
+          "debit": 327.99998999998206,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "7201",
+          "description": "FX translation gain - EUR",
+          "debit": 0.0,
+          "credit": 327.99998999998206,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $328.00. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "1100",
+        "currency": "EUR",
+        "balance_local": 215678.9,
+        "rate": 1.0891,
+        "computed_usd": 234895.88999,
+        "reported_usd": 234567.89,
+        "diff_usd": 327.99998999998206,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "843f16e0-2b77-42e4-8f37-967cfb48b26d",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 175.83939499998814,
+      "description": "FX translation adjustment - EUR 175.84 (ENT101/1200)",
+      "lines": [
+        {
+          "account": "1200",
+          "description": "FX translation adjustment - EUR",
+          "debit": 175.83939499998814,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "7201",
+          "description": "FX translation gain - EUR",
+          "debit": 0.0,
+          "credit": 175.83939499998814,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $175.84. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "1200",
+        "currency": "EUR",
+        "balance_local": 144123.45,
+        "rate": 1.0891,
+        "computed_usd": 156964.849395,
+        "reported_usd": 156789.01,
+        "diff_usd": 175.83939499998814,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "0693ba91-84e8-4bf0-b410-a8181f1a9ab7",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 11.44909799999732,
+      "description": "FX translation adjustment - EUR 11.45 (ENT101/1300)",
+      "lines": [
+        {
+          "account": "1300",
+          "description": "FX translation adjustment - EUR",
+          "debit": 11.44909799999732,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "7201",
+          "description": "FX translation gain - EUR",
+          "debit": 0.0,
+          "credit": 11.44909799999732,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $11.45. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "1300",
+        "currency": "EUR",
+        "balance_local": 72456.78,
+        "rate": 1.0891,
+        "computed_usd": 78912.679098,
+        "reported_usd": 78901.23,
+        "diff_usd": 11.44909799999732,
+        "is_exception": false,
+        "materiality_factor": 0.9428,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "3ac55bd2-ddf1-48a9-98a2-db2181607ed2",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 1091.1097140000202,
+      "description": "FX translation adjustment - EUR 1,091.11 (ENT101/1400)",
+      "lines": [
+        {
+          "account": "1400",
+          "description": "FX translation adjustment - EUR",
+          "debit": 1091.1097140000202,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "7201",
+          "description": "FX translation gain - EUR",
+          "debit": 0.0,
+          "credit": 1091.1097140000202,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $1,091.11. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "1400",
+        "currency": "EUR",
+        "balance_local": 1009876.54,
+        "rate": 1.0891,
+        "computed_usd": 1099856.539714,
+        "reported_usd": 1098765.43,
+        "diff_usd": 1091.1097140000202,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "4b7c2eeb-882b-49e9-a167-f06055c901ea",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 51.75090199999977,
+      "description": "FX translation adjustment - EUR 51.75 (ENT101/1500)",
+      "lines": [
+        {
+          "account": "1500",
+          "description": "FX translation adjustment - EUR",
+          "debit": 51.75090199999977,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "7201",
+          "description": "FX translation gain - EUR",
+          "debit": 0.0,
+          "credit": 51.75090199999977,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $51.75. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "1500",
+        "currency": "EUR",
+        "balance_local": -182456.78,
+        "rate": 1.0891,
+        "computed_usd": -198713.679098,
+        "reported_usd": -198765.43,
+        "diff_usd": 51.75090199999977,
+        "is_exception": false,
+        "materiality_factor": 0.7412,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "a624e4b5-54d2-44c9-84ad-04ad0e2c1257",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 69.76010999991558,
+      "description": "FX translation adjustment - EUR 69.76 (ENT101/2000)",
+      "lines": [
+        {
+          "account": "7201",
+          "description": "FX translation loss - EUR",
+          "debit": 69.76010999991558,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "2000",
+          "description": "FX translation adjustment - EUR",
+          "debit": 0.0,
+          "credit": 69.76010999991558,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $69.76. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "2000",
+        "currency": "EUR",
+        "balance_local": -265432.1,
+        "rate": 1.0891,
+        "computed_usd": -289082.10010999994,
+        "reported_usd": -289012.34,
+        "diff_usd": -69.76010999991558,
+        "is_exception": false,
+        "materiality_factor": 0.6512,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "1e3290da-359e-4b79-bb10-7c602e2c95dd",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 21.159493999992264,
+      "description": "FX translation adjustment - EUR 21.16 (ENT101/2100)",
+      "lines": [
+        {
+          "account": "7201",
+          "description": "FX translation loss - EUR",
+          "debit": 21.159493999992264,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "2100",
+          "description": "FX translation adjustment - EUR",
+          "debit": 0.0,
+          "credit": 21.159493999992264,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $21.16. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "2100",
+        "currency": "EUR",
+        "balance_local": -95012.34,
+        "rate": 1.0891,
+        "computed_usd": -103477.93949399999,
+        "reported_usd": -103456.78,
+        "diff_usd": -21.159493999992264,
+        "is_exception": false,
+        "materiality_factor": 0.8942,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "c4c450d1-7f30-4958-b5d7-2b038189b59e",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 498.52971399994567,
+      "description": "FX translation adjustment - EUR 498.53 (ENT101/2200)",
+      "lines": [
+        {
+          "account": "7201",
+          "description": "FX translation loss - EUR",
+          "debit": 498.52971399994567,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "2200",
+          "description": "FX translation adjustment - EUR",
+          "debit": 0.0,
+          "credit": 498.52971399994567,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $498.53. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "2200",
+        "currency": "EUR",
+        "balance_local": -419876.54,
+        "rate": 1.0891,
+        "computed_usd": -457287.53971399995,
+        "reported_usd": -456789.01,
+        "diff_usd": -498.52971399994567,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "e11a42e1-231d-474a-b05d-7e1c05d35134",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 17.888998999958858,
+      "description": "FX translation adjustment - EUR 17.89 (ENT101/3000)",
+      "lines": [
+        {
+          "account": "7201",
+          "description": "FX translation loss - EUR",
+          "debit": 17.888998999958858,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "3000",
+          "description": "FX translation adjustment - EUR",
+          "debit": 0.0,
+          "credit": 17.888998999958858,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $17.89. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "3000",
+        "currency": "EUR",
+        "balance_local": -734567.89,
+        "rate": 1.0891,
+        "computed_usd": -800017.888999,
+        "reported_usd": -800000.0,
+        "diff_usd": -17.888998999958858,
+        "is_exception": false,
+        "materiality_factor": 0.9106,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "072986cc-24f0-40ef-a0b2-3c084244a59c",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 100.56090199999744,
+      "description": "FX translation adjustment - EUR 100.56 (ENT101/3100)",
+      "lines": [
+        {
+          "account": "3100",
+          "description": "FX translation adjustment - EUR",
+          "debit": 100.56090199999744,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "7201",
+          "description": "FX translation gain - EUR",
+          "debit": 0.0,
+          "credit": 100.56090199999744,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $100.56. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "3100",
+        "currency": "EUR",
+        "balance_local": -173456.78,
+        "rate": 1.0891,
+        "computed_usd": -188911.779098,
+        "reported_usd": -189012.34,
+        "diff_usd": 100.56090199999744,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "629c9174-cfb9-4a68-a0ef-ae31eedbac65",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 423.7801099999342,
+      "description": "FX translation adjustment - EUR 423.78 (ENT101/4000)",
+      "lines": [
+        {
+          "account": "7201",
+          "description": "FX translation loss - EUR",
+          "debit": 423.7801099999342,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "4000",
+          "description": "FX translation adjustment - EUR",
+          "debit": 0.0,
+          "credit": 423.7801099999342,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $423.78. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "4000",
+        "currency": "EUR",
+        "balance_local": -1825432.1,
+        "rate": 1.0891,
+        "computed_usd": -1988078.10011,
+        "reported_usd": -1987654.32,
+        "diff_usd": -423.7801099999342,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "04515456-f8fb-4c7a-8a2b-6167f528638c",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 498.52971399994567,
+      "description": "FX translation adjustment - EUR 498.53 (ENT101/4100)",
+      "lines": [
+        {
+          "account": "7201",
+          "description": "FX translation loss - EUR",
+          "debit": 498.52971399994567,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "4100",
+          "description": "FX translation adjustment - EUR",
+          "debit": 0.0,
+          "credit": 498.52971399994567,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $498.53. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "4100",
+        "currency": "EUR",
+        "balance_local": -419876.54,
+        "rate": 1.0891,
+        "computed_usd": -457287.53971399995,
+        "reported_usd": -456789.01,
+        "diff_usd": -498.52971399994567,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "6a391922-e331-456e-a5f4-fce3964a13e4",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 162.75971399992704,
+      "description": "FX translation adjustment - EUR 162.76 (ENT101/5000)",
+      "lines": [
+        {
+          "account": "5000",
+          "description": "FX translation adjustment - EUR",
+          "debit": 162.75971399992704,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "7201",
+          "description": "FX translation gain - EUR",
+          "debit": 0.0,
+          "credit": 162.75971399992704,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $162.76. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "5000",
+        "currency": "EUR",
+        "balance_local": 939876.54,
+        "rate": 1.0891,
+        "computed_usd": 1023619.539714,
+        "reported_usd": 1023456.78,
+        "diff_usd": 162.75971399992704,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "82989a94-838f-4993-ae24-30552a468991",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 69.76010999991558,
+      "description": "FX translation adjustment - EUR 69.76 (ENT101/6000)",
+      "lines": [
+        {
+          "account": "6000",
+          "description": "FX translation adjustment - EUR",
+          "debit": 69.76010999991558,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "7201",
+          "description": "FX translation gain - EUR",
+          "debit": 0.0,
+          "credit": 69.76010999991558,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $69.76. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "6000",
+        "currency": "EUR",
+        "balance_local": 265432.1,
+        "rate": 1.0891,
+        "computed_usd": 289082.10010999994,
+        "reported_usd": 289012.34,
+        "diff_usd": 69.76010999991558,
+        "is_exception": false,
+        "materiality_factor": 0.6512,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "7ae30158-7a13-4a21-b509-a68982ea252b",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 51.75090199999977,
+      "description": "FX translation adjustment - EUR 51.75 (ENT101/6100)",
+      "lines": [
+        {
+          "account": "7201",
+          "description": "FX translation loss - EUR",
+          "debit": 51.75090199999977,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "6100",
+          "description": "FX translation adjustment - EUR",
+          "debit": 0.0,
+          "credit": 51.75090199999977,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $51.75. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "6100",
+        "currency": "EUR",
+        "balance_local": 182456.78,
+        "rate": 1.0891,
+        "computed_usd": 198713.679098,
+        "reported_usd": 198765.43,
+        "diff_usd": -51.75090199999977,
+        "is_exception": false,
+        "materiality_factor": 0.7412,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "d7936271-c58f-49ed-a6b4-79dfb4a1a276",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 119.00949400005629,
+      "description": "FX translation adjustment - EUR 119.01 (ENT101/6200)",
+      "lines": [
+        {
+          "account": "6200",
+          "description": "FX translation adjustment - EUR",
+          "debit": 119.00949400005629,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "7201",
+          "description": "FX translation gain - EUR",
+          "debit": 0.0,
+          "credit": 119.00949400005629,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $119.01. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "6200",
+        "currency": "EUR",
+        "balance_local": 348012.34,
+        "rate": 1.0891,
+        "computed_usd": 379020.23949400004,
+        "reported_usd": 378901.23,
+        "diff_usd": 119.00949400005629,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "fafe9285-6478-486e-88c2-e3ff5b512c32",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 5.180803000002925,
+      "description": "FX translation adjustment - EUR 5.18 (ENT101/7100)",
+      "lines": [
+        {
+          "account": "7201",
+          "description": "FX translation loss - EUR",
+          "debit": 5.180803000002925,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "7100",
+          "description": "FX translation adjustment - EUR",
+          "debit": 0.0,
+          "credit": 5.180803000002925,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $5.18. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT101",
+        "account": "7100",
+        "currency": "EUR",
+        "balance_local": 18245.67,
+        "rate": 1.0891,
+        "computed_usd": 19871.359196999998,
+        "reported_usd": 19876.54,
+        "diff_usd": -5.180803000002925,
+        "is_exception": false,
+        "materiality_factor": 0.9741,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "20d6e46c-cd37-4b0c-83e2-8e52defa9bda",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 167.88600999995833,
+      "description": "FX translation adjustment - GBP 167.89 (ENT102/1000)",
+      "lines": [
+        {
+          "account": "1000",
+          "description": "FX translation adjustment - GBP",
+          "debit": 167.88600999995833,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "7202",
+          "description": "FX translation gain - GBP",
+          "debit": 0.0,
+          "credit": 167.88600999995833,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $167.89. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "1000",
+        "currency": "GBP",
+        "balance_local": 269876.54,
+        "rate": 1.2815,
+        "computed_usd": 345846.78601,
+        "reported_usd": 345678.9,
+        "diff_usd": 167.88600999995833,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "11793deb-0994-42e2-99e2-7b8aa6e375d6",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 46.47642999998061,
+      "description": "FX translation adjustment - GBP 46.48 (ENT102/1100)",
+      "lines": [
+        {
+          "account": "7202",
+          "description": "FX translation loss - GBP",
+          "debit": 46.47642999998061,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "1100",
+          "description": "FX translation adjustment - GBP",
+          "debit": 0.0,
+          "credit": 46.47642999998061,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $46.48. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "1100",
+        "currency": "GBP",
+        "balance_local": 147456.78,
+        "rate": 1.2815,
+        "computed_usd": 188965.86357000002,
+        "reported_usd": 189012.34,
+        "diff_usd": -46.47642999998061,
+        "is_exception": false,
+        "materiality_factor": 0.7676,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "b1fc5534-9ecd-48f9-b7dc-2cc5e129e16b",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 10.196105000009993,
+      "description": "FX translation adjustment - GBP 10.20 (ENT102/1200)",
+      "lines": [
+        {
+          "account": "1200",
+          "description": "FX translation adjustment - GBP",
+          "debit": 10.196105000009993,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "7202",
+          "description": "FX translation gain - GBP",
+          "debit": 0.0,
+          "credit": 10.196105000009993,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $10.20. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "1200",
+        "currency": "GBP",
+        "balance_local": 96345.67,
+        "rate": 1.2815,
+        "computed_usd": 123466.97610500001,
+        "reported_usd": 123456.78,
+        "diff_usd": 10.196105000009993,
+        "is_exception": false,
+        "materiality_factor": 0.949,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "40394101-fa99-464b-a8e2-d178e40e46c6",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 1.9161050000038813,
+      "description": "FX translation adjustment - GBP 1.92 (ENT102/1300)",
+      "lines": [
+        {
+          "account": "1300",
+          "description": "FX translation adjustment - GBP",
+          "debit": 1.9161050000038813,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "7202",
+          "description": "FX translation gain - GBP",
+          "debit": 0.0,
+          "credit": 1.9161050000038813,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $1.92. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "1300",
+        "currency": "GBP",
+        "balance_local": 49345.67,
+        "rate": 1.2815,
+        "computed_usd": 63236.476105,
+        "reported_usd": 63234.56,
+        "diff_usd": 1.9161050000038813,
+        "is_exception": false,
+        "materiality_factor": 0.9904,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "d71b6c9d-8cf7-4464-ab2d-ba9c97f1230f",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 34.69896499987226,
+      "description": "FX translation adjustment - GBP 34.70 (ENT102/1400)",
+      "lines": [
+        {
+          "account": "7202",
+          "description": "FX translation loss - GBP",
+          "debit": 34.69896499987226,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "1400",
+          "description": "FX translation adjustment - GBP",
+          "debit": 0.0,
+          "credit": 34.69896499987226,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $34.70. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "1400",
+        "currency": "GBP",
+        "balance_local": 694567.89,
+        "rate": 1.2815,
+        "computed_usd": 890088.7510350001,
+        "reported_usd": 890123.45,
+        "diff_usd": -34.69896499987226,
+        "is_exception": false,
+        "materiality_factor": 0.8265,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "b5e436f9-23f8-4c61-8c60-f0f4256e20cb",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 3.0338950000004843,
+      "description": "FX translation adjustment - GBP 3.03 (ENT102/1500)",
+      "lines": [
+        {
+          "account": "1500",
+          "description": "FX translation adjustment - GBP",
+          "debit": 3.0338950000004843,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "7202",
+          "description": "FX translation gain - GBP",
+          "debit": 0.0,
+          "credit": 3.0338950000004843,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $3.03. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "1500",
+        "currency": "GBP",
+        "balance_local": -122345.67,
+        "rate": 1.2815,
+        "computed_usd": -156785.976105,
+        "reported_usd": -156789.01,
+        "diff_usd": 3.0338950000004843,
+        "is_exception": false,
+        "materiality_factor": 0.9848,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "b0892773-236a-464b-8aeb-69abecc2a198",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 37.57628999999724,
+      "description": "FX translation adjustment - GBP 37.58 (ENT102/2000)",
+      "lines": [
+        {
+          "account": "2000",
+          "description": "FX translation adjustment - GBP",
+          "debit": 37.57628999999724,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "7202",
+          "description": "FX translation gain - GBP",
+          "debit": 0.0,
+          "credit": 37.57628999999724,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $37.58. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "2000",
+        "currency": "GBP",
+        "balance_local": -183012.34,
+        "rate": 1.2815,
+        "computed_usd": -234530.31371000002,
+        "reported_usd": -234567.89,
+        "diff_usd": 37.57628999999724,
+        "is_exception": false,
+        "materiality_factor": 0.8121,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "4990daf9-8197-40c0-83bd-f243e81a10b8",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 1.0788250000041444,
+      "description": "FX translation adjustment - GBP 1.08 (ENT102/2100)",
+      "lines": [
+        {
+          "account": "2100",
+          "description": "FX translation adjustment - GBP",
+          "debit": 1.0788250000041444,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "7202",
+          "description": "FX translation gain - GBP",
+          "debit": 0.0,
+          "credit": 1.0788250000041444,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $1.08. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "2100",
+        "currency": "GBP",
+        "balance_local": -65123.45,
+        "rate": 1.2815,
+        "computed_usd": -83455.701175,
+        "reported_usd": -83456.78,
+        "diff_usd": 1.0788250000041444,
+        "is_exception": false,
+        "materiality_factor": 0.9946,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "f7a1cbeb-de85-4414-867b-ea21b70c68ad",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 58.581175000057556,
+      "description": "FX translation adjustment - GBP 58.58 (ENT102/2200)",
+      "lines": [
+        {
+          "account": "7202",
+          "description": "FX translation loss - GBP",
+          "debit": 58.581175000057556,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "2200",
+          "description": "FX translation adjustment - GBP",
+          "debit": 0.0,
+          "credit": 58.581175000057556,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $58.58. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "2200",
+        "currency": "GBP",
+        "balance_local": -287123.45,
+        "rate": 1.2815,
+        "computed_usd": -367948.70117500005,
+        "reported_usd": -367890.12,
+        "diff_usd": -58.581175000057556,
+        "is_exception": false,
+        "materiality_factor": 0.7071,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "3930b84b-5a3a-4916-a7c6-5aeb63a5ec51",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 42.58864000008907,
+      "description": "FX translation adjustment - GBP 42.59 (ENT102/3000)",
+      "lines": [
+        {
+          "account": "7202",
+          "description": "FX translation loss - GBP",
+          "debit": 42.58864000008907,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "3000",
+          "description": "FX translation adjustment - GBP",
+          "debit": 0.0,
+          "credit": 42.58864000008907,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $42.59. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "3000",
+        "currency": "GBP",
+        "balance_local": -468234.56,
+        "rate": 1.2815,
+        "computed_usd": -600042.5886400001,
+        "reported_usd": -600000.0,
+        "diff_usd": -42.58864000008907,
+        "is_exception": false,
+        "materiality_factor": 0.7871,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "5a93b633-4a92-4e5c-b14a-547015224390",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 0.6103500000026543,
+      "description": "FX translation adjustment - GBP 0.61 (ENT102/3100)",
+      "lines": [
+        {
+          "account": "7202",
+          "description": "FX translation loss - GBP",
+          "debit": 0.6103500000026543,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "3100",
+          "description": "FX translation adjustment - GBP",
+          "debit": 0.0,
+          "credit": 0.6103500000026543,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $0.61. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "3100",
+        "currency": "GBP",
+        "balance_local": -113678.9,
+        "rate": 1.2815,
+        "computed_usd": -145679.51035,
+        "reported_usd": -145678.9,
+        "diff_usd": -0.6103500000026543,
+        "is_exception": false,
+        "materiality_factor": 0.9969,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "b51918da-ce37-4310-bcf3-6a6d8a75a66b",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 30.256430000066757,
+      "description": "FX translation adjustment - GBP 30.26 (ENT102/4000)",
+      "lines": [
+        {
+          "account": "4000",
+          "description": "FX translation adjustment - GBP",
+          "debit": 30.256430000066757,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "7202",
+          "description": "FX translation gain - GBP",
+          "debit": 0.0,
+          "credit": 30.256430000066757,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $30.26. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "4000",
+        "currency": "GBP",
+        "balance_local": -1223456.78,
+        "rate": 1.2815,
+        "computed_usd": -1567859.86357,
+        "reported_usd": -1567890.12,
+        "diff_usd": 30.256430000066757,
+        "is_exception": false,
+        "materiality_factor": 0.8487,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "839e7235-c774-4942-94f6-168447be3783",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 58.581175000057556,
+      "description": "FX translation adjustment - GBP 58.58 (ENT102/4100)",
+      "lines": [
+        {
+          "account": "7202",
+          "description": "FX translation loss - GBP",
+          "debit": 58.581175000057556,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "4100",
+          "description": "FX translation adjustment - GBP",
+          "debit": 0.0,
+          "credit": 58.581175000057556,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $58.58. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "4100",
+        "currency": "GBP",
+        "balance_local": -287123.45,
+        "rate": 1.2815,
+        "computed_usd": -367948.70117500005,
+        "reported_usd": -367890.12,
+        "diff_usd": -58.581175000057556,
+        "is_exception": false,
+        "materiality_factor": 0.7071,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "20a68446-9032-4182-9fb7-b691b3d06eae",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 290.8038949999027,
+      "description": "FX translation adjustment - GBP 290.80 (ENT102/5000)",
+      "lines": [
+        {
+          "account": "7202",
+          "description": "FX translation loss - GBP",
+          "debit": 290.8038949999027,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "5000",
+          "description": "FX translation adjustment - GBP",
+          "debit": 0.0,
+          "credit": 290.8038949999027,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $290.80. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "5000",
+        "currency": "GBP",
+        "balance_local": 642345.67,
+        "rate": 1.2815,
+        "computed_usd": 823165.9761050001,
+        "reported_usd": 823456.78,
+        "diff_usd": -290.8038949999027,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "43364bd6-91e6-448d-b278-bad2fac221d3",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 37.57628999999724,
+      "description": "FX translation adjustment - GBP 37.58 (ENT102/6000)",
+      "lines": [
+        {
+          "account": "7202",
+          "description": "FX translation loss - GBP",
+          "debit": 37.57628999999724,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "6000",
+          "description": "FX translation adjustment - GBP",
+          "debit": 0.0,
+          "credit": 37.57628999999724,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $37.58. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "6000",
+        "currency": "GBP",
+        "balance_local": 183012.34,
+        "rate": 1.2815,
+        "computed_usd": 234530.31371000002,
+        "reported_usd": 234567.89,
+        "diff_usd": -37.57628999999724,
+        "is_exception": false,
+        "materiality_factor": 0.8121,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "87f179df-49d1-452d-8b9d-6798939138e7",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 3.0338950000004843,
+      "description": "FX translation adjustment - GBP 3.03 (ENT102/6100)",
+      "lines": [
+        {
+          "account": "7202",
+          "description": "FX translation loss - GBP",
+          "debit": 3.0338950000004843,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "6100",
+          "description": "FX translation adjustment - GBP",
+          "debit": 0.0,
+          "credit": 3.0338950000004843,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $3.03. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "6100",
+        "currency": "GBP",
+        "balance_local": 122345.67,
+        "rate": 1.2815,
+        "computed_usd": 156785.976105,
+        "reported_usd": 156789.01,
+        "diff_usd": -3.0338950000004843,
+        "is_exception": false,
+        "materiality_factor": 0.9848,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "79fc8b22-73a5-4356-a76a-e5200ec126fd",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 160.1162899999763,
+      "description": "FX translation adjustment - GBP 160.12 (ENT102/6200)",
+      "lines": [
+        {
+          "account": "7202",
+          "description": "FX translation loss - GBP",
+          "debit": 160.1162899999763,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "6200",
+          "description": "FX translation adjustment - GBP",
+          "debit": 0.0,
+          "credit": 160.1162899999763,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $160.12. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "6200",
+        "currency": "GBP",
+        "balance_local": 233012.34,
+        "rate": 1.2815,
+        "computed_usd": 298605.31371,
+        "reported_usd": 298765.43,
+        "diff_usd": -160.1162899999763,
+        "is_exception": true,
+        "materiality_factor": 0.5,
+        "auto_approval_recommended": false
+      }
+    },
+    {
+      "je_id": "a7d69d08-d5ae-43b4-bd63-3be26b814bfc",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 0.311359999999695,
+      "description": "FX translation adjustment - GBP 0.31 (ENT102/7100)",
+      "lines": [
+        {
+          "account": "7202",
+          "description": "FX translation loss - GBP",
+          "debit": 0.311359999999695,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "7100",
+          "description": "FX translation adjustment - GBP",
+          "debit": 0.0,
+          "credit": 0.311359999999695,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created journal for FX translation difference of $0.31. Amount is below materiality threshold and represents routine currency translation adjustment.",
+      "source_data": {
+        "period": "2025-08",
+        "entity": "ENT102",
+        "account": "7100",
+        "currency": "GBP",
+        "balance_local": 12234.56,
+        "rate": 1.2815,
+        "computed_usd": 15678.58864,
+        "reported_usd": 15678.9,
+        "diff_usd": -0.311359999999695,
+        "is_exception": false,
+        "materiality_factor": 0.9984,
+        "auto_approval_recommended": true
+      }
+    },
+    {
+      "je_id": "08b53663-6e8f-407a-bc39-994d3eb8714d",
+      "module": "Flux",
+      "scenario": "accrual_adjustment",
+      "entity": "ENT100",
+      "amount_usd": 23456.78,
+      "description": "Accrual adjustment for budget variance - 23,456.78 (ENT100/7100)",
+      "lines": [
+        {
+          "account": "7100",
+          "description": "Additional accrual for budget variance",
+          "debit": 23456.78,
+          "credit": 0.0,
+          "entity": "ENT100",
+          "currency": "USD"
+        },
+        {
+          "account": "2100",
+          "description": "Accrued liability for budget variance",
+          "debit": 0.0,
+          "credit": 23456.78,
+          "entity": "ENT100",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created accrual adjustment for budget variance of $23,456.78. Over-budget amount requires accrual but is below materiality threshold for manual review.",
+      "source_data": {
+        "entity": "ENT100",
+        "account": "7100",
+        "actual_usd": 23456.78,
+        "budget_amount": 0.0,
+        "prior_usd": 23456.78,
+        "var_vs_budget": 23456.78,
+        "var_vs_prior": 0.0,
+        "pct_vs_budget": null,
+        "pct_vs_prior": 0.0,
+        "threshold_usd": 50034.04,
+        "band_vs_budget": "within",
+        "band_vs_prior": "within",
+        "ai_basis": "budget",
+        "ai_narrative": "[FORENSIC] ENT100/7100: variance vs budget = 23456.78 USD (thr=50034.04, band=within). Cites entity=ENT100, account=7100, period=2025-08."
+      }
+    },
+    {
+      "je_id": "3d0c4082-c5be-400a-9a75-e55dab86bbab",
+      "module": "Flux",
+      "scenario": "accrual_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 26666.56,
+      "description": "Accrual adjustment for budget variance - 26,666.56 (ENT101/3100)",
+      "lines": [
+        {
+          "account": "3100",
+          "description": "Additional accrual for budget variance",
+          "debit": 26666.56,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "2101",
+          "description": "Accrued liability for budget variance",
+          "debit": 0.0,
+          "credit": 26666.56,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created accrual adjustment for budget variance of $26,666.56. Over-budget amount requires accrual but is below materiality threshold for manual review.",
+      "source_data": {
+        "entity": "ENT101",
+        "account": "3100",
+        "actual_usd": -189012.34,
+        "budget_amount": -215678.9,
+        "prior_usd": -189012.34,
+        "var_vs_budget": 26666.56,
+        "var_vs_prior": 0.0,
+        "pct_vs_budget": -0.1236,
+        "pct_vs_prior": -0.0,
+        "threshold_usd": 41920.41,
+        "band_vs_budget": "within",
+        "band_vs_prior": "within",
+        "ai_basis": "budget",
+        "ai_narrative": "[FORENSIC] ENT101/3100: variance vs budget = 26666.56 USD (thr=41920.41, band=within). Cites entity=ENT101, account=3100, period=2025-08."
+      }
+    },
+    {
+      "je_id": "4eb6237e-df96-485a-897c-ffc485ee7cfb",
+      "module": "Flux",
+      "scenario": "accrual_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 19876.54,
+      "description": "Accrual adjustment for budget variance - 19,876.54 (ENT101/7100)",
+      "lines": [
+        {
+          "account": "7100",
+          "description": "Additional accrual for budget variance",
+          "debit": 19876.54,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "2101",
+          "description": "Accrued liability for budget variance",
+          "debit": 0.0,
+          "credit": 19876.54,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created accrual adjustment for budget variance of $19,876.54. Over-budget amount requires accrual but is below materiality threshold for manual review.",
+      "source_data": {
+        "entity": "ENT101",
+        "account": "7100",
+        "actual_usd": 19876.54,
+        "budget_amount": 0.0,
+        "prior_usd": 19876.54,
+        "var_vs_budget": 19876.54,
+        "var_vs_prior": 0.0,
+        "pct_vs_budget": null,
+        "pct_vs_prior": 0.0,
+        "threshold_usd": 41920.41,
+        "band_vs_budget": "within",
+        "band_vs_prior": "within",
+        "ai_basis": "budget",
+        "ai_narrative": "[FORENSIC] ENT101/7100: variance vs budget = 19876.54 USD (thr=41920.41, band=within). Cites entity=ENT101, account=7100, period=2025-08."
+      }
+    },
+    {
+      "je_id": "941eba06-a99d-4b90-a225-3d06509e2370",
+      "module": "Flux",
+      "scenario": "accrual_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 4555.66,
+      "description": "Accrual adjustment for budget variance - 4,555.66 (ENT102/3100)",
+      "lines": [
+        {
+          "account": "3100",
+          "description": "Additional accrual for budget variance",
+          "debit": 4555.66,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "2102",
+          "description": "Accrued liability for budget variance",
+          "debit": 0.0,
+          "credit": 4555.66,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created accrual adjustment for budget variance of $4,555.66. Over-budget amount requires accrual but is below materiality threshold for manual review.",
+      "source_data": {
+        "entity": "ENT102",
+        "account": "3100",
+        "actual_usd": -145678.9,
+        "budget_amount": -150234.56,
+        "prior_usd": -145678.9,
+        "var_vs_budget": 4555.66,
+        "var_vs_prior": 0.0,
+        "pct_vs_budget": -0.0303,
+        "pct_vs_prior": -0.0,
+        "threshold_usd": 33324.63,
+        "band_vs_budget": "within",
+        "band_vs_prior": "within",
+        "ai_basis": "budget",
+        "ai_narrative": "[FORENSIC] ENT102/3100: variance vs budget = 4555.66 USD (thr=33324.63, band=within). Cites entity=ENT102, account=3100, period=2025-08."
+      }
+    },
+    {
+      "je_id": "91b507d6-9419-4596-8b07-a960a7366030",
+      "module": "Flux",
+      "scenario": "accrual_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 15678.9,
+      "description": "Accrual adjustment for budget variance - 15,678.90 (ENT102/7100)",
+      "lines": [
+        {
+          "account": "7100",
+          "description": "Additional accrual for budget variance",
+          "debit": 15678.9,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "2102",
+          "description": "Accrued liability for budget variance",
+          "debit": 0.0,
+          "credit": 15678.9,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created accrual adjustment for budget variance of $15,678.90. Over-budget amount requires accrual but is below materiality threshold for manual review.",
+      "source_data": {
+        "entity": "ENT102",
+        "account": "7100",
+        "actual_usd": 15678.9,
+        "budget_amount": 0.0,
+        "prior_usd": 15678.9,
+        "var_vs_budget": 15678.9,
+        "var_vs_prior": 0.0,
+        "pct_vs_budget": null,
+        "pct_vs_prior": 0.0,
+        "threshold_usd": 33324.63,
+        "band_vs_budget": "within",
+        "band_vs_prior": "within",
+        "ai_basis": "budget",
+        "ai_narrative": "[FORENSIC] ENT102/7100: variance vs budget = 15678.90 USD (thr=33324.63, band=within). Cites entity=ENT102, account=7100, period=2025-08."
+      }
+    }
+  ],
+  "summary": {
+    "total_count": 41,
+    "total_amount_usd": 95264.05,
+    "by_module": {
+      "FX": 36,
+      "Flux": 5
+    }
+  },
+  "materiality_thresholds": {
+    "ENT100": 50034.04,
+    "ENT101": 41920.41,
+    "ENT102": 33324.63
+  },
+  "auto_journal_threshold": 5000
+}

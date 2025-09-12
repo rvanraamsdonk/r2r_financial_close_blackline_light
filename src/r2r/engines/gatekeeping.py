@@ -136,26 +136,21 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
     run_id = Path(audit.log_path).stem.replace("audit_", "")
     out_path = Path(audit.out_dir) / f"gatekeeping_{run_id}.json"
 
-    # Generate AI rationale for auto-close decisions
-    ai_rationale = ""
-    confidence_score = 0.0
+    # Generate deterministic rationale for auto-close decisions
+    deterministic_rationale = ""
     
     auto_journal_text = f"{auto_journal_cnt} automated journal(s) totaling ${auto_journal_total:,.2f} were created to resolve exceptions." if auto_journal_cnt > 0 else ""
 
     if auto_close_eligible:
         if risk_level == "low":
-            ai_rationale = f"Auto-close approved: Net exceptions of ${net_exception_amount:,.2f} are below materiality thresholds. All critical controls passed. {auto_journal_text}"
-            confidence_score = 0.98
+            deterministic_rationale = f"Auto-close approved: Net exceptions of ${net_exception_amount:,.2f} are below materiality thresholds. All critical controls passed. {auto_journal_text}"
         else:  # medium risk but eligible
-            ai_rationale = f"Auto-close with monitoring: Net exceptions of ${net_exception_amount:,.2f} are within acceptable limits. {auto_journal_text} All items are auto-approved."
-            confidence_score = 0.88
+            deterministic_rationale = f"Auto-close with monitoring: Net exceptions of ${net_exception_amount:,.2f} are within acceptable limits. {auto_journal_text} All items are auto-approved."
     else:
         if risk_level == "high":
-            ai_rationale = f"Manual review required: Critical control failures detected or high-value net exceptions (${net_exception_amount:,.2f}) exceed risk tolerance. {auto_journal_text} Human oversight mandatory."
-            confidence_score = 0.99  # High confidence in blocking
+            deterministic_rationale = f"Manual review required: Critical control failures detected or high-value net exceptions (${net_exception_amount:,.2f}) exceed risk tolerance. {auto_journal_text} Human oversight mandatory."
         else:
-            ai_rationale = f"Exception review needed: {sources_triggered} sources with ${net_exception_amount:,.2f} net impact require analyst validation. {auto_journal_text}"
-            confidence_score = 0.90
+            deterministic_rationale = f"Exception review needed: {sources_triggered} sources with ${net_exception_amount:,.2f} net impact require analyst validation. {auto_journal_text}"
     
     payload: Dict[str, Any] = {
         "generated_at": utils.now_iso_z(),
@@ -175,8 +170,7 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
         "auto_journal_amount": auto_journal_total,
         "net_exception_amount": net_exception_amount,
         "materiality_threshold": MATERIALITY_THRESHOLD,
-        "ai_rationale": ai_rationale,
-        "confidence_score": confidence_score,
+        "deterministic_rationale": deterministic_rationale,
         "referenced_artifacts": referenced_artifacts,
     }
 
@@ -229,8 +223,7 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
             "gatekeeping_auto_close_eligible": auto_close_eligible,
             "gatekeeping_sources_triggered_count": sources_triggered,
             "gatekeeping_net_exception_amount": net_exception_amount,
-            "gatekeeping_confidence_score": confidence_score,
-            "gatekeeping_ai_rationale": ai_rationale,
+            "gatekeeping_deterministic_rationale": deterministic_rationale,
             "gatekeeping_artifact": str(out_path),
         }
     )

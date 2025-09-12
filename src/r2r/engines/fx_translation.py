@@ -13,10 +13,10 @@ from ..state import R2RState
 from ..utils import now_iso_z, run_id
 
 
-def _calculate_confidence_score(diff: float, threshold: float) -> float:
+def _calculate_materiality_factor(diff: float, threshold: float) -> float:
     """
-    Calculates a confidence score based on the difference relative to the materiality threshold.
-    Score is 1.0 for zero diff, and decreases as diff approaches the threshold.
+    Calculates a materiality factor based on the difference relative to the materiality threshold.
+    Factor is 1.0 for zero diff, and decreases as diff approaches the threshold.
     """
     if threshold == 0:
         return 0.0 if diff != 0 else 1.0
@@ -123,7 +123,7 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
         if comp_usd is not None:
             diff = float(comp_usd) - float(bal_usd_reported)
             threshold = _get_dynamic_materiality_threshold(acct, ent, coa, ents)
-            confidence = _calculate_confidence_score(diff, threshold)
+            materiality_factor = _calculate_materiality_factor(diff, threshold)
 
             if abs(diff) > threshold:
                 diff_count += 1
@@ -149,7 +149,7 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
                 "reported_usd": bal_usd_reported,
                 "diff_usd": float(diff) if diff is not None else None,
                 "is_exception": is_exception,
-                "confidence_score": confidence,
+                "materiality_factor": materiality_factor,
                 "auto_approval_recommended": auto_approved,
             }
         )
@@ -171,7 +171,7 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
             "exceptions_count": int(diff_count),
             "exceptions_total_abs_diff_usd": float(round(total_abs_diff, 2)),
             "auto_approved_count": auto_approved_count,
-            "average_confidence_score": round(total_confidence / processed_rows, 4) if processed_rows > 0 else 0,
+            "average_materiality_factor": round(total_confidence / processed_rows, 4) if processed_rows > 0 else 0,
         },
         "rows": computed_rows,
     }

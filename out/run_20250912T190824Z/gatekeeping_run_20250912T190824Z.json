@@ -1,0 +1,52 @@
+{
+  "generated_at": "2025-09-12T19:10:16Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "inputs": {
+    "fx_coverage_ok": null,
+    "tb_balanced_by_entity": null,
+    "tb_entity_sums_usd": null
+  },
+  "categories": {
+    "bank_duplicates": 13,
+    "ap_exceptions": 19,
+    "ar_exceptions": 15,
+    "ic_mismatches": 6,
+    "accruals_exceptions": 9,
+    "je_exceptions": 0,
+    "flux_exceptions": 47,
+    "auto_journals_created": 0
+  },
+  "totals": {
+    "ap_exceptions_total_abs": 653977.7,
+    "ar_exceptions_total_abs": 2586167.48,
+    "ic_mismatch_total_diff_abs": 0.0,
+    "accruals_exception_total_usd": 711808.57,
+    "je_exceptions_total_abs": null,
+    "auto_journals_total_amount": 0.0
+  },
+  "risk_level": "high",
+  "block_close": true,
+  "auto_close_eligible": false,
+  "gross_exception_amount": 3951953.7499999995,
+  "auto_journal_amount": 0.0,
+  "net_exception_amount": 3951953.7499999995,
+  "materiality_threshold": 50000,
+  "deterministic_rationale": "Manual review required: Critical control failures detected or high-value net exceptions ($3,951,953.75) exceed risk tolerance.  Human oversight mandatory.",
+  "referenced_artifacts": {
+    "period_init_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\period_init_run_20250912T190824Z.json",
+    "fx_translation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\fx_translation_run_20250912T190824Z.json",
+    "bank_reconciliation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\bank_reconciliation_run_20250912T190824Z.json",
+    "bank_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\ai_cache\\bank_ai_rationales_run_20250912T190824Z_a49910813c07.json",
+    "ap_reconciliation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\ap_reconciliation_run_20250912T190824Z.json",
+    "ar_reconciliation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\ar_reconciliation_run_20250912T190824Z.json",
+    "ap_ar_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\ai_cache\\ap_ar_ai_suggestions_run_20250912T190824Z_d2f650ba3ca1.json",
+    "intercompany_reconciliation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\intercompany_reconciliation_run_20250912T190824Z.json",
+    "ic_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\ai_cache\\ic_ai_match_proposals_run_20250912T190824Z_30e401d1439f.json",
+    "accruals_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\accruals_run_20250912T190824Z.json",
+    "accruals_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\ai_cache\\accruals_ai_narratives_run_20250912T190824Z_caeb63ad7412.json",
+    "flux_analysis_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\flux_analysis_run_20250912T190824Z.json",
+    "flux_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\ai_cache\\flux_ai_narratives_run_20250912T190824Z_8593d90b75d1.json",
+    "auto_journals_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\auto_journals_run_20250912T190824Z.json"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "generated_at": "2025-09-12T19:08:53Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "narratives": [
+    {
+      "accrual_id": "ACR-2025-08-ENT102-004",
+      "narrative": "The accrual for entity ENT102 with ID ACR-2025-08-ENT102-004 and amount USD 156,250 failed to reverse as expected on 2025-09-01. This indicates potential issues with automated reversal processes or manual intervention errors. The materiality of this accrual is high due to its significant amount, which could impact financial reporting accuracy and compliance.",
+      "confidence": 0.95,
+      "risk_level": "high",
+      "business_impact": "Delayed reversal could lead to overstated liabilities and misalignment with financial reporting standards."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT101-008",
+      "narrative": "The accrual for entity ENT101 with ID ACR-2025-08-ENT101-008 and amount USD 136,250 failed to reverse as scheduled. This exception highlights a recurring pattern of reversal failures within ENT101, suggesting systemic issues in accrual management. The materiality is high, warranting immediate corrective action.",
+      "confidence": 0.9,
+      "risk_level": "high",
+      "business_impact": "Potential misstatement of liabilities and increased audit scrutiny."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT100-004",
+      "narrative": "The accrual for entity ENT100 with ID ACR-2025-08-ENT100-004 and amount USD 125,000 did not reverse as expected. This exception may be due to discrepancies in accrual setup or reversal triggers. The materiality is high, and the exception poses a risk to compliance and financial accuracy.",
+      "confidence": 0.88,
+      "risk_level": "medium",
+      "business_impact": "Overstated liabilities and potential non-compliance with accounting standards."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT101-006",
+      "narrative": "The accrual for entity ENT101 with ID ACR-2025-08-ENT101-006 and amount USD 70,850 failed to reverse. While the amount is less material compared to other exceptions, it still indicates a pattern of reversal issues within ENT101 that requires investigation.",
+      "confidence": 0.85,
+      "risk_level": "medium",
+      "business_impact": "Cumulative impact of smaller accruals could lead to financial reporting inaccuracies."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT100-008",
+      "narrative": "The accrual for entity ENT100 with ID ACR-2025-08-ENT100-008 and amount USD 65,000 did not reverse as expected. This exception may be linked to process inefficiencies or data integrity issues. The materiality is moderate but still warrants attention.",
+      "confidence": 0.8,
+      "risk_level": "medium",
+      "business_impact": "Potential misalignment with financial reporting timelines."
+    }
+  ],
+  "je_rationales": [
+    {
+      "proposal_id": "ACR-2025-08-ENT102-004",
+      "rationale": "Reverse the accrual of USD 156,250 for entity ENT102 in the 2025-09 period to correct overstated liabilities. This aligns with the original accrual intent and ensures compliance with financial reporting standards.",
+      "accounting_treatment": "Debit accrued liabilities and credit the corresponding expense account to reverse the accrual.",
+      "confidence": 0.95
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT101-008",
+      "rationale": "Reverse the accrual of USD 136,250 for entity ENT101 in the 2025-09 period to address the failed reversal and ensure accurate liability reporting.",
+      "accounting_treatment": "Debit accrued liabilities and credit the corresponding expense account to reverse the accrual.",
+      "confidence": 0.9
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT100-004",
+      "rationale": "Reverse the accrual of USD 125,000 for entity ENT100 in the 2025-09 period to correct financial reporting discrepancies.",
+      "accounting_treatment": "Debit accrued liabilities and credit the corresponding expense account to reverse the accrual.",
+      "confidence": 0.88
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT101-006",
+      "rationale": "Reverse the accrual of USD 70,850 for entity ENT101 in the 2025-09 period to address the failed reversal and ensure compliance.",
+      "accounting_treatment": "Debit accrued liabilities and credit the corresponding expense account to reverse the accrual.",
+      "confidence": 0.85
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT100-008",
+      "rationale": "Reverse the accrual of USD 65,000 for entity ENT100 in the 2025-09 period to align with financial reporting requirements.",
+      "accounting_treatment": "Debit accrued liabilities and credit the corresponding expense account to reverse the accrual.",
+      "confidence": 0.8
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\accruals_run_20250912T190824Z.json",
+    null,
+    null
+  ]
+}

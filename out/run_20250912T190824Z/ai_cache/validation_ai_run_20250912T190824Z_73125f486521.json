@@ -1,0 +1,70 @@
+{
+  "generated_at": "2025-09-12T19:10:21Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "summary": {
+    "schema_issues": 0,
+    "duplicate_rows": 0,
+    "fx_coverage_ok": null
+  },
+  "root_causes": [
+    {
+      "issue_type": "data_quality",
+      "description": "High volume of AR exceptions ($2.6M) indicates potential data entry errors or incomplete reconciliations.",
+      "severity": "critical",
+      "affected_categories": [
+        "ar_exceptions"
+      ],
+      "financial_impact": "$2.6M AR exceptions exceed materiality thresholds",
+      "confidence": 0.9
+    },
+    {
+      "issue_type": "process_control",
+      "description": "Bank duplicate records (13 instances) suggest gaps in reconciliation processes or system controls.",
+      "severity": "high",
+      "affected_categories": [
+        "bank_duplicates"
+      ],
+      "financial_impact": "Potential misstatements in cash balances due to duplicate records",
+      "confidence": 0.85
+    },
+    {
+      "issue_type": "system_integration",
+      "description": "AP exceptions ($653.9K) may result from integration issues between sub-ledgers and the general ledger.",
+      "severity": "high",
+      "affected_categories": [
+        "ap_exceptions"
+      ],
+      "financial_impact": "$653.9K AP exceptions exceed materiality thresholds",
+      "confidence": 0.8
+    }
+  ],
+  "remediations": [
+    {
+      "issue_type": "data_quality",
+      "action": "Conduct a detailed review of AR exception records to identify and correct data entry errors. Implement validation checks to prevent recurrence.",
+      "priority": "critical",
+      "estimated_effort": "2-3 weeks with 2 FTEs",
+      "success_criteria": "Reduction in AR exceptions to below materiality thresholds (<$50K)."
+    },
+    {
+      "issue_type": "process_control",
+      "action": "Enhance bank reconciliation processes by implementing automated duplicate detection and resolution workflows.",
+      "priority": "high",
+      "estimated_effort": "3-4 weeks with 1 FTE and IT support",
+      "success_criteria": "Elimination of duplicate bank records in future periods."
+    },
+    {
+      "issue_type": "system_integration",
+      "action": "Investigate AP sub-ledger to GL integration for discrepancies. Resolve mapping or configuration issues causing exceptions.",
+      "priority": "high",
+      "estimated_effort": "4-6 weeks with 2 FTEs and IT support",
+      "success_criteria": "Reduction in AP exceptions to below materiality thresholds (<$50K)."
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\bank_reconciliation_run_20250912T190824Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\ap_reconciliation_run_20250912T190824Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\ar_reconciliation_run_20250912T190824Z.json"
+  ]
+}

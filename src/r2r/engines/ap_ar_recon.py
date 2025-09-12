@@ -232,29 +232,29 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             
             # Enhanced rationale for forensic patterns
             if reason == "duplicate_payment_pattern":
-                e["ai_rationale"] = (
+                e["deterministic_rationale"] = (
                     f"[FORENSIC] Potential duplicate payment detected: vendor={vendor_name}, "
                     f"amount=${amount:.2f}, similar transaction found within 7 days"
                 )
             elif reason.startswith("round_dollar"):
-                e["ai_rationale"] = (
+                e["deterministic_rationale"] = (
                     f"[FORENSIC] Round dollar anomaly: amount=${amount:.2f} is suspiciously round"
                 )
             elif reason == "suspicious_new_vendor":
-                e["ai_rationale"] = (
+                e["deterministic_rationale"] = (
                     f"[FORENSIC] Suspicious vendor pattern: {vendor_name} with large payment ${amount:.2f}"
                 )
             elif reason == "weekend_entry":
-                e["ai_rationale"] = (
+                e["deterministic_rationale"] = (
                     f"[FORENSIC] Weekend entry: transaction dated {bill_date.strftime('%Y-%m-%d')} (%s)"
                     % bill_date.strftime('%A')
                 )
             elif reason == "split_transaction_pattern":
-                e["ai_rationale"] = (
+                e["deterministic_rationale"] = (
                     f"[FORENSIC] Split transaction pattern: multiple payments to {vendor_name} on same day"
                 )
             else:
-                e["ai_rationale"] = (
+                e["deterministic_rationale"] = (
                     f"[DET] AP {r.get('entity')} bill {r.get('bill_id')}: reason={reason}, "
                     f"amount={float(r.get('amount', 0.0)):.2f} {r.get('currency')}, age_days={age}. "
                     f"Candidates={len(cand)} (vendor={_safe_str(r.get('vendor_name'))})."
@@ -308,21 +308,21 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
         by_ent[ent] = by_ent.get(ent, 0.0) + abs(float(e.get("amount", 0.0)))
 
     # Summary AI confidence and rationale
-    ap_confidence_score = round((weighted_conf_sum / amount_sum_abs), 3) if amount_sum_abs > 0 else 0.0
+    # Remove fake confidence scores - deterministic logic doesn't need confidence
     if exceptions:
         if auto_approved_count > 0:
-            ap_ai_rationale = (
+            ap_deterministic_rationale = (
                 f"AP AI assessment: {len(exceptions)} exceptions, {auto_approved_count} auto-approved "
                 f"(total_abs=${auto_approved_total_abs:,.0f}) as immaterial duplicate/split patterns under "
                 f"materiality (${MATERIALITY_THRESHOLD:,.0f})."
             )
         else:
-            ap_ai_rationale = (
+            ap_deterministic_rationale = (
                 f"AP AI assessment: {len(exceptions)} exceptions identified; no items met auto-approval policy. "
                 f"Materiality threshold=${MATERIALITY_THRESHOLD:,.0f}."
             )
     else:
-        ap_ai_rationale = "AP AI assessment: no exceptions."
+        ap_deterministic_rationale = "AP deterministic assessment: no exceptions."
 
     payload = {
         "generated_at": now_iso_z(),
@@ -338,8 +338,8 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "count": len(exceptions),
             "total_abs_amount": float(round(total_abs, 2)),
             "by_entity_abs_amount": {k: float(round(v, 2)) for k, v in by_ent.items()},
-            "ai_confidence_score": ap_confidence_score,
-            "ai_rationale": ap_ai_rationale,
+            # Removed fake confidence score
+            "deterministic_rationale": ap_deterministic_rationale,
             "auto_approved_count": auto_approved_count,
             "auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         },
@@ -395,8 +395,8 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "ap_exceptions_total_abs": payload["summary"]["total_abs_amount"],
             "ap_exceptions_by_entity": payload["summary"]["by_entity_abs_amount"],
             "ap_reconciliation_artifact": str(out_path),
-            "ap_confidence_score": ap_confidence_score,
-            "ap_ai_rationale": ap_ai_rationale,
+            # Removed fake confidence score
+            "ap_deterministic_rationale": ap_deterministic_rationale,
             "ap_auto_approved_count": auto_approved_count,
             "ap_auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         }
@@ -568,27 +568,27 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             
             # Enhanced rationale for forensic patterns
             if reason == "channel_stuffing_pattern":
-                e["ai_rationale"] = (
+                e["deterministic_rationale"] = (
                     f"[FORENSIC] Channel stuffing detected: large invoice ${amount:.2f} "
                     f"to {customer_name} near month-end with extended terms ({payment_terms})"
                 )
             elif reason == "credit_memo_abuse":
-                e["ai_rationale"] = (
+                e["deterministic_rationale"] = (
                     f"[FORENSIC] Credit memo abuse: significant credit ${abs(amount):.2f} "
                     f"to {customer_name}"
                 )
             elif reason == "related_party_transaction":
-                e["ai_rationale"] = (
+                e["deterministic_rationale"] = (
                     f"[FORENSIC] Related party transaction: ${amount:.2f} "
                     f"to {customer_name} with unusual pricing"
                 )
             elif reason == "weekend_revenue_recognition":
-                e["ai_rationale"] = (
+                e["deterministic_rationale"] = (
                     f"[FORENSIC] Weekend revenue recognition: ${amount:.2f} invoice "
                     f"dated {invoice_date.strftime('%Y-%m-%d')} ({invoice_date.strftime('%A')})"
                 )
             else:
-                e["ai_rationale"] = (
+                e["deterministic_rationale"] = (
                     f"[DET] AR {r.get('entity')} invoice {r.get('invoice_id')}: reason={reason}, "
                     f"amount={float(r.get('amount', 0.0)):.2f} {r.get('currency')}, age_days={age}. "
                     f"Candidates={len(cand)} (customer={_safe_str(r.get('customer_name'))})."
@@ -635,14 +635,14 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
         by_ent[ent] = by_ent.get(ent, 0.0) + abs(float(e.get("amount", 0.0)))
 
     # Summary AI confidence and rationale
-    ar_confidence_score = round((weighted_conf_sum / amount_sum_abs), 3) if amount_sum_abs > 0 else 0.0
+    # Remove fake confidence scores - deterministic logic doesn't need confidence
     if exceptions:
-        ar_ai_rationale = (
+        ar_deterministic_rationale = (
             f"AR AI assessment: {len(exceptions)} exceptions identified; no items met auto-approval policy. "
             f"Materiality threshold=${MATERIALITY_THRESHOLD:,.0f}."
         )
     else:
-        ar_ai_rationale = "AR AI assessment: no exceptions."
+        ar_deterministic_rationale = "AR deterministic assessment: no exceptions."
 
     payload = {
         "generated_at": now_iso_z(),
@@ -657,8 +657,8 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "count": len(exceptions),
             "total_abs_amount": float(round(total_abs, 2)),
             "by_entity_abs_amount": {k: float(round(v, 2)) for k, v in by_ent.items()},
-            "ai_confidence_score": ar_confidence_score,
-            "ai_rationale": ar_ai_rationale,
+            # Removed fake confidence score
+            "deterministic_rationale": ar_deterministic_rationale,
             "auto_approved_count": auto_approved_count,
             "auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         },
@@ -714,8 +714,8 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "ar_exceptions_total_abs": payload["summary"]["total_abs_amount"],
             "ar_exceptions_by_entity": payload["summary"]["by_entity_abs_amount"],
             "ar_reconciliation_artifact": str(out_path),
-            "ar_confidence_score": ar_confidence_score,
-            "ar_ai_rationale": ar_ai_rationale,
+            # Removed fake confidence score
+            "ar_deterministic_rationale": ar_deterministic_rationale,
             "ar_auto_approved_count": auto_approved_count,
             "ar_auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         }

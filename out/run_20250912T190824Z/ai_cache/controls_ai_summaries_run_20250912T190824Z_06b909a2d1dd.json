@@ -1,0 +1,64 @@
+{
+  "generated_at": "2025-09-12T19:10:37Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "owner_summaries": [
+    {
+      "owner_name": "John Doe",
+      "control_count": 3,
+      "risk_areas": [
+        "Revenue Recognition",
+        "Intercompany Transactions"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "High number of reconciliation exceptions and intercompany mismatches indicate operational inefficiencies.",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Jane Smith",
+      "control_count": 2,
+      "risk_areas": [
+        "Cash Management",
+        "FX Rates Compliance"
+      ],
+      "effectiveness_rating": "effective",
+      "key_concerns": "FX rates coverage meets policy, but duplicate detection exceptions require monitoring.",
+      "confidence": 0.9
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Entity-level trial balances are not zeroed, which may lead to inaccurate financial reporting.",
+      "severity": "high",
+      "affected_processes": [
+        "Trial Balance"
+      ],
+      "mitigation_recommendations": "Implement automated checks to ensure trial balances are zeroed by entity before close.",
+      "confidence": 0.85
+    },
+    {
+      "risk_category": "operational",
+      "description": "High flux analysis exceptions across accounts indicate potential misstatements or unusual activity.",
+      "severity": "medium",
+      "affected_processes": [
+        "Flux Analysis"
+      ],
+      "mitigation_recommendations": "Enhance flux analysis thresholds and investigate exceptions promptly.",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "compliance",
+      "description": "Open HITL cases may delay compliance reporting and operational close timelines.",
+      "severity": "low",
+      "affected_processes": [
+        "Compliance Reporting"
+      ],
+      "mitigation_recommendations": "Prioritize resolution of HITL cases and streamline case management processes.",
+      "confidence": 0.7
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\controls_mapping_run_20250912T190824Z.json"
+  ]
+}

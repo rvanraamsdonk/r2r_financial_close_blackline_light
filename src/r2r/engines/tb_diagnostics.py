@@ -60,8 +60,8 @@ def _get_entity_level_materiality_threshold(
         return default_threshold
 
 
-def _calculate_confidence_score(diff: float, threshold: float) -> float:
-    """Calculates a confidence score based on the difference relative to the materiality threshold."""
+def _calculate_materiality_factor(diff: float, threshold: float) -> float:
+    """Calculates a materiality factor based on the difference relative to the materiality threshold."""
     if threshold == 0:
         return 0.0 if diff != 0 else 1.0
     ratio = min(abs(diff) / threshold, 1.0)
@@ -98,18 +98,18 @@ def tb_diagnostics(state: R2RState, audit: AuditLogger) -> R2RState:
 
     # Materiality check
     materially_off = {}
-    entity_confidence = {}
+    entity_materiality_factors = {}
     entity_auto_approved = {}
 
     for ent, total in by_ent.items():
         threshold = _get_entity_level_materiality_threshold(ent, ents)
-        confidence = _calculate_confidence_score(total, threshold)
-        entity_confidence[ent] = confidence
+        materiality_factor = _calculate_materiality_factor(total, threshold)
+        entity_materiality_factors[ent] = materiality_factor
         
         if abs(total) > threshold:
             materially_off[ent] = total
         
-        entity_auto_approved[ent] = abs(total) <= threshold and confidence >= 0.95
+        entity_auto_approved[ent] = abs(total) <= threshold and materiality_factor >= 0.95
 
     off = pd.Series(materially_off)
 
@@ -134,7 +134,7 @@ def tb_diagnostics(state: R2RState, audit: AuditLogger) -> R2RState:
                     "entity": ent,
                     "imbalance_usd": float(round(total, 2)),
                     "materiality_threshold_usd": _get_entity_level_materiality_threshold(ent, ents),
-                    "confidence_score": entity_confidence.get(ent, 0.0),
+                    "materiality_factor": entity_materiality_factors.get(ent, 0.0),
                     "auto_approved": entity_auto_approved.get(ent, False),
                     "ai_resolution_suggestion": suggestion,
                     "top_accounts": top,
@@ -173,12 +173,12 @@ def tb_diagnostics(state: R2RState, audit: AuditLogger) -> R2RState:
             "entities_in_scope": len(by_entity_totals),
             "material_imbalances": len(diagnostics),
             "auto_approved_entities": sum(entity_auto_approved.values()),
-            "average_confidence_score": round(sum(entity_confidence.values()) / len(entity_confidence), 4) if entity_confidence else 0,
+            "average_materiality_factor": round(sum(entity_materiality_factors.values()) / len(entity_materiality_factors), 4) if entity_materiality_factors else 0,
         },
         "rollups": {
             "by_entity_total_usd": {k: float(v) for k, v in by_entity_totals.items()},
             "entity_materially_balanced": entity_balanced,
-            "entity_confidence_scores": entity_confidence,
+            "entity_materiality_factors": entity_materiality_factors,
             **({"by_account_type_total_usd": {k: float(v) for k, v in by_account_type.items()}} if by_account_type else {}),
         },
     }

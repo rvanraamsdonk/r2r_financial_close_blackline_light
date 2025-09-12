@@ -4,7 +4,7 @@ This document walks through the complete R2R financial close flow in this reposi
 
 Notes
 
-- Always run via the repo venv: `.venv/bin/python`.
+- Always run via the repo venv: `.venv\Scripts\python.exe` on Windows (project-local venv).
 - Main entrypoints: `scripts/run_close.py` (end-to-end), `scripts/drill_through.py` (drill/inspect), `scripts/smoke_test.py` (quick validation).
 - Static, deterministic data for repeatable demos lives under `data/`. Outputs are timestamped into `out/`.
 
@@ -98,31 +98,31 @@ References: `src/r2r/engines/fx_translation.py`, `docs/fx_translation.md`.
 ## 5) Bank Reconciliation
 
 - Purpose
-  - Match bank statement lines to GL cash activity; detect timing differences, duplicates, and unmatched items.
+  - Deterministically detect duplicate candidates and timing differences within bank statements; surface forensic-risk patterns (unusual counterparties, velocity anomalies, kiting).
 - Expected outcomes
-  - Matched pairs and categorized exceptions.
-  - Metrics: match rate, unexplained variance by account.
+  - Categorized exceptions: `duplicate_candidate`, `timing_candidate`, and `forensic_risk` (no GL match rate is computed in this demo flow).
+  - Metrics: counts and totals by entity; auto-approval only for immaterial duplicates/timing differences per policy.
 - Example outputs
-  - `out/bank_recon_YYYYMMDDThhmmssZ.json` (matches, exceptions, metrics).
+  - `out/run_*/bank_reconciliation_run_*.json` (exceptions, metrics, rules).
   - Console summary per bank account.
 - User actions
   - Review matched/unmatched items.
   - Flag and resolve duplicates; approve timing differences.
   - Attach supporting evidence (statement lines, journal refs).
 
-References: Bank engine in `src/r2r/engines/` with tests like `tests/unit/engines/TestBankReconciliation::test_no_duplicates_scenario`.
+References: Bank engine `src/r2r/engines/bank_recon.py` with unit tests under `tests/unit/engines/`.
 
 ---
 
 ## 6) Accounts Payable (AP) Reconciliation
 
 - Purpose
-  - Reconcile AP subledger aging vs GL; identify duplicates, cut-off issues, and status anomalies.
+  - Deterministically flag overdue/aging issues and AP forensic patterns (duplicate payments, round-dollar anomalies, suspicious new vendors, weekend entries, split transactions).
 - Expected outcomes
-  - Variances categorized with vendor/document references.
+  - Exceptions categorized with vendor/document references (no GL variance calculation in this module).
   - Robust handling of NaN/None textual fields to avoid stalls.
 - Example outputs
-  - `out/ap_recon_YYYYMMDDThhmmssZ.json`.
+  - `out/run_*/ap_reconciliation_run_*.json`.
   - Console: AP variance summary by vendor.
 - User actions
   - Sort by variance, filter by vendor, export exception list.
@@ -135,11 +135,11 @@ References: NaN-safe handling via `_safe_str` in `src/r2r/engines/ap_ar_recon.py
 ## 7) Accounts Receivable (AR) Reconciliation
 
 - Purpose
-  - Reconcile AR subledger vs GL; detect duplicates, timing, and unapplied cash.
+  - Deterministically flag overdue/aging and AR forensic patterns (channel stuffing near month-end with extended terms, credit memo abuse, related parties with unusual pricing, weekend revenue recognition). No unapplied cash logic in this module.
 - Expected outcomes
-  - Variances categorized with customer/invoice context.
+  - Exceptions categorized with customer/invoice context.
 - Example outputs
-  - `out/ar_recon_YYYYMMDDThhmmssZ.json`.
+  - `out/run_*/ar_reconciliation_run_*.json`.
   - Console: AR variance summary by customer.
 - User actions
   - Drill into invoice/payment chains.
@@ -150,11 +150,11 @@ References: NaN-safe handling via `_safe_str` in `src/r2r/engines/ap_ar_recon.py
 ## 8) Intercompany (IC) Reconciliation
 
 - Purpose
-  - Reconcile intercompany balances across entities; identify mismatches by counterparty and currency.
+  - Deterministically flag amount mismatches by entity pair using materiality thresholds, and surface pattern-based forensic risks (round-dollar anomalies, large management fee/transfer pricing risks, structuring).
 - Expected outcomes
-  - Pairwise matrices and exception items by entity/counterparty.
+  - Exception list by entity/counterparty with diff amounts and thresholds; may include simple true-up proposals when mismatches exist.
 - Example outputs
-  - `out/ic_recon_YYYYMMDDThhmmssZ.json`.
+  - `out/run_*/intercompany_reconciliation_run_*.json`.
   - Console matrix with variances and thresholds.
 - User actions
   - Assign follow-ups to counterparties.
@@ -181,31 +181,76 @@ References: Business context in `docs/accruals.md` and related narratives.
 
 ---
 
-## 10) Variance Analysis vs Budget/Forecast
+## 10) Flux Analysis (Variance vs Budget/Prior)
 
 - Purpose
-  - Compare actuals vs budget/forecast at account/cost center level; compute variances and flags.
+  - Compare actuals vs budget and prior at entity/account level; compute variances and flags by materiality.
 - Expected outcomes
   - Variance table with thresholds and directionality.
 - Example outputs
-  - `out/variance_YYYYMMDDThhmmssZ.json`.
+  - `out/run_*/flux_analysis_run_*.json`.
   - Console variance summary by account/group.
 - User actions
   - Filter by material variances.
   - Annotate with explanations or link evidence.
 
-References: Budget input in `data/lite/budget.csv` and docs under `docs/`.
+References: Budget input `data/budget.csv` and docs under `docs/`.
 
 ---
 
-# 11) Human-in-the-Loop (HITL) Review & Approvals [DET]
+## 11) Controls Mapping
+
+- Purpose
+  - Map detected exceptions to control categories and frameworks for review and reporting.
+- Expected outcomes
+  - Control category counts and mappings to support governance and sampling.
+- Example outputs
+  - `out/run_*/controls_mapping_run_*.json`.
+- User actions
+  - Review mappings and ensure exceptions are routed to appropriate control owners.
+
+References: `src/r2r/engines/controls_mapping.py` (artifact observed in audit log).
+
+---
+
+## 12) Gatekeeping Aggregate (Close Readiness)
+
+- Purpose
+  - Aggregate exceptions and apply materiality-based policies to determine close readiness and risk level.
+- Expected outcomes
+  - Risk level, block/allow close decision, AI rationale string, totals and auto-approval metrics.
+- Example outputs
+  - `out/run_*/gatekeeping_run_*.json`.
+- User actions
+  - Review gating decision, adjust policy thresholds as needed, and sample exceptions for review.
+
+References: `src/r2r/engines/gatekeeping.py` (artifact observed in audit log).
+
+---
+
+## 13) Close Reporting
+
+- Purpose
+  - Produce an executive summary of period close status, risks, and actions.
+- Expected outcomes
+  - Consolidated report JSON with high-level metrics and AI summaries when enabled.
+- Example outputs
+  - `out/run_*/close_report_run_*.json`.
+- User actions
+  - Share report to stakeholders; attach to audit package.
+
+References: `src/r2r/engines/close_reporting.py` (artifact observed in audit log).
+
+---
+
+# 14) Human-in-the-Loop (HITL) Review & Approvals [DET]
 
 - Purpose
   - Route exceptions for review, collect approvals, and mark disposition (approved, adjust, follow-up).
 - Expected outcomes
   - Updated status for each exception with audit trail (who/when/why).
 - Example outputs
-  - `out/review_queue_YYYYMMDDThhmmssZ.json` (status changes) if persisted by workflow.
+  - `out/run_*/cases_run_*.json` and AI summaries in `out/run_*/ai_cache/hitl_ai_case_summaries_*.json` when enabled.
   - Console: summarized queue with counts and statuses.
 - User actions
   - Approve/Reject with comments.
@@ -222,8 +267,8 @@ References: Interactive flows shown in demo mode, with stop markers for HITL ite
 - Expected outcomes
   - Bundle of JSON/CSV files and a manifest referencing data lineage.
 - Example outputs
-  - Files under `out/` with the run timestamp.
-  - Provenance checks (e.g., `verify_provenance.py`) passing.
+  - Files under `out/run_*` with the run timestamp.
+  - Provenance checks based on `out/run_*/audit_*.jsonl` (evidence and deterministic hashes).
 - User actions
   - Download/export package.
   - View provenance graph and sampling checks.
@@ -232,15 +277,15 @@ References: `docs/audit.md`, provenance verification extended for email evidence
 
 ---
 
-## 13) Metrics, Performance & AI Cost Governance [DET]
+## 15) Metrics, Performance & AI Cost Governance [DET]
 
 - Purpose
   - Track runtime metrics (counts, durations), and AI token usage/costs when enabled.
 - Expected outcomes
   - Metrics summaries; AI cost derived from env rate `R2R_AI_RATE_PER_1K`.
 - Example outputs
-  - `scripts/drill_through.py list-ai --sum` outputs total tokens/costs (text/JSON).
-  - `out/metrics_YYYYMMDDThhmmssZ.json` if persisted by workflow.
+  - AI usage metrics appear in the audit log (`ai_metrics` entries) and module-specific AI cache files under `out/run_*/ai_cache/`.
+  - Optional metrics JSON if persisted by workflow.
 - User actions
   - Inspect token/cost footprint by component.
   - Adjust AI usage flags or prompts accordingly.

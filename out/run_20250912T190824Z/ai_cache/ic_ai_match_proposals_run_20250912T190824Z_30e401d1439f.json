@@ -1,0 +1,52 @@
+{
+  "generated_at": "2025-09-12T19:08:45Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "candidate_pairs": [
+    {
+      "source_doc_id": "IC-001",
+      "target_doc_id": "IC-001",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT101",
+      "match_confidence": 0.95,
+      "match_rationale": "Exact amount match with same counterparties and round dollar anomaly identified",
+      "amount_difference": 0.0,
+      "recommended_action": "Automatic elimination entry"
+    },
+    {
+      "source_doc_id": "IC-003",
+      "target_doc_id": "IC-014",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT102",
+      "match_confidence": 0.85,
+      "match_rationale": "Round dollar anomalies with same counterparties and similar transaction patterns",
+      "amount_difference": 20000.0,
+      "recommended_action": "Manual review and elimination entry"
+    }
+  ],
+  "je_proposals": [
+    {
+      "proposal_id": "JE-IC-001",
+      "entity": "ENT100",
+      "description": "Eliminate intercompany receivable/payable mismatch for IC-001",
+      "debit_account": "2100 - Intercompany Payable",
+      "credit_account": "1200 - Intercompany Receivable",
+      "amount": 75000.0,
+      "rationale": "Eliminate confirmed intercompany balance per reconciliation for round dollar anomaly",
+      "confidence": 0.9
+    },
+    {
+      "proposal_id": "JE-IC-002",
+      "entity": "ENT100",
+      "description": "Adjust intercompany receivable/payable mismatch for IC-003 and IC-014",
+      "debit_account": "2100 - Intercompany Payable",
+      "credit_account": "1200 - Intercompany Receivable",
+      "amount": 60000.0,
+      "rationale": "Partial elimination of intercompany mismatch due to round dollar anomalies and structuring pattern",
+      "confidence": 0.85
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\intercompany_reconciliation_run_20250912T190824Z.json"
+  ]
+}

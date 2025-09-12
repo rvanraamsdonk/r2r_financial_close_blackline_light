@@ -784,7 +784,7 @@ def ai_gatekeeping_rationales(state: R2RState, audit: AuditLogger) -> R2RState:
         "categories": categories,
         "totals": totals,
     }
-    payload = _invoke_ai("gatekeeping", "validation.md", context, payload)
+    payload = _invoke_ai("gatekeeping", "gatekeeping.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(
         lambda: with_cache(

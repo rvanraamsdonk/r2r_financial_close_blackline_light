@@ -1,0 +1,57 @@
+{
+  "generated_at": "2025-09-12T19:10:16Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "risk_level": "high",
+  "block_close": true,
+  "rationales": [
+    {
+      "risk_category": "materiality",
+      "description": "AR exceptions totaling $2,586,167.48 significantly exceed the $50,000 materiality threshold, posing a high risk to financial accuracy and reporting integrity.",
+      "severity": "critical",
+      "affected_areas": [
+        "AR"
+      ],
+      "threshold_breached": "$50,000 materiality limit exceeded",
+      "recommended_action": "Investigate and resolve AR exceptions by reconciling outstanding balances and validating transactions.",
+      "confidence": 0.95
+    },
+    {
+      "risk_category": "control",
+      "description": "Flux exceptions count of 47 indicates potential control failures in variance analysis, which could lead to undetected material misstatements.",
+      "severity": "high",
+      "affected_areas": [
+        "AP",
+        "AR"
+      ],
+      "threshold_breached": "Control threshold for flux exceptions breached",
+      "recommended_action": "Perform detailed variance analysis to identify and address root causes of flux exceptions.",
+      "confidence": 0.9
+    },
+    {
+      "risk_category": "data_quality",
+      "description": "Bank duplicates count of 13 suggests data quality issues that could result in inaccurate cash balances and reconciliation errors.",
+      "severity": "medium",
+      "affected_areas": [
+        "Bank"
+      ],
+      "threshold_breached": "Data integrity standards violated",
+      "recommended_action": "Review and eliminate duplicate bank entries to ensure accurate cash reporting.",
+      "confidence": 0.85
+    },
+    {
+      "risk_category": "compliance",
+      "description": "Accruals exceptions totaling $711,808.57 breach compliance with regulatory reporting standards, requiring accurate accrual accounting.",
+      "severity": "high",
+      "affected_areas": [
+        "Accruals"
+      ],
+      "threshold_breached": "$50,000 materiality limit exceeded",
+      "recommended_action": "Validate and adjust accruals to ensure compliance with regulatory standards.",
+      "confidence": 0.92
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\gatekeeping_run_20250912T190824Z.json"
+  ]
+}

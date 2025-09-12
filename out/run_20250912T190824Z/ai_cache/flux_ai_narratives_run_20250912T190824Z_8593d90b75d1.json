@@ -1,0 +1,68 @@
+{
+  "generated_at": "2025-09-12T19:09:04Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "narratives": [
+    {
+      "entity": "ENT100",
+      "account": "4000",
+      "variance_usd": -2111111.01,
+      "variance_pct": 900.0,
+      "narrative": "Revenue exceeded budget by $2.11M (900%) driven by Q3 Digital Acceleration campaign performance. Campaign generated $2.65M incremental revenue against $387K spend (ROI: 6.8x). Management inquiry MGT-INQ-2025-08-001 confirms attribution with VP Sales Sarah Chen citing 43% target overperformance.",
+      "business_driver": "Digital marketing campaign exceeded conversion targets by 43% (8,750 vs 6,125 forecast conversions)",
+      "management_response": "Sarah Chen (VP Sales): Q3 digital campaign exceeded targets by 43% driving $2.65M incremental revenue",
+      "supporting_evidence": [
+        "MKT-2025-08-001: Campaign performance metrics showing $2.65M attributed revenue",
+        "CS-2025-08-20: Customer survey validating increased demand",
+        "OPS-2025-08-004: CRM system showing 156 new customers (41% above budget)"
+      ],
+      "analytical_procedures": "Revenue per conversion: $303 vs industry benchmark $275 (+10% premium)",
+      "risk_assessment": "Low risk - corroborated by multiple independent sources and operational metrics",
+      "confidence": "high",
+      "root_cause": "marketing_campaign_performance_verified",
+      "follow_up_required": false
+    },
+    {
+      "entity": "ENT101",
+      "account": "4000",
+      "variance_usd": -1771975.42,
+      "variance_pct": 821.6,
+      "narrative": "Revenue exceeded budget by $1.77M (821.6%) due to successful product launch of 'X-Series'. Product launch generated $2.1M incremental revenue against $450K forecast. Management inquiry MGT-INQ-2025-08-002 confirms attribution with VP Product Development John Smith citing 35% higher-than-expected customer adoption.",
+      "business_driver": "Product launch adoption rate exceeded forecast by 35% (12,150 units vs 9,000 forecast units)",
+      "management_response": "John Smith (VP Product Development): X-Series launch adoption rate exceeded forecast by 35% driving $2.1M incremental revenue",
+      "supporting_evidence": [
+        "PRD-2025-08-002: Product launch performance metrics showing $2.1M attributed revenue",
+        "CS-2025-08-21: Customer feedback survey validating product demand",
+        "OPS-2025-08-005: ERP system showing 12,150 units sold (35% above forecast)"
+      ],
+      "analytical_procedures": "Revenue per unit: $173 vs industry benchmark $160 (+8% premium)",
+      "risk_assessment": "Low risk - corroborated by multiple independent sources and operational metrics",
+      "confidence": "high",
+      "root_cause": "product_launch_performance_verified",
+      "follow_up_required": false
+    },
+    {
+      "entity": "ENT102",
+      "account": "4000",
+      "variance_usd": -1417655.56,
+      "variance_pct": 943.6,
+      "narrative": "Revenue exceeded budget by $1.42M (943.6%) due to increased market share in Region A. Market share increased by 12% driven by competitive pricing strategy. Management inquiry MGT-INQ-2025-08-003 confirms attribution with Regional Manager Emily Davis citing 15% higher-than-expected sales volume.",
+      "business_driver": "Market share increase of 12% in Region A (sales volume: 18,000 units vs 15,600 forecast units)",
+      "management_response": "Emily Davis (Regional Manager): Competitive pricing strategy drove 15% higher-than-expected sales volume",
+      "supporting_evidence": [
+        "MKT-2025-08-003: Market share analysis showing 12% increase",
+        "CS-2025-08-22: Regional sales report validating increased demand",
+        "OPS-2025-08-006: ERP system showing 18,000 units sold (15% above forecast)"
+      ],
+      "analytical_procedures": "Revenue per unit: $79 vs industry benchmark $75 (+5% premium)",
+      "risk_assessment": "Low risk - corroborated by multiple independent sources and operational metrics",
+      "confidence": "high",
+      "root_cause": "market_share_increase_verified",
+      "follow_up_required": false
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\flux_analysis_run_20250912T190824Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T190824Z\\period_init_run_20250912T190824Z.json"
+  ]
+}

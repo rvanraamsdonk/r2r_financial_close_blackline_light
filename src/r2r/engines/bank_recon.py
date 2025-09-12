@@ -109,7 +109,7 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                     "duplicate_signature": {k: v for k, v in zip(sig_cols, key if isinstance(key, Tuple) else (key,))},
                     "primary_bank_txn_id": primary["bank_txn_id"],
                     "classification": "error_duplicate",
-                    "ai_rationale": (
+                    "deterministic_rationale": (
                         f"[DET] Bank duplicate candidate: entity {r['entity']}, txn {r['bank_txn_id']} matches signature with primary {primary['bank_txn_id']} on same date. "
                         f"Classify=error_duplicate. Cites entity, date={r['date']}, amount={float(r['amount']):.2f} {r['currency']}, counterparty={r['counterparty']}, type={r['transaction_type']}."
                     ),
@@ -253,7 +253,7 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                     "matched_bank_txn_id": r_prev["bank_txn_id"],
                     "day_diff": day_diff,
                     "classification": "timing_difference",
-                    "ai_rationale": (
+                    "deterministic_rationale": (
                         f"[DET] Bank timing candidate: entity {r_curr['entity']}, txn {r_curr['bank_txn_id']} matches amount/counterparty/type with txn {r_prev['bank_txn_id']} within {day_diff} days. "
                         f"Classify=timing_difference. Cites dates {r_prev['date']} -> {r_curr['date']}, amount={float(r_curr['amount']):.2f} {r_curr['currency']}, counterparty={r_curr['counterparty']}."
                     ),
@@ -306,7 +306,7 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
     auto_approved_total_abs = 0.0
     for e in exceptions:
         conf, auto, note = _score_exception(e)
-        e["confidence_score"] = conf
+        # Removed fake confidence score
         e["auto_approve"] = auto
         prior = e.get("ai_rationale")
         suffix = f" Policy: {note} Materiality threshold=${MATERIALITY_THRESHOLD:,.0f}."
@@ -356,8 +356,8 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "materiality_threshold": MATERIALITY_THRESHOLD,
             "auto_approved_count": auto_approved_count,
             "auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
-            "ai_rationale": summary_rationale,
-            "confidence_score": summary_conf,
+            "deterministic_rationale": summary_rationale,
+            # Removed fake confidence score
         },
     }
 
@@ -411,8 +411,8 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "bank_duplicates_total_abs": payload["summary"]["total_abs_amount"],
             "bank_duplicates_by_entity": payload["summary"]["by_entity_abs_amount"],
             "bank_reconciliation_artifact": str(out_path),
-            "bank_confidence_score": payload["summary"].get("confidence_score"),
-            "bank_ai_rationale": payload["summary"].get("ai_rationale"),
+            # Removed fake confidence score
+            "bank_deterministic_rationale": payload["summary"].get("deterministic_rationale"),
             "bank_auto_approved_count": auto_approved_count,
             "bank_auto_approved_total_abs": float(round(auto_approved_total_abs, 2)),
         }
