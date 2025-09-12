@@ -6,7 +6,7 @@ from __future__ import annotations
 import pytest
 from unittest.mock import patch, Mock
 
-from src.r2r.ai.modules import ai_validation_root_causes, ai_ap_ar_suggestions, ai_flux_narratives
+from src.r2r.ai.modules import ai_validation_root_causes, ai_ap_ar_suggestions, ai_flux_narratives, ai_bank_rationales
 from tests.fixtures.mocks import MockAIModule, MockAIResponse, MockAuditLogger
 from tests.fixtures.helpers import StateBuilder
 
@@ -88,6 +88,46 @@ class TestAIModules:
         assert len(result_state.prompt_runs) > 0
         assert any("flux" in str(run) for run in result_state.prompt_runs)
         assert len(audit.records) > 0
+    
+    def test_ai_flux_narratives_with_email_context(self, repo_root, temp_output_dir):
+        """Test that ai_flux_narratives includes email evidence in its context."""
+        # 1. Create mock artifacts
+        flux_artifact_path = Path(temp_output_dir) / "flux_analysis_run.json"
+        flux_artifact_content = {"rows": [{"entity": "E1", "account": "A1", "var_vs_budget": 1000}]}
+        flux_artifact_path.write_text(json.dumps(flux_artifact_content))
+
+        email_artifact_path = Path(temp_output_dir) / "email_evidence_run.json"
+        email_artifact_content = {"items": [{"email_id": "EMAIL-001", "summary": "Test summary"}]}
+        email_artifact_path.write_text(json.dumps(email_artifact_content))
+
+        # 2. Build state with metrics pointing to these artifacts
+        state = (StateBuilder(repo_root, temp_output_dir)
+                 .with_period("2025-08")
+                 .with_ai_mode("assist")
+                 .with_metric("flux_analysis_artifact", str(flux_artifact_path))
+                 .with_metric("email_evidence_artifact", str(email_artifact_path))
+                 .build())
+
+        audit = MockAuditLogger(temp_output_dir, "test_run")
+
+        # 3. Mock the _invoke_ai function to inspect the context
+        with patch("src.r2r.ai.modules._invoke_ai") as mock_invoke_ai:
+            # Define a dummy return value for the mock
+            mock_invoke_ai.return_value = {"narratives": []}
+
+            # 4. Execute the function
+            ai_flux_narratives(state, audit)
+
+            # 5. Assert that the mock was called and inspect the context
+            mock_invoke_ai.assert_called_once()
+            
+            # The context is the 3rd argument of _invoke_ai(kind, template_name, context, payload)
+            call_args, call_kwargs = mock_invoke_ai.call_args
+            context = call_args[2]
+            
+            assert "email_evidence" in context
+            assert len(context["email_evidence"]) == 1
+            assert context["email_evidence"][0]["email_id"] == "EMAIL-001"
 
 
 @pytest.mark.unit
@@ -126,6 +166,45 @@ class TestAIModuleCaching:
                 # Test cost calculation logic
                 # Implementation depends on actual cost tracking in modules
                 pass
+
+
+    def test_ai_bank_rationales_with_email_context(self, repo_root, temp_output_dir):
+        """Test that ai_bank_rationales includes email evidence in its context."""
+        # 1. Create mock artifacts
+        bank_artifact_path = Path(temp_output_dir) / "bank_reconciliation_run.json"
+        bank_artifact_content = {"exceptions": [{"bank_txn_id": "TXN001", "amount": 1000}]}
+        bank_artifact_path.write_text(json.dumps(bank_artifact_content))
+
+        email_artifact_path = Path(temp_output_dir) / "email_evidence_run.json"
+        email_artifact_content = {"items": [{"email_id": "EMAIL-001", "summary": "Test summary"}]}
+        email_artifact_path.write_text(json.dumps(email_artifact_content))
+
+        # 2. Build state with metrics pointing to these artifacts
+        state = (StateBuilder(repo_root, temp_output_dir)
+                 .with_period("2025-08")
+                 .with_ai_mode("assist")
+                 .with_metric("bank_reconciliation_artifact", str(bank_artifact_path))
+                 .with_metric("email_evidence_artifact", str(email_artifact_path))
+                 .build())
+
+        audit = MockAuditLogger(temp_output_dir, "test_run")
+
+        # 3. Mock the _invoke_ai function to inspect the context
+        with patch("src.r2r.ai.modules._invoke_ai") as mock_invoke_ai:
+            mock_invoke_ai.return_value = {"rationales": []}
+
+            # 4. Execute the function
+            ai_bank_rationales(state, audit)
+
+            # 5. Assert that the mock was called and inspect the context
+            mock_invoke_ai.assert_called_once()
+            
+            call_args, call_kwargs = mock_invoke_ai.call_args
+            context = call_args[2]
+            
+            assert "email_evidence" in context
+            assert len(context["email_evidence"]) == 1
+            assert context["email_evidence"][0]["email_id"] == "EMAIL-001"
 
 
 # Template for additional AI module tests

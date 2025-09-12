@@ -4,6 +4,7 @@
 - Provide deterministic variance analysis between Actuals (TB) and (a) Budget, (b) Prior period.
 - Surface material exceptions by entity/account for professional close review.
 - Produce audit-ready artifact, provenance, and metrics for transparency.
+- Compute variances and percents: 
 
 ## Inputs
 - Trial Balance (current period) CSV: `data/.../trial_balance_YYYY_MM.csv`
@@ -20,11 +21,11 @@
 - Aggregate Actuals: sum `balance_usd` by `entity, account`
 - Aggregate Budget: sum `budget_amount` by `entity, account`
 - Aggregate Prior: sum prior-period `balance_usd` by `entity, account`
-- Compute variances and percents:
   - `var_vs_budget = actual_usd - budget_amount`; `pct_vs_budget = var_vs_budget / budget_amount` if denom != 0
   - `var_vs_prior = actual_usd - prior_usd`; `pct_vs_prior = var_vs_prior / prior_usd` if denom != 0
 - Exception: flag if `abs(var_vs_budget) > threshold(entity)` or `abs(var_vs_prior) > threshold(entity)`
 - Threshold basis: `materiality_thresholds_usd[entity]` else default floor USD 1,000
+- `deterministic_summary`: A `[FORENSIC]`-labeled text field summarizing the largest variance driver (budget or prior) for each account.
 
 ## Artifact
 - File: `out/flux_analysis_<RUNID>.json`

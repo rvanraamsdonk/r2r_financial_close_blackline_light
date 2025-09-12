@@ -1,0 +1,87 @@
+{
+  "generated_at": "2025-09-12T20:12:59Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "owner_summaries": [
+    {
+      "owner_name": "Finance Controller",
+      "control_count": 4,
+      "risk_areas": [
+        "Financial Reporting",
+        "Reconciliations"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "High number of reconciliation exceptions and flux analysis issues",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Treasury Manager",
+      "control_count": 2,
+      "risk_areas": [
+        "Cash Management",
+        "FX Risk"
+      ],
+      "effectiveness_rating": "effective",
+      "key_concerns": "No significant issues identified",
+      "confidence": 0.9
+    },
+    {
+      "owner_name": "Accounting Manager",
+      "control_count": 4,
+      "risk_areas": [
+        "Accruals",
+        "Intercompany Transactions"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "Accruals and intercompany mismatches require further review",
+      "confidence": 0.7
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Unbalanced trial balances at the entity level could lead to material misstatements in financial reporting.",
+      "severity": "high",
+      "affected_processes": [
+        "Trial Balance"
+      ],
+      "mitigation_recommendations": "Implement automated checks to ensure trial balances are zeroed out before close.",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "operational",
+      "description": "High number of flux analysis exceptions indicates potential anomalies in account movements.",
+      "severity": "medium",
+      "affected_processes": [
+        "Flux Analysis"
+      ],
+      "mitigation_recommendations": "Enhance flux analysis thresholds and investigate recurring exceptions.",
+      "confidence": 0.75
+    },
+    {
+      "risk_category": "compliance",
+      "description": "Reconciliation exceptions in AP, AR, and bank accounts increase the risk of undetected errors or fraud.",
+      "severity": "medium",
+      "affected_processes": [
+        "AP",
+        "AR",
+        "Bank Reconciliation"
+      ],
+      "mitigation_recommendations": "Strengthen reconciliation processes and reduce exception thresholds.",
+      "confidence": 0.78
+    },
+    {
+      "risk_category": "operational",
+      "description": "Open HITL cases may delay critical financial close activities.",
+      "severity": "low",
+      "affected_processes": [
+        "Human-in-the-Loop (HITL) Processes"
+      ],
+      "mitigation_recommendations": "Prioritize resolution of open HITL cases before close deadlines.",
+      "confidence": 0.85
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T201030Z\\controls_mapping_run_20250912T201030Z.json"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "generated_at": "2025-09-12T20:12:32Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "risk_level": "high",
+  "block_close": true,
+  "rationales": [
+    {
+      "risk_category": "materiality",
+      "description": "AR exceptions totaling $2,586,167.48 significantly exceed the $50,000 materiality threshold, indicating potential misstatements in accounts receivable balances.",
+      "severity": "critical",
+      "affected_areas": [
+        "AR"
+      ],
+      "threshold_breached": "$50,000 materiality limit exceeded",
+      "recommended_action": "Investigate and resolve the AR exceptions by identifying and correcting the underlying discrepancies. Ensure proper documentation for audit purposes.",
+      "confidence": 0.95
+    },
+    {
+      "risk_category": "control",
+      "description": "Flux exceptions totaling 47 instances indicate potential control failures in variance analysis, which could lead to undetected financial misstatements.",
+      "severity": "high",
+      "affected_areas": [
+        "AP",
+        "AR",
+        "Bank"
+      ],
+      "threshold_breached": "Control thresholds for flux analysis breached",
+      "recommended_action": "Perform a detailed review of flux exceptions to identify root causes and implement corrective actions. Strengthen variance analysis controls to prevent recurrence.",
+      "confidence": 0.9
+    },
+    {
+      "risk_category": "data_quality",
+      "description": "Bank duplicates totaling 13 instances suggest data quality issues that could impact the accuracy of cash balances and reconciliation processes.",
+      "severity": "medium",
+      "affected_areas": [
+        "Bank"
+      ],
+      "threshold_breached": "Data integrity standards violated",
+      "recommended_action": "Identify and eliminate duplicate bank transactions. Implement automated reconciliation tools to improve data accuracy.",
+      "confidence": 0.85
+    },
+    {
+      "risk_category": "compliance",
+      "description": "AP exceptions totaling $653,977.70 may indicate non-compliance with regulatory or internal policy requirements, posing audit risks.",
+      "severity": "high",
+      "affected_areas": [
+        "AP"
+      ],
+      "threshold_breached": "$50,000 materiality limit exceeded",
+      "recommended_action": "Review and resolve AP exceptions to ensure compliance with regulatory and internal policies. Provide supporting documentation for audit readiness.",
+      "confidence": 0.92
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T201030Z\\gatekeeping_run_20250912T201030Z.json"
+  ]
+}

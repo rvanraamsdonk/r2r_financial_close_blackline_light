@@ -7,10 +7,16 @@ VARIANCE ANALYSIS REQUIREMENTS:
   Percentage variance: {{ ((variance.pct_vs_budget or 0) * 100) | round(1) }}%
 {% endfor %}
 
+EMAIL EVIDENCE AVAILABLE:
+{% for email in email_evidence %}
+- Email ID: {{ email.email_id }}, Subject: {{ email.subject }}, Summary: {{ email.summary }}
+{% endfor %}
+
 SUPPORTING EVIDENCE AVAILABLE:
 - Marketing campaign performance data with ROI metrics
 - Product launch results with actual vs forecast comparisons  
 - Market intelligence reports with third-party validation
+- Email evidence with summaries and categories
 - Management inquiry responses with supporting documentation
 - Operational metrics from source systems with variance analysis
 
@@ -29,6 +35,7 @@ AUDIT QUALITY REQUIREMENTS:
 - Operational metrics must cite source systems and validation status
 - Market intelligence must reference external validation sources
 - Financial impact calculations must be reconcilable to variance amounts
+- Narratives should cite email evidence (by email_id) where relevant to explain a variance.
 
 Required JSON output format:
 {

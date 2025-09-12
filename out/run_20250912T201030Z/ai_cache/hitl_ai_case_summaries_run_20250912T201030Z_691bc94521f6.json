@@ -1,0 +1,115 @@
+{
+  "generated_at": "2025-09-12T20:12:43Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "case_summaries": [
+    {
+      "case_id": "CASE-202508-BANK_DUPLICATES-001",
+      "summary": "Duplicate bank transactions identified, potentially leading to overstated balances and reconciliation delays.",
+      "risk_level": "high",
+      "business_impact": "Potential misstatement of cash balances and delayed period close.",
+      "confidence": 0.9
+    },
+    {
+      "case_id": "CASE-202508-AP_EXCEPTIONS-002",
+      "summary": "Accounts payable exceptions include unprocessed invoices and duplicate payments, risking vendor relationships and financial inaccuracies.",
+      "risk_level": "critical",
+      "business_impact": "Risk of duplicate payments and unrecorded liabilities impacting cash flow and vendor trust.",
+      "confidence": 0.85
+    },
+    {
+      "case_id": "CASE-202508-AR_EXCEPTIONS-003",
+      "summary": "Accounts receivable exceptions involve delayed collections and incorrect postings, impacting revenue recognition and cash flow.",
+      "risk_level": "critical",
+      "business_impact": "Delayed revenue recognition and potential cash flow shortages.",
+      "confidence": 0.88
+    },
+    {
+      "case_id": "CASE-202508-IC_MISMATCHES-004",
+      "summary": "Intercompany mismatches identified, leading to potential consolidation errors and reconciliation delays.",
+      "risk_level": "high",
+      "business_impact": "Risk of inaccurate consolidated financial statements and delayed close processes.",
+      "confidence": 0.87
+    },
+    {
+      "case_id": "CASE-202508-ACCRUALS_EXCEPTIONS-005",
+      "summary": "Accruals exceptions include missing or incorrect accrual entries, risking understated liabilities and inaccurate expense reporting.",
+      "risk_level": "high",
+      "business_impact": "Potential misstatement of liabilities and expenses, impacting financial accuracy.",
+      "confidence": 0.86
+    },
+    {
+      "case_id": "CASE-202508-FLUX_EXCEPTIONS-006",
+      "summary": "Flux analysis exceptions identified significant unexplained variances, indicating potential errors or omissions in financial reporting.",
+      "risk_level": "critical",
+      "business_impact": "Unexplained variances may lead to financial misstatements and audit risks.",
+      "confidence": 0.9
+    }
+  ],
+  "next_actions": [
+    {
+      "action": "Investigate and resolve duplicate bank transactions by reconciling with supporting documentation.",
+      "priority": "high",
+      "owner": "Bank Reconciliation Team",
+      "estimated_effort": "2-3 days",
+      "dependencies": [
+        "Access to bank statements",
+        "Reconciliation software"
+      ]
+    },
+    {
+      "action": "Review and process AP exceptions, including duplicate payments and unprocessed invoices.",
+      "priority": "critical",
+      "owner": "Accounts Payable Team",
+      "estimated_effort": "3-5 days",
+      "dependencies": [
+        "Vendor invoice records",
+        "ERP system access"
+      ]
+    },
+    {
+      "action": "Resolve AR exceptions by reconciling delayed collections and correcting postings.",
+      "priority": "critical",
+      "owner": "Accounts Receivable Team",
+      "estimated_effort": "3-4 days",
+      "dependencies": [
+        "Customer payment records",
+        "ERP system access"
+      ]
+    },
+    {
+      "action": "Investigate intercompany mismatches and reconcile discrepancies across entities.",
+      "priority": "high",
+      "owner": "Intercompany Accounting Team",
+      "estimated_effort": "2-3 days",
+      "dependencies": [
+        "Intercompany transaction logs",
+        "Entity-level financial data"
+      ]
+    },
+    {
+      "action": "Review and correct accruals exceptions to ensure accurate liability and expense reporting.",
+      "priority": "high",
+      "owner": "General Accounting Team",
+      "estimated_effort": "2-3 days",
+      "dependencies": [
+        "Accrual schedules",
+        "Supporting documentation"
+      ]
+    },
+    {
+      "action": "Analyze flux exceptions to identify root causes of variances and correct errors or omissions.",
+      "priority": "critical",
+      "owner": "Financial Reporting Team",
+      "estimated_effort": "5-7 days",
+      "dependencies": [
+        "Variance analysis reports",
+        "Historical financial data"
+      ]
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T201030Z\\cases_run_20250912T201030Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T201030Z\\cases_manifest_run_20250912T201030Z.json"
+  ]
+}

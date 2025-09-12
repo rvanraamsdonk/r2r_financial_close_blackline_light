@@ -470,6 +470,7 @@ def ai_flux_narratives(state: R2RState, audit: AuditLogger) -> R2RState:
         _validate_ai("flux", payload, state)
     # Extract top variances for compact context from flux analysis rows
     flux_slice = []
+    email_slice = []
     try:
         flux_path = m.get("flux_analysis_artifact")
         if flux_path and Path(flux_path).exists():
@@ -497,12 +498,29 @@ def ai_flux_narratives(state: R2RState, audit: AuditLogger) -> R2RState:
                 })
     except Exception:
         flux_slice = []
+    try:
+        email_path = m.get("email_evidence_artifact")
+        if email_path and Path(email_path).exists():
+            with Path(email_path).open("r", encoding="utf-8") as f:
+                email_json = json.load(f)
+            email_items = email_json.get("items") or []
+            for item in email_items[:10]: # Limit for context
+                email_slice.append({
+                    "email_id": item.get("email_id"),
+                    "subject": item.get("subject"),
+                    "summary": item.get("summary"),
+                    "category": item.get("category"),
+                    "timestamp": item.get("timestamp")
+                })
+    except Exception:
+        email_slice = []
     context = {
         "period": state.period,
         "entity": state.entity,
         "citations": payload["citations"],
         "counts": inputs["counts"],
         "top_variances": flux_slice,
+        "email_evidence": email_slice,
     }
     payload = _invoke_ai("flux", "flux.md", context, payload)
     ih = compute_inputs_hash(inputs)
@@ -614,6 +632,24 @@ def ai_bank_rationales(state: R2RState, audit: AuditLogger) -> R2RState:
     inputs = {"period": state.period, "entity": state.entity, "citations": payload["citations"]}
     if state.ai_mode == "strict":
         _validate_ai("bank", payload, state)
+    # Include compact email evidence slice
+    email_slice = []
+    try:
+        email_path = m.get("email_evidence_artifact")
+        if email_path and Path(email_path).exists():
+            with Path(email_path).open("r", encoding="utf-8") as f:
+                email_json = json.load(f)
+            email_items = email_json.get("items") or []
+            for item in email_items[:10]: # Limit for context
+                email_slice.append({
+                    "email_id": item.get("email_id"),
+                    "subject": item.get("subject"),
+                    "summary": item.get("summary"),
+                    "category": item.get("category"),
+                    "timestamp": item.get("timestamp")
+                })
+    except Exception:
+        email_slice = []
     # Include compact bank exception slices if present
     bank_slice = []
     try:
@@ -636,7 +672,7 @@ def ai_bank_rationales(state: R2RState, audit: AuditLogger) -> R2RState:
                 bank_slice.append(compact)
     except Exception:
         bank_slice = []
-    context = {"period": state.period, "entity": state.entity, "citations": payload["citations"], "bank_exceptions": bank_slice}
+    context = {"period": state.period, "entity": state.entity, "citations": payload["citations"], "bank_exceptions": bank_slice, "email_evidence": email_slice}
     payload = _invoke_ai("bank", "bank.md", context, payload)
     ih = compute_inputs_hash(inputs)
     result, dt = time_call(

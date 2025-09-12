@@ -130,7 +130,7 @@ def accruals_check(state: R2RState, audit: AuditLogger) -> R2RState:
                     "proposed_period": next_p,
                     "amount_usd": float(amt),
                     "narrative": f"Propose reversal of accrual {r['accrual_id']} in {next_p}",
-                    "ai_narrative": (
+                    "deterministic_narrative": (
                         f"[DET] Reverse {r['accrual_id']} for entity {r['entity']} in {next_p}: "
                         f"amount_usd={amt:.2f}. Cites entity, accrual_id, proposed_period, amount."
                     ),

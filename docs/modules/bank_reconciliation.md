@@ -31,7 +31,7 @@
     - `matched_bank_txn_id` (for timing): earlier transaction in the match
     - `day_diff` (for timing): integer day gap
     - `classification` (new): `error_duplicate` | `timing_difference`
-    - `ai_rationale` (new): `[DET]`-labeled deterministic narrative citing entity, ids, dates, amount, counterparty, type
+    - `deterministic_rationale` (new): `[DET]`-labeled deterministic narrative citing entity, ids, dates, amount, counterparty, type
   - `summary`
     - `count`: number of exceptions
     - `total_abs_amount`: sum(|amount|) of duplicates

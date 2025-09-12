@@ -58,7 +58,7 @@ class TestFluxAnalysis:
         # Verify metrics are calculated
         assert "flux_exceptions_count" in result_state.metrics
         assert "flux_by_entity_count" in result_state.metrics
-        assert "flux_analysis_artifact" in result_state.metrics
+        assert "deterministic_summary" in result_state.metrics
         
         # Should detect exceptions (revenue variance: 50k-45k=5k > 3k threshold)
         assert result_state.metrics["flux_exceptions_count"] >= 1
@@ -121,7 +121,7 @@ class TestFluxAnalysis:
         
         # Should still process with zero budget amounts
         assert "flux_exceptions_count" in result_state.metrics
-        assert "flux_analysis_artifact" in result_state.metrics
+        assert "deterministic_summary" in result_state.metrics
     
     def test_flux_multi_entity_analysis(self, repo_root, temp_output_dir):
         """Test flux analysis with multiple entities."""

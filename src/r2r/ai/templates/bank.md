@@ -12,11 +12,15 @@ Generate AI-powered rationales for bank exceptions that enhance the existing for
 ## Bank Exceptions Data
 {{ bank_exceptions | tojson }}
 
+## Email Evidence
+{{ email_evidence | tojson }}
+
 ## Instructions
 1. For each exception, provide an AI-generated rationale that adds value beyond the existing forensic classification
 2. Focus on business context, risk implications, and investigative next steps
 3. Use confidence scoring (0.1-1.0) based on data quality and pattern strength
 4. Reference specific transaction details and amounts in your analysis
+- Correlate with email evidence where possible, citing email_id
 
 ## Output Format
 Return ONLY valid JSON matching the BankAI schema:

@@ -148,7 +148,7 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                 "description": r.get("description"),
                 "reason": "unusual_counterparty",
                 "classification": "forensic_risk",
-                "ai_rationale": f"[FORENSIC] Unusual counterparty: Large transaction (${amount:.2f}) with suspicious entity '{r['counterparty']}' containing cash advance keywords",
+                "deterministic_rationale": f"[FORENSIC] Unusual counterparty: Large transaction (${amount:.2f}) with suspicious entity '{r['counterparty']}' containing cash advance keywords",
             }
             exceptions.append(exc)
             input_row_ids.append(str(r["bank_txn_id"]))
@@ -172,7 +172,7 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                     "classification": "forensic_risk",
                     "velocity_count": len(group),
                     "velocity_total": float(total_amount),
-                    "ai_rationale": f"[FORENSIC] Velocity anomaly: {len(group)} transactions with '{counterparty}' on {date}, total ${total_amount:.2f}",
+                    "deterministic_rationale": f"[FORENSIC] Velocity anomaly: {len(group)} transactions with '{counterparty}' on {date}, total ${total_amount:.2f}",
                 }
                 exceptions.append(exc)
                 input_row_ids.append(str(r["bank_txn_id"]))
@@ -214,7 +214,7 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
                     "matched_amount": float(in_txn["amount"]),
                     "matched_date": in_txn["date"],
                     "day_diff": day_diff,
-                    "ai_rationale": f"[FORENSIC] Potential kiting: Transfer out ${out_amount:.2f} on {out_txn['date']} followed by transfer in ${in_amount:.2f} on {in_txn['date']} ({day_diff} days later)",
+                    "deterministic_rationale": f"[FORENSIC] Potential kiting: Transfer out ${out_amount:.2f} on {out_txn['date']} followed by transfer in ${in_amount:.2f} on {in_txn['date']} ({day_diff} days later)",
                 }
                 exceptions.append(exc)
                 input_row_ids.append(str(out_txn["bank_txn_id"]))
@@ -308,9 +308,9 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
         conf, auto, note = _score_exception(e)
         # Removed fake confidence score
         e["auto_approve"] = auto
-        prior = e.get("ai_rationale")
+        prior = e.get("deterministic_rationale")
         suffix = f" Policy: {note} Materiality threshold=${MATERIALITY_THRESHOLD:,.0f}."
-        e["ai_rationale"] = (prior + " " + suffix).strip() if prior else suffix.strip()
+        e["deterministic_rationale"] = (prior + " " + suffix).strip() if prior else suffix.strip()
         if auto:
             auto_approved_count += 1
             auto_approved_total_abs += abs(float(e.get("amount", 0.0)))

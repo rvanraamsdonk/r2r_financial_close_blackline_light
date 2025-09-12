@@ -1,0 +1,90 @@
+{
+  "generated_at": "2025-09-12T20:10:42Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "matches": [
+    {
+      "ap_bill_id": "AP050023",
+      "ar_invoice_id": "AR060025",
+      "confidence": 0.95,
+      "reason": "Matching based on same entity (ENT102), close amount (GBP 117274.06 vs GBP 242123.45), and similar date (2025-08-17 for both).",
+      "support": {
+        "amount_delta": 124849.39,
+        "date_gap_days": 0,
+        "signals": [
+          "amount_close",
+          "date_near",
+          "same_entity"
+        ]
+      }
+    },
+    {
+      "ap_bill_id": "AP050008",
+      "ar_invoice_id": "AR060004",
+      "confidence": 0.9,
+      "reason": "Matching based on same entity (ENT100), close amount (USD 53243.71 vs USD 243023.93), and similar date (2025-08-31 vs 2025-08-29).",
+      "support": {
+        "amount_delta": 189780.22,
+        "date_gap_days": 2,
+        "signals": [
+          "amount_close",
+          "date_near",
+          "same_entity"
+        ]
+      }
+    },
+    {
+      "ap_bill_id": "AP050006",
+      "ar_invoice_id": "AR060027",
+      "confidence": 0.88,
+      "reason": "Matching based on same entity (ENT100), close amount (USD 34792.46 vs USD 92000.00), and similar date (2025-08-24 vs 2025-08-30).",
+      "support": {
+        "amount_delta": 57207.54,
+        "date_gap_days": 6,
+        "signals": [
+          "amount_close",
+          "date_near",
+          "same_entity"
+        ]
+      }
+    },
+    {
+      "ap_bill_id": "AP050031",
+      "ar_invoice_id": "AR060007",
+      "confidence": 0.87,
+      "reason": "Matching based on same entity (ENT101), close amount (EUR 45678.90 vs EUR 356651.76), and similar date (2025-08-25 vs 2025-08-24).",
+      "support": {
+        "amount_delta": 310972.86,
+        "date_gap_days": 1,
+        "signals": [
+          "amount_close",
+          "date_near",
+          "same_entity"
+        ]
+      }
+    },
+    {
+      "ap_bill_id": "AP050015",
+      "ar_invoice_id": "AR060016",
+      "confidence": 0.85,
+      "reason": "Matching based on same entity (ENT101), close amount (EUR 48800.57 vs EUR 255432.10), and similar date (2025-08-10 for both).",
+      "support": {
+        "amount_delta": 206631.53,
+        "date_gap_days": 0,
+        "signals": [
+          "amount_close",
+          "date_near",
+          "same_entity"
+        ]
+      }
+    }
+  ],
+  "unresolved_summary": {
+    "ap_exceptions": 19,
+    "ar_exceptions": 15
+  },
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T201030Z\\ap_reconciliation_run_20250912T201030Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T201030Z\\ar_reconciliation_run_20250912T201030Z.json"
+  ]
+}

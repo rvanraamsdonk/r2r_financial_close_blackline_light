@@ -1,0 +1,53 @@
+{
+  "generated_at": "2025-09-12T20:12:36Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "summary": {
+    "schema_issues": 0,
+    "duplicate_rows": 0,
+    "fx_coverage_ok": null
+  },
+  "root_causes": [
+    {
+      "issue_type": "data_quality",
+      "description": "AR exceptions totaling $2.6M indicate significant data integrity issues, likely due to incomplete or inaccurate transaction postings.",
+      "severity": "critical",
+      "affected_categories": [
+        "ar_exceptions"
+      ],
+      "financial_impact": "$2.6M AR exceptions exceed materiality thresholds",
+      "confidence": 0.9
+    },
+    {
+      "issue_type": "process_control",
+      "description": "Bank duplicates (13 instances) suggest inadequate reconciliation controls or duplicate transaction entries.",
+      "severity": "high",
+      "affected_categories": [
+        "bank_duplicates"
+      ],
+      "financial_impact": "Potential misstatements in cash balances and reconciliation delays",
+      "confidence": 0.85
+    }
+  ],
+  "remediations": [
+    {
+      "issue_type": "data_quality",
+      "action": "Perform a detailed review of AR transaction postings to identify missing or incorrect entries. Implement automated validation checks for transaction completeness and accuracy.",
+      "priority": "critical",
+      "estimated_effort": "2-3 weeks with 2-3 FTEs",
+      "success_criteria": "Reduction in AR exceptions below materiality thresholds (<$50K or <10 items)"
+    },
+    {
+      "issue_type": "process_control",
+      "action": "Enhance bank reconciliation processes by implementing duplicate detection algorithms and stricter approval workflows for transaction entries.",
+      "priority": "high",
+      "estimated_effort": "1-2 weeks with 1-2 FTEs",
+      "success_criteria": "Elimination of duplicate transactions in bank reconciliation reports"
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T201030Z\\bank_reconciliation_run_20250912T201030Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T201030Z\\ap_reconciliation_run_20250912T201030Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T201030Z\\ar_reconciliation_run_20250912T201030Z.json"
+  ]
+}

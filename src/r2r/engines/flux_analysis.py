@@ -121,7 +121,7 @@ def flux_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
         )
 
         # Deterministic narrative with citations to computed fields
-        ai_narrative = (
+        deterministic_summary = (
             f"[FORENSIC] {ent}/{acct}: variance vs {basis} = {var_used:.2f} USD (thr={thr:.2f}, band={band_used}). "
             f"Cites entity={ent}, account={acct}, period={period}."
         )
@@ -140,7 +140,7 @@ def flux_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
             "band_vs_budget": band_b,
             "band_vs_prior": band_p,
             "ai_basis": basis,
-            "ai_narrative": ai_narrative,
+            "deterministic_summary": deterministic_summary,
         }
         rows.append(row)
 

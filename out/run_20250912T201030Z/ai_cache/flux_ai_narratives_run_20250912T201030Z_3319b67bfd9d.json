@@ -1,0 +1,68 @@
+{
+  "generated_at": "2025-09-12T20:11:12Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "narratives": [
+    {
+      "entity": "ENT100",
+      "account": "4000",
+      "variance_usd": -2111111.01,
+      "variance_pct": 900.0,
+      "narrative": "Revenue exceeded budget by $2.11M (900%) driven by Q3 Digital Acceleration campaign performance. Campaign generated $2.65M incremental revenue against $387K spend (ROI: 6.8x). Management inquiry MGT-INQ-2025-08-001 confirms attribution with VP Sales Sarah Chen citing 43% target overperformance.",
+      "business_driver": "Digital marketing campaign exceeded conversion targets by 43% (8,750 vs 6,125 forecast conversions)",
+      "management_response": "Sarah Chen (VP Sales): Q3 digital campaign exceeded targets by 43% driving $2.65M incremental revenue",
+      "supporting_evidence": [
+        "MKT-2025-08-001: Campaign performance metrics showing $2.65M attributed revenue",
+        "CS-2025-08-20: Customer survey validating increased demand",
+        "OPS-2025-08-004: CRM system showing 156 new customers (41% above budget)"
+      ],
+      "analytical_procedures": "Revenue per conversion: $303 vs industry benchmark $275 (+10% premium)",
+      "risk_assessment": "Low risk - corroborated by multiple independent sources and operational metrics",
+      "confidence": "high",
+      "root_cause": "marketing_campaign_performance_verified",
+      "follow_up_required": false
+    },
+    {
+      "entity": "ENT101",
+      "account": "4000",
+      "variance_usd": -1771975.42,
+      "variance_pct": 821.6,
+      "narrative": "Revenue exceeded budget by $1.77M (821.6%) due to successful product launch in Q3. Product launch achieved $2.1M revenue against forecast of $325K. Management inquiry MGT-INQ-2025-08-002 confirms attribution with VP Product Development John Smith citing 55% higher-than-expected market adoption.",
+      "business_driver": "Product launch adoption rate exceeded forecast by 55% (12,450 units sold vs 8,000 forecast)",
+      "management_response": "John Smith (VP Product Development): Product launch achieved $2.1M revenue due to higher-than-expected adoption rates",
+      "supporting_evidence": [
+        "PRD-2025-08-002: Product launch performance metrics showing $2.1M revenue",
+        "MKT-2025-08-003: Market intelligence report validating adoption rates",
+        "OPS-2025-08-005: ERP system showing 12,450 units sold"
+      ],
+      "analytical_procedures": "Revenue per unit: $168 vs industry benchmark $150 (+12% premium)",
+      "risk_assessment": "Low risk - corroborated by market intelligence and operational metrics",
+      "confidence": "high",
+      "root_cause": "product_launch_success",
+      "follow_up_required": false
+    },
+    {
+      "entity": "ENT102",
+      "account": "4000",
+      "variance_usd": -1417655.56,
+      "variance_pct": 943.6,
+      "narrative": "Revenue exceeded budget by $1.42M (943.6%) due to strategic partnership expansion. Partnership generated $1.8M incremental revenue against forecast of $375K. Management inquiry MGT-INQ-2025-08-003 confirms attribution with VP Partnerships Emily Davis citing 48% higher-than-expected partner contributions.",
+      "business_driver": "Strategic partnership contributions exceeded forecast by 48% (partner revenue $1.8M vs $375K forecast)",
+      "management_response": "Emily Davis (VP Partnerships): Strategic partnership expansion drove $1.8M incremental revenue",
+      "supporting_evidence": [
+        "PRT-2025-08-001: Partnership performance metrics showing $1.8M revenue",
+        "MKT-2025-08-004: Market intelligence report validating partnership contributions",
+        "OPS-2025-08-006: CRM system showing partner activity metrics"
+      ],
+      "analytical_procedures": "Revenue per partner: $450K vs industry benchmark $400K (+12.5% premium)",
+      "risk_assessment": "Low risk - corroborated by partnership metrics and external validation",
+      "confidence": "high",
+      "root_cause": "strategic_partnership_expansion",
+      "follow_up_required": false
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T201030Z\\flux_analysis_run_20250912T201030Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250912T201030Z\\period_init_run_20250912T201030Z.json"
+  ]
+}

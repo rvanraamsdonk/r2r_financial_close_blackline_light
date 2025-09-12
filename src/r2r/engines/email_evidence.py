@@ -49,7 +49,7 @@ def email_evidence_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
     # AI-powered transaction linking
     enhanced_emails = []
     for email in relevant:
-        enhanced_email = _analyze_email_with_ai(email, state, audit)
+        enhanced_email = _analyze_email_with_ai(email, state, audit, data_fp)
         enhanced_emails.append(enhanced_email)
 
     # Build artifact
@@ -131,7 +131,7 @@ def _next_day_of_period(period: str) -> str:
     return f"{y}-{m+1:02d}-01"
 
 
-def _analyze_email_with_ai(email: Dict[str, Any], state: R2RState, audit: AuditLogger) -> Dict[str, Any]:
+def _analyze_email_with_ai(email: Dict[str, Any], state: R2RState, audit: AuditLogger, source_file_path: Path) -> Dict[str, Any]:
     """
     Use AI to analyze email content and find semantic matches to transaction data
     """
@@ -141,6 +141,7 @@ def _analyze_email_with_ai(email: Dict[str, Any], state: R2RState, audit: AuditL
     if not transaction_data:
         # No transaction data available, return email as-is
         enhanced = email.copy()
+        enhanced["source_evidence"] = {"uri": str(source_file_path), "id": email.get("email_id")}
         enhanced["ai_transaction_matches"] = []
         enhanced["ai_analysis"] = {"status": "no_transaction_data", "confidence": 0.0}
         return enhanced
@@ -168,6 +169,7 @@ def _analyze_email_with_ai(email: Dict[str, Any], state: R2RState, audit: AuditL
         
         # Enhance email with AI findings
         enhanced = email.copy()
+        enhanced["source_evidence"] = {"uri": str(source_file_path), "id": email.get("email_id")}
         enhanced["ai_transaction_matches"] = analysis.get("transaction_matches", [])
         enhanced["ai_extracted_info"] = analysis.get("extracted_info", {})
         enhanced["ai_forensic_indicators"] = analysis.get("forensic_indicators", [])
@@ -182,6 +184,7 @@ def _analyze_email_with_ai(email: Dict[str, Any], state: R2RState, audit: AuditL
     except Exception as e:
         # Fallback on AI failure
         enhanced = email.copy()
+        enhanced["source_evidence"] = {"uri": str(source_file_path), "id": email.get("email_id")}
         enhanced["ai_transaction_matches"] = []
         enhanced["ai_analysis"] = {"status": f"ai_error: {str(e)}", "confidence": 0.0}
         return enhanced

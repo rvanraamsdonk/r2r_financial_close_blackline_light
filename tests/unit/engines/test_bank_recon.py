@@ -309,6 +309,55 @@ class TestBankReconciliation:
         assert result_state.metrics["bank_reconciliation_artifact"].endswith(".json")
 
 
+    @patch('src.r2r.engines.bank_recon.load_bank_transactions')
+    def test_deterministic_rationale_in_artifact(self, mock_load_bank, repo_root, temp_output_dir):
+        """Test that the deterministic_rationale field is correctly generated in the artifact."""
+        import json
+        from pathlib import Path
+
+        # Setup mock data with a clear duplicate
+        mock_data = pd.DataFrame([
+            {
+                "entity": "ENT100", "bank_txn_id": "TXN001", "date": "2025-08-15",
+                "amount": 1000.0, "currency": "USD", "counterparty": "Vendor A",
+                "transaction_type": "Payment", "description": "Payment 1"
+            },
+            {
+                "entity": "ENT100", "bank_txn_id": "TXN002", "date": "2025-08-15",
+                "amount": 1000.0, "currency": "USD", "counterparty": "Vendor A",
+                "transaction_type": "Payment", "description": "Duplicate Payment"
+            }
+        ])
+        mock_load_bank.return_value = mock_data
+
+        state = (StateBuilder(repo_root, temp_output_dir)
+                .with_period("2025-08")
+                .with_entity("ENT100")
+                .build())
+
+        audit = MockAuditLogger(temp_output_dir, "test_run")
+
+        # Execute
+        result_state = bank_reconciliation(state, audit)
+
+        # Verify artifact was created
+        artifact_path_str = result_state.metrics.get("bank_reconciliation_artifact")
+        assert artifact_path_str, "Bank reconciliation artifact not found in metrics"
+        artifact_path = Path(artifact_path_str)
+        assert artifact_path.exists(), "Bank reconciliation artifact file does not exist"
+
+        # Load the artifact and check the rationale field
+        with artifact_path.open("r") as f:
+            artifact_data = json.load(f)
+
+        assert "exceptions" in artifact_data
+        assert len(artifact_data["exceptions"]) > 0
+        exception = artifact_data["exceptions"][0]
+
+        assert "deterministic_rationale" in exception
+        assert exception["deterministic_rationale"].strip().startswith("[DET]")
+
+
 # Template for additional unit tests that can be implemented by lower reasoning model
 """
 TODO: Implement these additional unit tests:

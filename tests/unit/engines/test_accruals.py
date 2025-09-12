@@ -168,6 +168,47 @@ class TestAccrualsEngine:
         assert by_entity["ENT_B"] == 2500.0
 
 
+    def test_accruals_reversal_proposals(self, repo_root, temp_output_dir):
+        """Test the structure and content of reversal proposals."""
+        accruals_data = pd.DataFrame([
+            {
+                "entity": "TEST_ENT", "accrual_id": "ACC007", "description": "Test Proposal",
+                "amount_local": 7000.0, "amount_usd": 7000.0, "currency": "USD",
+                "status": "Should Reverse", "accrual_date": "2025-08-31", "reversal_date": "",
+                "notes": "Generate a proposal for this"
+            }
+        ])
+
+        state = (StateBuilder(repo_root, temp_output_dir)
+                .with_period("2025-08")
+                .with_entity("TEST_ENT")
+                .build())
+
+        audit = MockAuditLogger(temp_output_dir, "TEST_RUN")
+
+        with patch("pandas.read_csv", return_value=accruals_data), \
+             patch("pathlib.Path.exists", return_value=True):
+            result_state = accruals_check(state, audit)
+
+        # Verify artifact was created
+        artifact_path = result_state.metrics.get("accruals_artifact")
+        assert artifact_path and Path(artifact_path).exists()
+
+        # Load the artifact and check proposals
+        with open(artifact_path, "r") as f:
+            artifact_data = json.load(f)
+
+        assert "proposals" in artifact_data
+        assert len(artifact_data["proposals"]) == 1
+
+        proposal = artifact_data["proposals"][0]
+        assert proposal["proposal_type"] == "accrual_reversal"
+        assert proposal["accrual_id"] == "ACC007"
+        assert proposal["amount_usd"] == -7000.0
+        assert "deterministic_narrative" in proposal
+        assert proposal["deterministic_narrative"].startswith("[DET] Reverse ACC007")
+
+
 # Template for additional unit tests
 """
 TODO: Implement these additional accruals tests:

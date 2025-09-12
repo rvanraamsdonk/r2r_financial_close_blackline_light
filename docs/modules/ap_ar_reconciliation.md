@@ -42,8 +42,8 @@ Minimum columns in subledger files:
 ### New deterministic [DET]-labeled fields
 
 - Each exception now includes a `[DET]`-labeled rationale string summarizing the reason and citing key fields.
-  - AP: `ai_rationale` e.g. `[DET] AP E1 bill B-1001: reason=overdue, amount=123.45 USD, age_days=75. Candidates=2 (vendor=Acme).`
-  - AR: `ai_rationale` e.g. `[DET] AR E1 invoice I-2002: reason=age_gt_60, amount=234.56 USD, age_days=90. Candidates=1 (customer=Beta).`
+  - AP: `deterministic_rationale` e.g. `[DET] AP E1 bill B-1001: reason=overdue, amount=123.45 USD, age_days=75. Candidates=2 (vendor=Acme).`
+  - AR: `deterministic_rationale` e.g. `[DET] AR E1 invoice I-2002: reason=age_gt_60, amount=234.56 USD, age_days=90. Candidates=1 (customer=Beta).`
 - Deterministic candidate suggestions for potential near-duplicates within the same subledger and entity.
   - AP: `candidates[]` objects include `bill_id, vendor_name, bill_date, amount, score (0..1)`
   - AR: `candidates[]` objects include `invoice_id, customer_name, invoice_date, amount, score (0..1)`
