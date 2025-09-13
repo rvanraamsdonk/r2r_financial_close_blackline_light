@@ -1,63 +1,134 @@
-# AP & AR Reconciliation (Deterministic)
+# AP & AR Reconciliation Module
 
-- Engine module: `src/r2r/engines/ap_ar_recon.py`
-- Functions: `ap_reconciliation(state, audit)`, `ar_reconciliation(state, audit)`
-- Artifacts: `out/ap_reconciliation_<run_id>.json`, `out/ar_reconciliation_<run_id>.json`
-- Provenance:
-  - EvidenceRef: source CSV under `data/lite/subledgers/`
-  - input_row_ids: AP uses `bill_id`, AR uses `invoice_id`
-  - DeterministicRun fn: `ap_reconciliation`, `ar_reconciliation`
+Engine: `src/r2r/engines/ap_ar_recon.py::{ap_reconciliation, ar_reconciliation}`
 
-## Logic
+## Purpose
 
-- AP: flags exceptions when any of the following is true:
+Deterministically flag high-risk AP bills and AR invoices (e.g., overdue, aging) and provide assistive candidate hints for potential duplicates. Emit audit-ready artifacts and metrics for downstream modules.
+
+## Where it runs in the graph sequence
+
+- After: Bank reconciliation
+- Before: Intercompany reconciliation
+- Sequence: `bank_recon -> ap_recon -> ar_recon -> ic_recon`
+
+## Inputs
+
+- Data inputs
+  - AP file: `data/subledgers/ap_detail_*.csv`
+  - AR file: `data/subledgers/ar_detail_*.csv`
+  - Required columns:
+    - AP: `period, entity, bill_id, vendor_name, bill_date, amount, currency, age_days, status, notes`
+    - AR: `period, entity, invoice_id, customer_name, invoice_date, amount, currency, age_days, status`
+- Module inputs (from `state`)
+  - `state.period`, `state.entity`
+- Provenance inputs
+  - EvidenceRef with CSV URI and `input_row_ids` (`bill_id` for AP, `invoice_id` for AR)
+
+## Scope and filters
+
+- Period scope: rows where `period == state.period`
+- Entity scope: if `state.entity != "ALL"`, filter to that entity
+- Robust parsing: NaN-safe string handling for `status`, `notes`
+
+## Rules
+
+### Deterministic
+
+- AP exception rules (any true):
   - `status == "Overdue"`
   - `age_days > 60`
   - `notes` contains the word "duplicate" (case-insensitive)
-
-- AR: flags exceptions when any of the following is true:
+- AR exception rules (any true):
   - `status == "Overdue"`
   - `age_days > 60`
+- Deterministic candidate hints (both AP and AR):
+  - Up to 3 candidates in same entity and counterparty with high amount similarity and date proximity; `score` in [0..1]
+- Deterministic rationale per exception:
+  - `deterministic_rationale` includes key fields and the reason
 
-Both engines:
+### AI
 
-- Filter to `state.period` and (optional) `state.entity`
-- Persist JSON artifact with exceptions and summary totals by entity
-- Append `EvidenceRef` with row-level `input_row_ids`
-- Append `DeterministicRun` with parameters and output hash
-- Update `state.messages`, `state.tags`, and `state.metrics`
+- None in these engines. AI suggestions may be generated downstream and do not affect detection logic.
 
-## Graph Placement
+## Outputs
 
-- Inserted after bank reconciliation and before intercompany reconciliation:
-  - `bank_recon -> ap_recon -> ar_recon -> ic_recon`
+- Artifacts
+  - AP: `out/ap_reconciliation_{run_id}.json`
+  - AR: `out/ar_reconciliation_{run_id}.json`
 
-## Schema Expectations
+### AP artifact (representative schema)
 
-Minimum columns in subledger files:
+```json
+{
+  "generated_at": "2025-09-12T19:10:16Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "exceptions": [
+    {
+      "entity": "ENT100",
+      "bill_id": "B-1001",
+      "vendor_name": "Acme Co",
+      "bill_date": "2025-07-01",
+      "amount": 123.45,
+      "currency": "USD",
+      "age_days": 75,
+      "status": "Overdue",
+      "reason": "overdue",
+      "candidates": [
+        {"bill_id": "B-0999", "vendor_name": "Acme Co", "bill_date": "2025-07-02", "amount": 123.45, "score": 0.97}
+      ],
+      "deterministic_rationale": "[DET] AP ENT100 bill B-1001: reason=overdue, 123.45 USD, age_days=75."
+    }
+  ],
+  "summary": {
+    "count": 1,
+    "total_abs_amount": 123.45,
+    "by_entity_abs_amount": {"ENT100": 123.45}
+  }
+}
+```
 
-- AP: `period, entity, bill_id, vendor_name, bill_date, amount, currency, age_days, status, notes`
-- AR: `period, entity, invoice_id, customer_name, invoice_date, amount, currency, age_days, status`
+### AR artifact (representative schema)
 
-### New deterministic [DET]-labeled fields
+```json
+{
+  "generated_at": "2025-09-12T19:10:16Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "exceptions": [
+    {
+      "entity": "ENT200",
+      "invoice_id": "I-2002",
+      "customer_name": "Beta LLC",
+      "invoice_date": "2025-06-15",
+      "amount": 234.56,
+      "currency": "USD",
+      "age_days": 90,
+      "status": "Open",
+      "reason": "age_gt_60",
+      "candidates": [
+        {"invoice_id": "I-1999", "customer_name": "Beta LLC", "invoice_date": "2025-06-14", "amount": 234.56, "score": 0.93}
+      ],
+      "deterministic_rationale": "[DET] AR ENT200 invoice I-2002: reason=age_gt_60, 234.56 USD, age_days=90."
+    }
+  ],
+  "summary": {
+    "count": 1,
+    "total_abs_amount": 234.56,
+    "by_entity_abs_amount": {"ENT200": 234.56}
+  }
+}
+```
 
-- Each exception now includes a `[DET]`-labeled rationale string summarizing the reason and citing key fields.
-  - AP: `deterministic_rationale` e.g. `[DET] AP E1 bill B-1001: reason=overdue, amount=123.45 USD, age_days=75. Candidates=2 (vendor=Acme).`
-  - AR: `deterministic_rationale` e.g. `[DET] AR E1 invoice I-2002: reason=age_gt_60, amount=234.56 USD, age_days=90. Candidates=1 (customer=Beta).`
-- Deterministic candidate suggestions for potential near-duplicates within the same subledger and entity.
-  - AP: `candidates[]` objects include `bill_id, vendor_name, bill_date, amount, score (0..1)`
-  - AR: `candidates[]` objects include `invoice_id, customer_name, invoice_date, amount, score (0..1)`
-  - Scoring is deterministic based on amount similarity and bill/invoice date proximity (capped to top 3).
-  - These are assistive hints, not auto-matches. They are grounded in artifact rows and clearly labeled.
+- Metrics written to `state.metrics`
+  - AP: `ap_exceptions_count`, `ap_exceptions_total_abs`, `ap_reconciliation_artifact`
+  - AR: `ar_exceptions_count`, `ar_exceptions_total_abs`, `ar_reconciliation_artifact`
 
-## Audit & Evidence
+## Controls
 
-- The audit log (`out/audit_<run_id>.jsonl`) contains matching `evidence` and `deterministic` records.
-- `scripts/verify_provenance.py` asserts presence and structure of `input_row_ids` for these engines.
-
-## Robustness
-
-- Text fields like `status` and `notes` may be parsed by pandas as `NaN` (float) when blank.
-- The engine uses a small helper to coerce such values to empty strings safely before applying
-  operations like `.strip()` or `.lower()`. This prevents runtime errors on real-world data
-  with partial/null text fields.
+- Deterministic and reproducible rules; no AI in detection
+- Provenance: EvidenceRef with CSV URI and row-level `input_row_ids`
+- DeterministicRun with parameters and output hash
+- Data quality: NaN-safe text handling; deterministic candidate scoring and capping
+- Audit signals: messages summarize counts and artifact paths; [DET] rationales for each exception

@@ -1,50 +1,95 @@
-# Journal Entry (JE) Lifecycle (Deterministic)
+# Journal Entry (JE) Lifecycle Module
 
-- Engine module: `src/r2r/engines/je_lifecycle.py`
-- Function: `je_lifecycle(state, audit)`
-- Artifact: `out/je_lifecycle_<run_id>.json`
-- Provenance:
-  - EvidenceRef: `data/<env>/supporting/journal_entries.csv`
-  - input_row_ids: `je_id`
-  - DeterministicRun fn: `je_lifecycle`
+Engine: `src/r2r/engines/je_lifecycle.py::je_lifecycle(state, audit)`
 
-## Logic
+## Purpose
 
-For the in-scope period (and optional entity):
-- Flags JEs where `approval_status` is not `Approved`.
-  - If `Rejected` → `approval_rejected`
-  - Otherwise → `approval_pending`
-- Flags manual JEs with missing `supporting_doc` → `manual_missing_support`
-- Flags entries where `reversal_flag` is true → `reversal_flagged`
-- Four-eyes (SoD) enforcement (new): when `abs(amount) > materiality_thresholds_usd[entity]`
-  - If `approval_status != "Approved"` or missing `approver` → `four_eyes_breach`
+Deterministically evaluate journal entries for approval state, supporting documentation, reversal flags, and four-eyes (SoD) compliance. Emit exceptions and summary metrics for governance and gatekeeping.
 
-Each exception includes `je_id`, `entity`, `amount`, `currency`, `source_system`, and `reason`.
+## Where it runs in the graph sequence
 
-## Output & Metrics
+- After: Accruals
+- Before: Flux Analysis
+- Sequence: `... -> ic_recon -> accruals -> je_lifecycle -> flux_analysis ...`
 
-- JSON artifact contains:
-  - `exceptions[]`
-  - `summary.count`, `summary.total_abs_amount`, `summary.by_reason`
-- `state.metrics` keys:
-  - `je_exceptions_count`
-  - `je_exceptions_total_abs`
-  - `je_exceptions_by_reason`
-  - `je_lifecycle_artifact`
-  - Note: `four_eyes_breach` exceptions are included in counts and `by_reason`.
+## Inputs
 
-## Graph Placement
+- Data inputs
+  - File: `data/supporting/journal_entries.csv`
+  - Required columns: `period, entity, je_id, amount, currency, source_system, approval_status, approver, supporting_doc, reversal_flag`
+- Module inputs (from `state.metrics`)
+  - `materiality_thresholds_usd` by entity (for SoD checks)
+  - `state.period`, `state.entity`
+- Provenance inputs
+  - EvidenceRef with CSV URI and `input_row_ids = [je_id, ...]`
 
-- Inserted after `accruals` and before `flux_analysis`:
-  - `... -> ic_recon -> accruals -> je_lifecycle -> flux_analysis ...`
+## Scope and filters
 
-## Audit & Evidence
+- Period scope: rows where `period == state.period`
+- Entity scope: if `state.entity != "ALL"`, filter to that entity
+- Robust parsing: NaN-safe strings for `approval_status`, `supporting_doc`, `approver`
 
-- Audit log (`out/audit_<run_id>.jsonl`) records `evidence` and `deterministic` entries.
-- `scripts/verify_provenance.py` checks `je_lifecycle` evidence has valid `input_row_ids` (allowing empty/None when no exceptions).
+## Rules
 
-## Robustness
+### Deterministic
 
-- Fields like `approval_status` and `supporting_doc` can be `NaN` when blank.
-- The engine uses a NaN-safe string helper to coerce such values to empty strings before
-  applying operations like `.strip()`/`.lower()` to avoid runtime errors.
+- Approval state
+  - If `approval_status == "Rejected"` → `approval_rejected`
+  - Else if `approval_status != "Approved"` → `approval_pending`
+- Supporting documentation
+  - If `source_system == "manual"` and `supporting_doc` is blank → `manual_missing_support`
+- Reversal handling
+  - If `reversal_flag` is true → `reversal_flagged`
+- Four-eyes (SoD) enforcement
+  - If `abs(amount) > materiality_thresholds_usd[entity]` and (`approval_status != "Approved"` or missing `approver`) → `four_eyes_breach`
+
+### AI
+
+- None in this engine. Any narratives are downstream and do not influence detection.
+
+## Outputs
+
+- Artifact path: `out/je_lifecycle_{run_id}.json`
+- JSON schema with representative values:
+
+```json
+{
+  "generated_at": "2025-09-12T19:10:16Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "exceptions": [
+    {
+      "je_id": "JE-1001",
+      "entity": "ENT100",
+      "amount": 12500.0,
+      "currency": "USD",
+      "source_system": "manual",
+      "reason": "manual_missing_support"
+    },
+    {
+      "je_id": "JE-2002",
+      "entity": "ENT200",
+      "amount": 250000.0,
+      "currency": "USD",
+      "source_system": "ERP",
+      "reason": "four_eyes_breach"
+    }
+  ],
+  "summary": {
+    "count": 2,
+    "total_abs_amount": 262500.0,
+    "by_reason": {"manual_missing_support": 1, "four_eyes_breach": 1}
+  }
+}
+```
+
+- Metrics written to `state.metrics`
+  - `je_exceptions_count`, `je_exceptions_total_abs`, `je_exceptions_by_reason`, `je_lifecycle_artifact`
+
+## Controls
+
+- Deterministic rule set for approval, documentation, reversal, and SoD
+- Provenance: EvidenceRef for CSV and row-level `input_row_ids`
+- DeterministicRun with parameters and output hash
+- Data quality: NaN-safe string handling; explicit numeric coercion for amounts
+- Audit signals: messages summarize counts and artifact path

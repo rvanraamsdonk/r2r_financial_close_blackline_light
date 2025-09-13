@@ -223,6 +223,44 @@ class TestIntercompanyReconciliation:
         assert result_state.metrics["ic_mismatch_total_diff_abs"] == 1500.0
 
 
+    def test_ic_deterministic_rationale_in_artifact(self, repo_root, temp_output_dir):
+        """Test that the deterministic_rationale field is correctly generated in the artifact."""
+        ic_data = pd.DataFrame([
+            {
+                "doc_id": "IC002", "entity_src": "ENT_A", "entity_dst": "ENT_C", "date": "2025-08-01",
+                "amount_src": 5000.0, "amount_dst": 4800.0, "currency": "USD",
+                "transaction_type": "Management Fee", "description": "Management Services"
+            }
+        ])
+        
+        state = (StateBuilder(repo_root, temp_output_dir)
+                .with_period("2025-08")
+                .with_entity("ALL")
+                .build())
+        
+        state.metrics["materiality_thresholds_usd"] = {"ENT_A": 150.0, "ENT_C": 150.0}
+        
+        audit = MockAuditLogger(temp_output_dir, "TEST_RUN")
+        
+        with patch("src.r2r.engines.intercompany_recon.load_intercompany", return_value=ic_data), \
+             patch("src.r2r.engines.intercompany_recon._find_ic_file", return_value=Path("/fake/path")):
+            result_state = intercompany_reconciliation(state, audit)
+
+        artifact_path_str = result_state.metrics.get("intercompany_reconciliation_artifact")
+        assert artifact_path_str
+        artifact_path = Path(artifact_path_str)
+        assert artifact_path.exists()
+
+        with artifact_path.open("r") as f:
+            artifact_data = json.load(f)
+
+        assert len(artifact_data["exceptions"]) == 1
+        exception = artifact_data["exceptions"][0]
+
+        assert "deterministic_rationale" in exception
+        assert exception["deterministic_rationale"].strip().startswith("[DET]")
+
+
 # Template for additional unit tests
 """
 TODO: Implement these additional intercompany tests:

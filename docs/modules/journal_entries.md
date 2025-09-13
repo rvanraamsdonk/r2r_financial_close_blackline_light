@@ -1,3 +1,96 @@
+# Auto Journal Creation Module
+
+Engine: `src/r2r/engines/auto_journal_engine.py::auto_journal_creation(state, audit)`
+
+## Purpose
+
+Deterministically create and auto-approve journal entries for immaterial differences detected by upstream engines (FX Translation, Flux Analysis). Reduce net exception amounts for Gatekeeping and accelerate close.
+
+## Where it runs in the graph sequence
+
+- After: FX Translation, Flux Analysis
+- Before: Gatekeeping & Close Reporting
+- Node: `auto_journal_creation(state, audit)` (deterministic)
+
+## Inputs
+
+- Module inputs (from `state.metrics`)
+  - `fx_translation_artifact`: path to FX artifact (rows with `diff_usd`)
+  - `flux_analysis_artifact`: path to Flux artifact (rows with `var_vs_budget`, etc.)
+  - `materiality_thresholds_usd` per entity; default threshold = 5,000 USD
+  - `state.period`, `state.entity`
+
+## Scope and filters
+
+- Period scope: period of the inbound artifacts
+- Entity scope: if `state.entity != "ALL"`, restrict to that entity
+- FX: consider rows where `abs(diff_usd) > 0`
+- Flux: consider rows where `abs(var_vs_budget) > 0` (and positive for accrual cases)
+
+## Rules
+
+### Deterministic
+
+- FX translation adjustments
+  - If `0 < abs(diff_usd) <= threshold(entity)`: propose JE via `JEEngine.propose_je(module="FX", scenario="translation_adjustment", ...)`
+  - Auto-approve proposal and add `[DET]` rationale noting amount and threshold
+- Flux accrual adjustments
+  - If `0 < abs(var_vs_budget) <= threshold(entity)` and `var_vs_budget > 0`: propose JE via `JEEngine.propose_je(module="Flux", scenario="accrual_adjustment", ...)`
+  - Auto-approve proposal and add `[DET]` rationale
+- Summarize totals by module and overall
+
+### AI
+
+- None. Auto-creation is purely deterministic. Any narratives elsewhere do not affect this engine’s logic.
+
+## Outputs
+
+- Artifact path: `out/auto_journals_{run_id}.json`
+- JSON schema with representative values:
+
+```json
+{
+  "generated_at": "2025-09-12T19:10:16Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "auto_journals": [
+    {
+      "je_id": "46f055df-79a3-46c6-b9c2-43fb2007eb9f",
+      "module": "FX",
+      "scenario": "translation_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 347.47,
+      "description": "FX translation adjustment - EUR 347.47 (ENT101/1000)",
+      "lines": [
+        {"account": "1000", "description": "FX translation adjustment - EUR", "debit": 347.47, "credit": 0.0, "entity": "ENT101", "currency": "USD"},
+        {"account": "7201", "description": "FX translation gain - EUR", "debit": 0.0, "credit": 347.47, "entity": "ENT101", "currency": "USD"}
+      ],
+      "deterministic_rationale": "[DET] Auto-created FX translation adjustment; amount below entity threshold.",
+      "source_data": {"entity": "ENT101", "account": "1000", "currency": "EUR", "diff_usd": 347.47}
+    }
+  ],
+  "summary": {
+    "total_count": 12,
+    "total_amount_usd": 2897.12,
+    "by_module": {"FX": 9, "Flux": 3}
+  },
+  "materiality_thresholds": {"ENT101": 5000},
+  "auto_journal_threshold": 5000
+}
+```
+
+- Metrics written to `state.metrics`
+  - `auto_journals_count`, `auto_journals_total_usd`, `auto_journals_by_module`, `auto_journals_artifact`
+
+## Controls
+
+- Deterministic creation bounded by entity thresholds; auto-approval only for immaterial amounts
+- Provenance: upstream artifacts referenced; deterministic run recorded with output hash
+- Data quality: resilient parsing of artifacts; numeric coercion and rounding for lines
+- Audit signals: messages include counts and totals; [DET] rationales per auto-JE
+
+---
+
 # Journal Entry (JE) Module
 
 ## Overview

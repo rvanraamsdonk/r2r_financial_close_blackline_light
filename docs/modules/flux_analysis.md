@@ -1,35 +1,56 @@
-# Flux Analysis (Budget & Prior)
+# Flux Analysis Module
+
+Engine: `src/r2r/engines/flux_analysis.py::flux_analysis(state, audit)`
 
 ## Purpose
-- Provide deterministic variance analysis between Actuals (TB) and (a) Budget, (b) Prior period.
-- Surface material exceptions by entity/account for professional close review.
-- Produce audit-ready artifact, provenance, and metrics for transparency.
-- Compute variances and percents: 
+
+Deterministically compute variances between Actuals (TB) and Budget/Prior, flag material exceptions by entity/account, and emit an audit-ready artifact with drill-through evidence and metrics.
+
+## Where it runs in the graph sequence
+
+- After: Intercompany reconciliation and Accruals
+- Before: Email Evidence and Gatekeeping
+- Node: `flux_analysis(state, audit)` (deterministic)
 
 ## Inputs
-- Trial Balance (current period) CSV: `data/.../trial_balance_YYYY_MM.csv`
-- Budget CSV: `data/.../budget.csv`
-- Trial Balance (prior period) CSV: `data/.../trial_balance_YYYY_MM.csv`
-- Materiality thresholds from `period_init` (state.metrics.materiality_thresholds_usd)
 
-## Scope & Filters
-- Period: `state.period` (e.g., `2025-08`)
-- Prior: `state.prior` or derived automatically as previous month
+- Data inputs
+  - Trial Balance (current): `data/.../trial_balance_YYYY_MM.csv`
+  - Budget: `data/.../budget.csv`
+  - Trial Balance (prior): `data/.../trial_balance_YYYY_MM.csv`
+- Module inputs (from `state.metrics`)
+  - `materiality_thresholds_usd` by entity; default floor USD 1,000
+  - `state.period`, `state.prior` (or derived), `state.entity`
+- Provenance inputs
+  - EvidenceRef URIs for TB current/prior and Budget; `input_row_ids` = `["<entity>|<account>", ...]` for flagged rows
+
+## Scope and filters
+
+- Period scope: `state.period`; prior derived as previous month if absent
 - Entity scope: `state.entity` or ALL
+- Aggregate Actuals/Budget/Prior by `[entity, account]`
 
 ## Rules
-- Aggregate Actuals: sum `balance_usd` by `entity, account`
-- Aggregate Budget: sum `budget_amount` by `entity, account`
-- Aggregate Prior: sum prior-period `balance_usd` by `entity, account`
+
+### Deterministic
+
+- Compute per account:
   - `var_vs_budget = actual_usd - budget_amount`; `pct_vs_budget = var_vs_budget / budget_amount` if denom != 0
   - `var_vs_prior = actual_usd - prior_usd`; `pct_vs_prior = var_vs_prior / prior_usd` if denom != 0
-- Exception: flag if `abs(var_vs_budget) > threshold(entity)` or `abs(var_vs_prior) > threshold(entity)`
-- Threshold basis: `materiality_thresholds_usd[entity]` else default floor USD 1,000
-- `deterministic_summary`: A `[FORENSIC]`-labeled text field summarizing the largest variance driver (budget or prior) for each account.
+- Thresholding
+  - Flag exception if `abs(var_vs_budget) > threshold(entity)` or `abs(var_vs_prior) > threshold(entity)`
+  - `threshold(entity)` from `materiality_thresholds_usd` or default 1,000 USD
+- Optional deterministic summaries may describe largest driver
 
-## Artifact
-- File: `out/flux_analysis_<RUNID>.json`
-- Schema (excerpt):
+### AI
+
+- None in this engine. AI narratives for flux are generated downstream and do not affect detection logic.
+
+## Outputs
+
+- Artifact path: `out/flux_analysis_{run_id}.json`
+- JSON schema with representative values:
+
 ```json
 {
   "generated_at": "2025-08-22T20:45:00Z",
@@ -79,25 +100,13 @@
 }
 ```
 
-## Provenance & Audit
-- Evidence appended:
-  - TB (current period) CSV URI (context)
-  - TB (prior period) CSV URI (context)
-  - Budget CSV URI (primary) with `input_row_ids` = `["<entity>|<account>", ...]` for flagged items
-- Deterministic run:
-  - `function_name = "flux_analysis"`
-  - Params: `{period, prior, entity}`
-  - `output_hash`: hash of artifact content
-- Provenance verifier allows None/empty `input_row_ids` for this step (zero exceptions possible)
+- Metrics written to `state.metrics`
+  - `flux_exceptions_count`, `flux_by_entity_count`, `flux_analysis_artifact`
 
-## Metrics
-- `flux_exceptions_count` — total exceptions
-- `flux_by_entity_count` — mapping entity -> count
-- `flux_analysis_artifact` — path to artifact
+## Controls
 
-## Workflow Placement
-- Inserted after `intercompany_reconciliation` and `accruals_check`, before `email_evidence_analysis`.
-
-## Determinism & Security
-- No network calls. Pure CSV inputs. Reproducible given same inputs and settings.
-- Honors repo-wide policy flags and runs with AI off unless otherwise configured.
+- Deterministic computation and thresholding
+- Provenance: EvidenceRef for TB (current/prior) and Budget with `input_row_ids`
+- DeterministicRun with parameters and output hash
+- Data quality: numeric coercion, safe handling of zero denominators
+- Audit signals: messages summarize counts, thresholds, and artifact path

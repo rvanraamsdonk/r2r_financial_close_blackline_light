@@ -135,13 +135,13 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
             
             # Enhanced rationale for forensic patterns
             if reason == "ic_amount_mismatch_above_threshold":
-                exception_data["ai_rationale"] = f"[DET] IC doc {doc_id} {src}->{dst}: diff={diff:.2f} USD exceeds threshold {thr:.2f}. Cites doc_id, entities, and computed threshold."
+                exception_data["deterministic_rationale"] = f"[DET] IC doc {doc_id} {src}->{dst}: diff={diff:.2f} USD exceeds threshold {thr:.2f}. Cites doc_id, entities, and computed threshold."
             elif reason == "ic_round_dollar_anomaly":
-                exception_data["ai_rationale"] = f"[FORENSIC] Round dollar anomaly: IC transaction {doc_id} for exactly ${amount_src:,.0f} between {src} and {dst} suggests potential manipulation"
+                exception_data["deterministic_rationale"] = f"[FORENSIC] Round dollar anomaly: IC transaction {doc_id} for exactly ${amount_src:,.0f} between {src} and {dst} suggests potential manipulation"
             elif reason == "ic_transfer_pricing_risk":
-                exception_data["ai_rationale"] = f"[FORENSIC] Transfer pricing risk: Large management fee ${amount_src:,.2f} from {src} to {dst} may indicate profit shifting"
+                exception_data["deterministic_rationale"] = f"[FORENSIC] Transfer pricing risk: Large management fee ${amount_src:,.2f} from {src} to {dst} may indicate profit shifting"
             elif reason == "ic_structuring_pattern":
-                exception_data["ai_rationale"] = f"[FORENSIC] Structuring pattern: Multiple small transactions from {src} to {dst} on same day may indicate avoidance of controls"
+                exception_data["deterministic_rationale"] = f"[FORENSIC] Structuring pattern: Multiple small transactions from {src} to {dst} on same day may indicate avoidance of controls"
             
             # AI confidence scoring and auto-approval (conservative for Intercompany)
             # Choose materiality basis
@@ -256,7 +256,7 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
             f"Pair thresholds enforced; forensic patterns flagged for review."
         )
     else:
-        ic_ai_rationale = "IC AI assessment: no exceptions."
+        ic_deterministic_rationale = "IC AI assessment: no exceptions."
 
     payload = {
         "generated_at": utils.now_iso_z(),
