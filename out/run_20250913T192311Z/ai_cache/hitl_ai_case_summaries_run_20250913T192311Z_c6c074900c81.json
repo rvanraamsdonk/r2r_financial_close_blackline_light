@@ -1,0 +1,50 @@
+{
+  "generated_at": "2025-09-13T19:23:36Z",
+  "period": "2024-08",
+  "entity_scope": "ENT100",
+  "case_summaries": [
+    {
+      "case_id": "CASE-202408-FLUX_EXCEPTIONS-001",
+      "summary": "The case involves 17 unresolved flux exceptions with high severity, indicating potential discrepancies in financial data that could impact reporting accuracy and compliance. Root cause analysis suggests gaps in automated flux review processes and manual oversight.",
+      "risk_level": "high",
+      "business_impact": "Potential misstatement of financial results, delayed close processes, and increased audit scrutiny.",
+      "confidence": 0.9
+    }
+  ],
+  "next_actions": [
+    {
+      "action": "Conduct a detailed review of the 17 flux exceptions to identify specific discrepancies and resolve them.",
+      "priority": "critical",
+      "owner": "Financial Close Team",
+      "estimated_effort": "2-3 business days",
+      "dependencies": [
+        "Access to flux exception logs",
+        "Coordination with reconciliation team"
+      ]
+    },
+    {
+      "action": "Implement enhanced automated flux review controls to reduce manual intervention and improve exception detection.",
+      "priority": "high",
+      "owner": "IT Controls Team",
+      "estimated_effort": "1-2 weeks",
+      "dependencies": [
+        "Approval for system updates",
+        "Testing environment setup"
+      ]
+    },
+    {
+      "action": "Provide training to the financial close team on identifying and resolving flux exceptions more efficiently.",
+      "priority": "medium",
+      "owner": "Training and Development Team",
+      "estimated_effort": "1 week",
+      "dependencies": [
+        "Training materials",
+        "Scheduling availability"
+      ]
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T192311Z\\cases_run_20250913T192311Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T192311Z\\cases_manifest_run_20250913T192311Z.json"
+  ]
+}

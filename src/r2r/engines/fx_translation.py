@@ -119,6 +119,8 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
         is_exception = False
         confidence = 1.0
         auto_approved = False
+        # Default to neutral materiality factor when we cannot compute translation
+        materiality_factor = 1.0
 
         if comp_usd is not None:
             diff = float(comp_usd) - float(bal_usd_reported)
@@ -218,15 +220,30 @@ def fx_translation(state: R2RState, audit: AuditLogger) -> R2RState:
             "evidence_id": ev_tb.id,
             "output_hash": det.output_hash,
             "params": det.params,
-            "artifact": str(out_path),
         }
     )
 
-    # Messages, tags, metrics
-    msg = (
-        f"[DET] FX translation: recomputed USD for {len(computed_rows)} rows; diffs>1c: {diff_count} -> {out_path}"
-    )
-    state.messages.append(msg)
+    # Enhanced console reporting with real-time progress
+    console = getattr(state, 'console', None)
+    if console:
+        phase_id = console.start_phase('fx_translation')
+        
+        # Show progress without artificial delays
+        total_rows = len(tb)
+        console.progress(
+            f"Processing {total_rows} FX translations", 
+            processed=total_rows, 
+            total=total_rows,
+            exceptions=diff_count
+        )
+        
+        # AI insights and risk assessment will be handled by post-run AI synthesis
+        
+        console.complete_phase(
+            status="WARNING" if diff_count > 0 else "SUCCESS",
+            summary=f"Translated {len(computed_rows)} positions with {diff_count} variances (${total_abs_diff:,.0f} total impact)",
+            artifacts=[str(out_path)]
+        )
     state.tags.append(OutputTag(method_type=MethodType.DET, rationale="FX translation to USD"))
     state.metrics.update(
         {

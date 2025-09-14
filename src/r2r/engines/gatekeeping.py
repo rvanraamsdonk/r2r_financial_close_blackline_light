@@ -52,9 +52,9 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
         except Exception:
             return None
 
-    # Consume auto-journaling results
-    auto_journal_cnt = _ival("auto_journals_created_count")
-    auto_journal_total = _fval("auto_journals_total_amount") or 0.0
+    # Consume auto-journaling results (from auto_journal_engine)
+    auto_journal_cnt = _ival("auto_journals_count")
+    auto_journal_total = _fval("auto_journals_total_usd") or 0.0
 
     totals = {
         "ap_exceptions_total_abs": _fval("ap_exceptions_total_abs"),
@@ -95,37 +95,37 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
     MATERIALITY_THRESHOLD = 50000  # $50K
     HIGH_RISK_THRESHOLD = 250000   # $250K
     
-    # AI-first risk assessment with materiality consideration
-    risk_level: str
-    auto_close_eligible = True
+    # Two-stage gatekeeping: Preliminary deterministic assessment
+    CRITICAL_THRESHOLD = 1000000  # $1M - extreme materiality
     
-    # Critical control failures always block
+    risk_level: str
+    preliminary_decision: str
+    final_decision_pending = False
+    
+    # Stage 1: Hard stops that cannot be overridden
     if fx_ok is False or tb_bal_ok is False:
         risk_level = "high"
-        auto_close_eligible = False
-    # High dollar amount exceptions require review
-    elif net_exception_amount > HIGH_RISK_THRESHOLD:
-        risk_level = "high" 
-        auto_close_eligible = False
-    # Multiple sources but low dollar amounts - medium risk, can auto-close with AI rationale
-    elif sources_triggered >= 3 and net_exception_amount <= MATERIALITY_THRESHOLD:
-        risk_level = "medium"
-        auto_close_eligible = True  # AI can handle with proper rationale
-    # Moderate exceptions with moderate amounts - medium risk
-    elif sources_triggered >= 2 and net_exception_amount > MATERIALITY_THRESHOLD:
-        risk_level = "medium"
-        auto_close_eligible = False
-    # Few exceptions, low amounts - low risk, auto-close
-    elif sources_triggered <= 2 and net_exception_amount <= MATERIALITY_THRESHOLD:
-        risk_level = "low"
-        auto_close_eligible = True
-    # Default to medium for edge cases
+        preliminary_decision = "BLOCKED"
+        final_decision_pending = False
+    elif net_exception_amount > CRITICAL_THRESHOLD:
+        risk_level = "critical" 
+        preliminary_decision = "BLOCKED"
+        final_decision_pending = False
+    # Everything else gets conditional approval pending AI analysis
     else:
-        risk_level = "medium"
-        auto_close_eligible = net_exception_amount <= MATERIALITY_THRESHOLD
+        if sources_triggered >= 3 or net_exception_amount > MATERIALITY_THRESHOLD:
+            risk_level = "medium"
+        elif sources_triggered <= 1 and net_exception_amount <= MATERIALITY_THRESHOLD:
+            risk_level = "low"
+        else:
+            risk_level = "medium"
+        
+        preliminary_decision = "CONDITIONAL_APPROVAL"
+        final_decision_pending = True
     
-    # Only block close for high risk or when auto-close is not eligible
-    block_close = bool(risk_level == "high" or not auto_close_eligible)
+    # For now, block_close reflects preliminary decision
+    block_close = preliminary_decision == "BLOCKED"
+    auto_close_eligible = preliminary_decision == "CONDITIONAL_APPROVAL"
 
     # Gather referenced artifacts already produced (URIs only)
     referenced_artifacts: Dict[str, str] = {}
@@ -136,21 +136,18 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
     run_id = Path(audit.log_path).stem.replace("audit_", "")
     out_path = Path(audit.out_dir) / f"gatekeeping_{run_id}.json"
 
-    # Generate deterministic rationale for auto-close decisions
+    # Generate deterministic rationale for preliminary decisions
     deterministic_rationale = ""
     
     auto_journal_text = f"{auto_journal_cnt} automated journal(s) totaling ${auto_journal_total:,.2f} were created to resolve exceptions." if auto_journal_cnt > 0 else ""
 
-    if auto_close_eligible:
-        if risk_level == "low":
-            deterministic_rationale = f"Auto-close approved: Net exceptions of ${net_exception_amount:,.2f} are below materiality thresholds. All critical controls passed. {auto_journal_text}"
-        else:  # medium risk but eligible
-            deterministic_rationale = f"Auto-close with monitoring: Net exceptions of ${net_exception_amount:,.2f} are within acceptable limits. {auto_journal_text} All items are auto-approved."
-    else:
-        if risk_level == "high":
-            deterministic_rationale = f"Manual review required: Critical control failures detected or high-value net exceptions (${net_exception_amount:,.2f}) exceed risk tolerance. {auto_journal_text} Human oversight mandatory."
+    if preliminary_decision == "BLOCKED":
+        if fx_ok is False or tb_bal_ok is False:
+            deterministic_rationale = f"BLOCKED: Critical control failure detected (FX: {fx_ok}, TB: {tb_bal_ok}). {auto_journal_text} Manual intervention required."
         else:
-            deterministic_rationale = f"Exception review needed: {sources_triggered} sources with ${net_exception_amount:,.2f} net impact require analyst validation. {auto_journal_text}"
+            deterministic_rationale = f"BLOCKED: Extreme materiality breach (${net_exception_amount:,.2f} > ${CRITICAL_THRESHOLD:,.0f}). {auto_journal_text} Management escalation required."
+    else:  # CONDITIONAL_APPROVAL
+        deterministic_rationale = f"CONDITIONAL APPROVAL: Preliminary assessment passed. Net exceptions: ${net_exception_amount:,.2f}, Sources: {sources_triggered}. {auto_journal_text} Pending comprehensive AI analysis for final decision."
     
     payload: Dict[str, Any] = {
         "generated_at": utils.now_iso_z(),
@@ -164,12 +161,15 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
         "categories": categories,
         "totals": totals,
         "risk_level": risk_level,
+        "preliminary_decision": preliminary_decision,
+        "final_decision_pending": final_decision_pending,
         "block_close": block_close,
         "auto_close_eligible": auto_close_eligible,
         "gross_exception_amount": gross_exception_amount,
         "auto_journal_amount": auto_journal_total,
         "net_exception_amount": net_exception_amount,
         "materiality_threshold": MATERIALITY_THRESHOLD,
+        "critical_threshold": CRITICAL_THRESHOLD,
         "deterministic_rationale": deterministic_rationale,
         "referenced_artifacts": referenced_artifacts,
     }
@@ -208,13 +208,22 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
         }
     )
 
-    # Messages, tags, metrics
-    state.messages.append(
-        f"[DET] Gatekeeping: risk_level={risk_level}, sources={sources_triggered} -> {out_path}"
-    )
-    state.tags.append(
-        OutputTag(method_type=MethodType.DET, rationale="Gatekeeping & risk aggregation")
-    )
+    # Simple console progress tracking
+    console = getattr(state, 'console', None)
+    if console:
+        console.start_phase('Gatekeeping Assessment')
+        
+        # Progress through gatekeeping analysis
+        console.progress("Analyzing exception patterns", processed=50, total=100)
+        console.progress("Evaluating risk factors", processed=75, total=100)
+        console.progress(f"Final decision: {('BLOCKED' if block_close else 'APPROVED')} ({risk_level} risk)", processed=sum(categories.values()), total=sum(categories.values()))
+        console.complete_phase(
+            status="BLOCKED" if block_close else "SUCCESS",
+            summary=f"Decision: {'BLOCKED' if block_close else 'APPROVED'}, Risk: {risk_level}, Auto-approved: {auto_journal_cnt}/{sum(categories.values())}",
+            artifacts=[str(out_path)]
+        )
+
+    # Redundant legacy console output removed; enhanced console used above
 
     state.metrics.update(
         {
@@ -225,6 +234,8 @@ def gatekeeping_aggregate(state: R2RState, audit: AuditLogger) -> R2RState:
             "gatekeeping_net_exception_amount": net_exception_amount,
             "gatekeeping_deterministic_rationale": deterministic_rationale,
             "gatekeeping_artifact": str(out_path),
+            "gatekeeping_total_exceptions": int(sum(categories.values())),
+            "gatekeeping_auto_approved_count": int(auto_journal_cnt),
         }
     )
 

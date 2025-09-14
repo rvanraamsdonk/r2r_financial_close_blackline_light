@@ -1,0 +1,40 @@
+{
+  "generated_at": "2025-09-13T18:29:08Z",
+  "period": "2024-08",
+  "entity_scope": "ENT100",
+  "case_summaries": [
+    {
+      "case_id": "CASE-202408-FLUX_EXCEPTIONS-001",
+      "summary": "The case involves 17 unresolved flux exceptions with high severity, potentially impacting financial statement accuracy and compliance. Root cause analysis suggests data discrepancies in flux calculations and delayed reconciliation processes.",
+      "risk_level": "high",
+      "business_impact": "Potential misstatement of financial results and delayed close timelines, affecting stakeholder confidence.",
+      "confidence": 0.9
+    }
+  ],
+  "next_actions": [
+    {
+      "action": "Perform detailed reconciliation of the 17 flux exceptions and validate data sources for accuracy.",
+      "priority": "critical",
+      "owner": "Reconciliation Team",
+      "estimated_effort": "3 business days",
+      "dependencies": [
+        "Access to source system data",
+        "Coordination with data owners"
+      ]
+    },
+    {
+      "action": "Implement automated flux exception monitoring to reduce manual intervention and improve accuracy.",
+      "priority": "high",
+      "owner": "Automation Team",
+      "estimated_effort": "2 weeks",
+      "dependencies": [
+        "Approval for automation tools",
+        "Integration with existing systems"
+      ]
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T182843Z\\cases_run_20250913T182843Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T182843Z\\cases_manifest_run_20250913T182843Z.json"
+  ]
+}

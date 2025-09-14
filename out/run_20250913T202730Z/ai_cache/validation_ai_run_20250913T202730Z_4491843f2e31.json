@@ -1,0 +1,36 @@
+{
+  "generated_at": "2025-09-13T20:27:30Z",
+  "period": "2024-08",
+  "entity_scope": "ALL",
+  "summary": {
+    "schema_issues": 0,
+    "duplicate_rows": 0,
+    "fx_coverage_ok": false
+  },
+  "root_causes": [
+    {
+      "issue_type": "process_control",
+      "description": "Flux exceptions indicate significant variances in account balances, likely due to inadequate review processes or missing supporting documentation.",
+      "severity": "high",
+      "affected_categories": [
+        "flux_exceptions"
+      ],
+      "financial_impact": "$51K in flux exceptions exceed materiality thresholds.",
+      "confidence": 0.85
+    }
+  ],
+  "remediations": [
+    {
+      "issue_type": "process_control",
+      "action": "Implement enhanced variance analysis procedures, including automated alerts for significant flux thresholds and mandatory documentation for variances exceeding $10K.",
+      "priority": "high",
+      "estimated_effort": "2 weeks for process redesign and training; 1 week for system configuration updates.",
+      "success_criteria": "Reduction in flux exceptions by 80% within the next two financial periods."
+    }
+  ],
+  "citations": [
+    null,
+    null,
+    null
+  ]
+}

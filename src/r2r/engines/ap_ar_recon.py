@@ -70,9 +70,17 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
     fp = _resolve_ap_path(Path(state.data_path), period)
 
     msgs: List[str] = []
+    # Enhanced console (ModernConsole)
+    console = getattr(state, 'console', None)
+    if console:
+        console.start_phase('ap_recon')
+
     if df.empty:
         msgs.append("[DET] AP recon: no AP bills in scope; skipping")
         state.messages.extend(msgs)
+        if console:
+            console.progress("No AP bills in scope - skipping", processed=0, total=0)
+            console.complete_phase(status="SUCCESS", summary="No AP transactions in scope", artifacts=[])
         state.tags.append(OutputTag(method_type=MethodType.DET, rationale="AP reconciliation (skipped)"))
         return state
 
@@ -378,15 +386,22 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
         }
     )
 
-    # Messages, tags, metrics
-    if exceptions:
-        msgs.append(
-            f"[DET] AP recon exceptions: {len(exceptions)} items, total_abs={payload['summary']['total_abs_amount']:.2f} -> {out_path}"
+    # Console reporting (ModernConsole)
+    if console:
+        total_tx = len(df)
+        exc_cnt = len(exceptions)
+        console.progress(f"Reconciling AP: {total_tx} transactions", processed=total_tx, total=total_tx, exceptions=exc_cnt)
+        
+        if exc_cnt > 0:
+            # AI insights and risk assessment will be handled by post-run AI synthesis
+            pass
+        
+        console.complete_phase(
+            status="WARNING" if exc_cnt > 0 else "SUCCESS",
+            summary=f"Analyzed {total_tx} AP transactions; {exc_cnt} exceptions",
+            artifacts=[str(out_path)]
         )
-    else:
-        msgs.append("[DET] AP recon: no exceptions for period")
 
-    state.messages.extend(msgs)
     state.tags.append(OutputTag(method_type=MethodType.DET, rationale="AP reconciliation"))
 
     state.metrics.update(
@@ -394,7 +409,6 @@ def ap_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
             "ap_exceptions_count": len(exceptions),
             "ap_exceptions_total_abs": payload["summary"]["total_abs_amount"],
             "ap_exceptions_by_entity": payload["summary"]["by_entity_abs_amount"],
-            "ap_reconciliation_artifact": str(out_path),
             # Removed fake confidence score
             "ap_deterministic_rationale": ap_deterministic_rationale,
             "ap_auto_approved_count": auto_approved_count,
@@ -424,9 +438,17 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
     fp = _resolve_ar_path(Path(state.data_path), period)
 
     msgs: List[str] = []
+    # Enhanced console (ModernConsole)
+    console = getattr(state, 'console', None)
+    if console:
+        console.start_phase('ar_recon')
+
     if df.empty:
         msgs.append("[DET] AR recon: no AR invoices in scope; skipping")
         state.messages.extend(msgs)
+        if console:
+            console.progress("No AR invoices in scope - skipping", processed=0, total=0)
+            console.complete_phase(status="SUCCESS", summary="No AR transactions in scope", artifacts=[])
         state.tags.append(OutputTag(method_type=MethodType.DET, rationale="AR reconciliation (skipped)"))
         return state
 
@@ -697,15 +719,21 @@ def ar_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
         }
     )
 
-    # Messages, tags, metrics
-    if exceptions:
-        msgs.append(
-            f"[DET] AR recon exceptions: {len(exceptions)} items, total_abs={payload['summary']['total_abs_amount']:.2f} -> {out_path}"
+    # Console reporting (ModernConsole)
+    if console:
+        total_tx = len(df)
+        exc_cnt = len(exceptions)
+        console.progress(f"Reconciling AR: {total_tx} transactions", processed=total_tx, total=total_tx, exceptions=exc_cnt)
+        
+        if exc_cnt > 0:
+            # AI insights and risk assessment will be handled by post-run AI synthesis
+            pass
+        
+        console.complete_phase(
+            status="WARNING" if exc_cnt > 0 else "SUCCESS",
+            summary=f"Analyzed {total_tx} AR transactions; {exc_cnt} exceptions",
+            artifacts=[str(out_path)]
         )
-    else:
-        msgs.append("[DET] AR recon: no exceptions for period")
-
-    state.messages.extend(msgs)
     state.tags.append(OutputTag(method_type=MethodType.DET, rationale="AR reconciliation"))
 
     state.metrics.update(

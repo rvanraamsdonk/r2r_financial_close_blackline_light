@@ -1,0 +1,63 @@
+{
+  "generated_at": "2025-09-13T20:17:09Z",
+  "period": "2024-08",
+  "entity_scope": "ALL",
+  "owner_summaries": [
+    {
+      "owner_name": "John Doe",
+      "control_count": 5,
+      "risk_areas": [
+        "Financial Reporting",
+        "Currency Risk Management"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "Control ownership gaps identified in TB balancing and FX coverage; insufficient accountability for flux analysis exceptions.",
+      "confidence": 0.75
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Entity-level TB balances are not zero, indicating potential misstatements in financial reporting.",
+      "severity": "high",
+      "affected_processes": [
+        "Trial Balance Reconciliation"
+      ],
+      "mitigation_recommendations": "Assign clear accountability for TB balancing and implement automated reconciliation tools.",
+      "confidence": 0.85
+    },
+    {
+      "risk_category": "compliance",
+      "description": "FX rates coverage does not meet policy requirements, increasing exposure to currency risk.",
+      "severity": "medium",
+      "affected_processes": [
+        "FX Rate Validation"
+      ],
+      "mitigation_recommendations": "Enhance FX rate validation processes and ensure policy adherence through periodic audits.",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "operational",
+      "description": "High flux analysis exception count (51) indicates potential anomalies in account balances.",
+      "severity": "medium",
+      "affected_processes": [
+        "Flux Analysis"
+      ],
+      "mitigation_recommendations": "Investigate root causes of flux exceptions and establish thresholds for acceptable variances.",
+      "confidence": 0.78
+    },
+    {
+      "risk_category": "operational",
+      "description": "One open HITL case may delay critical financial close processes.",
+      "severity": "low",
+      "affected_processes": [
+        "Human-in-the-Loop Case Management"
+      ],
+      "mitigation_recommendations": "Prioritize resolution of open HITL cases to avoid close delays.",
+      "confidence": 0.9
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T201644Z\\controls_mapping_run_20250913T201644Z.json"
+  ]
+}

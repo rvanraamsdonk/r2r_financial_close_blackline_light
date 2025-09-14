@@ -10,13 +10,13 @@ import os
 
 class Settings(BaseModel):
     # Policy and runtime
-    ai_mode: Literal["off", "assist", "strict"] = Field(default="assist")
+    ai_mode: Literal["assist"] = Field(default="assist")
     data_path: Path = Field(default=Path("data"))
     out_path: Path = Field(default=Path("out"))
     period: str = Field(default="2025-08")
     prior: Optional[str] = Field(default=None)
     entity: str = Field(default="ALL")
-    show_prompts: bool = Field(default=False)
+    # show_prompts removed - not needed with post-run AI
     save_evidence: bool = Field(default=True)
 
     # AI providers / networking policy

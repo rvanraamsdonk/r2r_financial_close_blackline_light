@@ -155,7 +155,17 @@ def open_hitl_cases(state: R2RState, audit: AuditLogger) -> R2RState:
         }
     )
 
-    state.messages.append(f"[DET] HITL: opened {len(cases)} cases -> {out_cases}")
+    # Simple console progress tracking
+    console = getattr(state, 'console', None)
+    if console:
+        console.start_phase('Human-in-the-Loop Case Management')
+        console.progress(f"Opened {len(cases)} HITL cases for review", processed=len(cases), total=len(cases))
+        high_severity_count = len([c for c in cases if c.severity == "high"])
+        console.complete_phase(
+            status="WARNING" if high_severity_count > 0 else "SUCCESS",
+            summary=f"Opened {len(cases)} cases, {high_severity_count} high-severity",
+            artifacts=[str(out_cases)]
+        )
     state.tags.append(OutputTag(method_type=MethodType.DET, rationale="HITL case management"))
 
     state.metrics.update(

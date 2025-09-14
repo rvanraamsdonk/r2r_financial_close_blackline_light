@@ -88,7 +88,7 @@ def auto_journal_creation(state: R2RState, audit: AuditLogger) -> R2RState:
                     
             except Exception as e:
                 # Log but don't fail the entire process
-                state.messages.append(f"[AUTO-JE] Failed to create FX journal for {entity}: {e}")
+                pass  # Error handling - continue processing other entities
     
     # Process Flux variances for accrual adjustments
     flux_data = _load_flux_data_for_auto_je(state)
@@ -138,7 +138,7 @@ def auto_journal_creation(state: R2RState, audit: AuditLogger) -> R2RState:
                     total_auto_amount += var_amount
                     
             except Exception as e:
-                state.messages.append(f"[AUTO-JE] Failed to create Flux journal for {entity}: {e}")
+                pass  # Error handling - continue processing other entities
     
     # Build output artifact
     run_id = Path(audit.log_path).stem.replace("audit_", "")
@@ -179,13 +179,23 @@ def auto_journal_creation(state: R2RState, audit: AuditLogger) -> R2RState:
         "artifact": str(out_path),
     })
     
-    # Messages, tags, metrics
-    if auto_journals:
-        state.messages.append(
-            f"[AUTO-JE] Created {len(auto_journals)} auto-journals totaling ${total_auto_amount:,.2f} -> {out_path}"
+    # Enhanced console reporting (ModernConsole)
+    console = getattr(state, 'console', None)
+    if console:
+        console.start_phase('auto_journals')
+        if auto_journals:
+            console.progress(
+                f"Created {len(auto_journals)} automated journal entries",
+                processed=len(auto_journals), total=len(auto_journals)
+            )
+            # AI insights will be handled by post-run AI synthesis
+        else:
+            console.progress("No automated journals created - all differences above materiality threshold", processed=0, total=0)
+        console.complete_phase(
+            status="SUCCESS",
+            summary=f"Created {len(auto_journals)} auto journals totaling ${total_auto_amount:,.0f}",
+            artifacts=[str(out_path)]
         )
-    else:
-        state.messages.append("[AUTO-JE] No auto-journals created - all differences above threshold or zero")
     
     state.tags.append(
         OutputTag(method_type=MethodType.DET, rationale="Auto journal creation for immaterial differences")

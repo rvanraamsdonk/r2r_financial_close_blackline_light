@@ -1,0 +1,36 @@
+{
+  "generated_at": "2025-09-13T19:22:09Z",
+  "period": "2024-08",
+  "entity_scope": "ENT100",
+  "summary": {
+    "schema_issues": 0,
+    "duplicate_rows": 0,
+    "fx_coverage_ok": null
+  },
+  "root_causes": [
+    {
+      "issue_type": "process_control",
+      "description": "Flux exceptions indicate potential issues in variance analysis processes.",
+      "severity": "high",
+      "affected_categories": [
+        "flux_exceptions"
+      ],
+      "financial_impact": "$23456.78 auto journals created, though below materiality thresholds.",
+      "confidence": 0.85
+    }
+  ],
+  "remediations": [
+    {
+      "issue_type": "process_control",
+      "action": "Enhance variance analysis workflows and implement stricter thresholds for flux exception reviews.",
+      "priority": "high",
+      "estimated_effort": "2 weeks, requiring 1 FTE for analysis and process updates.",
+      "success_criteria": "Reduction in flux exceptions by 50% in the next financial close cycle."
+    }
+  ],
+  "citations": [
+    null,
+    null,
+    null
+  ]
+}

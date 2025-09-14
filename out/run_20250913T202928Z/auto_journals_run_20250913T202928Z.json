@@ -1,0 +1,150 @@
+{
+  "generated_at": "2025-09-13T20:29:29Z",
+  "period": "2024-08",
+  "entity_scope": "ALL",
+  "auto_journals": [
+    {
+      "je_id": "1f60300e-fdff-424d-af5d-9e4febda3696",
+      "module": "Flux",
+      "scenario": "accrual_adjustment",
+      "entity": "ENT100",
+      "amount_usd": 23456.78,
+      "description": "Accrual adjustment for budget variance - 23,456.78 (ENT100/7100)",
+      "lines": [
+        {
+          "account": "7100",
+          "description": "Additional accrual for budget variance",
+          "debit": 23456.78,
+          "credit": 0.0,
+          "entity": "ENT100",
+          "currency": "USD"
+        },
+        {
+          "account": "2100",
+          "description": "Accrued liability for budget variance",
+          "debit": 0.0,
+          "credit": 23456.78,
+          "entity": "ENT100",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created accrual adjustment for budget variance of $23,456.78. Over-budget amount requires accrual but is below materiality threshold for manual review.",
+      "source_data": {
+        "entity": "ENT100",
+        "account": "7100",
+        "actual_usd": 23456.78,
+        "budget_amount": 0.0,
+        "prior_usd": 23456.78,
+        "var_vs_budget": 23456.78,
+        "var_vs_prior": 0.0,
+        "pct_vs_budget": null,
+        "pct_vs_prior": 0.0,
+        "threshold_usd": 50034.04,
+        "band_vs_budget": "within",
+        "band_vs_prior": "within",
+        "ai_basis": "budget",
+        "deterministic_summary": "[FORENSIC] ENT100/7100: variance vs budget = 23456.78 USD (thr=50034.04, band=within). Cites entity=ENT100, account=7100, period=2024-08."
+      }
+    },
+    {
+      "je_id": "c0971440-62b1-4078-86f1-00024f3e4076",
+      "module": "Flux",
+      "scenario": "accrual_adjustment",
+      "entity": "ENT101",
+      "amount_usd": 19876.54,
+      "description": "Accrual adjustment for budget variance - 19,876.54 (ENT101/7100)",
+      "lines": [
+        {
+          "account": "7100",
+          "description": "Additional accrual for budget variance",
+          "debit": 19876.54,
+          "credit": 0.0,
+          "entity": "ENT101",
+          "currency": "USD"
+        },
+        {
+          "account": "2101",
+          "description": "Accrued liability for budget variance",
+          "debit": 0.0,
+          "credit": 19876.54,
+          "entity": "ENT101",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created accrual adjustment for budget variance of $19,876.54. Over-budget amount requires accrual but is below materiality threshold for manual review.",
+      "source_data": {
+        "entity": "ENT101",
+        "account": "7100",
+        "actual_usd": 19876.54,
+        "budget_amount": 0.0,
+        "prior_usd": 19876.54,
+        "var_vs_budget": 19876.54,
+        "var_vs_prior": 0.0,
+        "pct_vs_budget": null,
+        "pct_vs_prior": 0.0,
+        "threshold_usd": 41920.41,
+        "band_vs_budget": "within",
+        "band_vs_prior": "within",
+        "ai_basis": "budget",
+        "deterministic_summary": "[FORENSIC] ENT101/7100: variance vs budget = 19876.54 USD (thr=41920.41, band=within). Cites entity=ENT101, account=7100, period=2024-08."
+      }
+    },
+    {
+      "je_id": "5e4f5ada-20d3-4e26-8980-1065bc99b934",
+      "module": "Flux",
+      "scenario": "accrual_adjustment",
+      "entity": "ENT102",
+      "amount_usd": 15678.9,
+      "description": "Accrual adjustment for budget variance - 15,678.90 (ENT102/7100)",
+      "lines": [
+        {
+          "account": "7100",
+          "description": "Additional accrual for budget variance",
+          "debit": 15678.9,
+          "credit": 0.0,
+          "entity": "ENT102",
+          "currency": "USD"
+        },
+        {
+          "account": "2102",
+          "description": "Accrued liability for budget variance",
+          "debit": 0.0,
+          "credit": 15678.9,
+          "entity": "ENT102",
+          "currency": "USD"
+        }
+      ],
+      "deterministic_rationale": "Auto-created accrual adjustment for budget variance of $15,678.90. Over-budget amount requires accrual but is below materiality threshold for manual review.",
+      "source_data": {
+        "entity": "ENT102",
+        "account": "7100",
+        "actual_usd": 15678.9,
+        "budget_amount": 0.0,
+        "prior_usd": 15678.9,
+        "var_vs_budget": 15678.9,
+        "var_vs_prior": 0.0,
+        "pct_vs_budget": null,
+        "pct_vs_prior": 0.0,
+        "threshold_usd": 33324.63,
+        "band_vs_budget": "within",
+        "band_vs_prior": "within",
+        "ai_basis": "budget",
+        "deterministic_summary": "[FORENSIC] ENT102/7100: variance vs budget = 15678.90 USD (thr=33324.63, band=within). Cites entity=ENT102, account=7100, period=2024-08."
+      }
+    }
+  ],
+  "summary": {
+    "total_count": 3,
+    "total_amount_usd": 59012.22,
+    "by_module": {
+      "FX": 0,
+      "Flux": 3
+    }
+  },
+  "materiality_thresholds": {
+    "ENT100": 50034.04,
+    "ENT101": 41920.41,
+    "ENT102": 33324.63
+  },
+  "auto_journal_threshold": 5000
+}

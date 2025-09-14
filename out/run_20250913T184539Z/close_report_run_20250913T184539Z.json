@@ -1,0 +1,46 @@
+{
+  "generated_at": "2025-09-13T18:47:48Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "artifacts": {
+    "period_init_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\period_init_run_20250913T184539Z.json",
+    "fx_translation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\fx_translation_run_20250913T184539Z.json",
+    "bank_reconciliation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\bank_reconciliation_run_20250913T184539Z.json",
+    "bank_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ai_cache\\bank_ai_rationales_run_20250913T184539Z_68b72f753c38.json",
+    "ap_reconciliation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ap_reconciliation_run_20250913T184539Z.json",
+    "ar_reconciliation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ar_reconciliation_run_20250913T184539Z.json",
+    "ap_ar_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ai_cache\\ap_ar_ai_suggestions_run_20250913T184539Z_3b1c8198dc59.json",
+    "intercompany_reconciliation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\intercompany_reconciliation_run_20250913T184539Z.json",
+    "ic_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ai_cache\\ic_ai_match_proposals_run_20250913T184539Z_7c53cf9dfc94.json",
+    "accruals_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\accruals_run_20250913T184539Z.json",
+    "accruals_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ai_cache\\accruals_ai_narratives_run_20250913T184539Z_c7f65241f651.json",
+    "flux_analysis_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\flux_analysis_run_20250913T184539Z.json",
+    "flux_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ai_cache\\flux_ai_narratives_run_20250913T184539Z_3f350e3338bd.json",
+    "auto_journals_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\auto_journals_run_20250913T184539Z.json",
+    "gatekeeping_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\gatekeeping_run_20250913T184539Z.json",
+    "gatekeeping_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ai_cache\\gatekeeping_ai_rationales_run_20250913T184539Z_bcf5fd14062f.json",
+    "validation_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ai_cache\\validation_ai_run_20250913T184539Z_a5c17d64a6f5.json",
+    "hitl_cases_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\cases_run_20250913T184539Z.json",
+    "hitl_manifest_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\cases_manifest_run_20250913T184539Z.json",
+    "hitl_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ai_cache\\hitl_ai_case_summaries_run_20250913T184539Z_38c2c9ff93fc.json",
+    "controls_mapping_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\controls_mapping_run_20250913T184539Z.json",
+    "controls_ai_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ai_cache\\controls_ai_summaries_run_20250913T184539Z_3f85a42ae5c1.json"
+  },
+  "summary": {
+    "period": "2025-08",
+    "entity": "ALL",
+    "risk_level": "high",
+    "block_close": true,
+    "open_hitl_cases": 6,
+    "tb_balanced_by_entity": false,
+    "fx_coverage_ok": true,
+    "key_counts": {
+      "ap_exceptions": 19,
+      "ar_exceptions": 15,
+      "je_exceptions": 0,
+      "flux_exceptions": 47,
+      "accruals_exceptions": 9
+    }
+  },
+  "audit_log": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\audit_run_20250913T184539Z.jsonl"
+}

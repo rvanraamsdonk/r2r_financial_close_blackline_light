@@ -1,0 +1,40 @@
+{
+  "generated_at": "2025-09-13T19:30:48Z",
+  "period": "2024-08",
+  "entity_scope": "ENT100",
+  "case_summaries": [
+    {
+      "case_id": "CASE-202408-FLUX_EXCEPTIONS-001",
+      "summary": "The case involves 17 flux exceptions with high severity, indicating potential misstatements or anomalies in financial data. These exceptions could impact the accuracy of financial reporting and compliance.",
+      "risk_level": "high",
+      "business_impact": "Potential misstatements in financial statements, risking regulatory non-compliance and stakeholder trust.",
+      "confidence": 0.9
+    }
+  ],
+  "next_actions": [
+    {
+      "action": "Conduct a detailed review of the 17 flux exceptions to identify root causes and validate financial data accuracy.",
+      "priority": "critical",
+      "owner": "Financial Close Team",
+      "estimated_effort": "3 business days",
+      "dependencies": [
+        "Access to detailed transaction logs",
+        "Coordination with accounting team"
+      ]
+    },
+    {
+      "action": "Implement automated flux exception monitoring to reduce recurrence and improve detection.",
+      "priority": "high",
+      "owner": "IT Automation Team",
+      "estimated_effort": "2 weeks",
+      "dependencies": [
+        "Approval for automation tools",
+        "Training for relevant staff"
+      ]
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T193020Z\\cases_run_20250913T193020Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T193020Z\\cases_manifest_run_20250913T193020Z.json"
+  ]
+}

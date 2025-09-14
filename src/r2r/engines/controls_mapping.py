@@ -82,7 +82,17 @@ def controls_mapping(state: R2RState, audit: AuditLogger) -> R2RState:
         "artifact": str(out_path),
     })
 
-    state.messages.append(f"[DET] Controls mapping: {len(mapping)} mapped -> {out_path}")
+    # Enhanced console (ModernConsole)
+    console = getattr(state, 'console', None)
+    if console:
+        console.start_phase('controls_mapping')
+        console.progress(f"Mapped {len(mapping)} controls to financial statement line items", processed=len(mapping), total=len(mapping))
+        # Evidence tracking handled by audit system
+        console.complete_phase(
+            status="SUCCESS",
+            summary=f"Controls mapped: {len(mapping)}",
+            artifacts=[str(out_path)]
+        )
     state.tags.append(OutputTag(method_type=MethodType.DET, rationale="Controls mapping"))
 
     state.metrics.update({

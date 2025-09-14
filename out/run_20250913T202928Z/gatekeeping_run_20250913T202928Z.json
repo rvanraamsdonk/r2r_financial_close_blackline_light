@@ -1,0 +1,46 @@
+{
+  "generated_at": "2025-09-13T20:29:29Z",
+  "period": "2024-08",
+  "entity_scope": "ALL",
+  "inputs": {
+    "fx_coverage_ok": null,
+    "tb_balanced_by_entity": false,
+    "tb_entity_sums_usd": null
+  },
+  "categories": {
+    "bank_duplicates": 0,
+    "ap_exceptions": 0,
+    "ar_exceptions": 0,
+    "ic_mismatches": 0,
+    "accruals_exceptions": 0,
+    "je_exceptions": 0,
+    "flux_exceptions": 51,
+    "auto_journals_created": 3
+  },
+  "totals": {
+    "ap_exceptions_total_abs": null,
+    "ar_exceptions_total_abs": null,
+    "ic_mismatch_total_diff_abs": null,
+    "accruals_exception_total_usd": 0.0,
+    "je_exceptions_total_abs": null,
+    "auto_journals_total_amount": 59012.22
+  },
+  "risk_level": "high",
+  "preliminary_decision": "BLOCKED",
+  "final_decision_pending": false,
+  "block_close": true,
+  "auto_close_eligible": false,
+  "gross_exception_amount": 0,
+  "auto_journal_amount": 59012.22,
+  "net_exception_amount": -59012.22,
+  "materiality_threshold": 50000,
+  "critical_threshold": 1000000,
+  "deterministic_rationale": "BLOCKED: Critical control failure detected (FX: None, TB: False). 3 automated journal(s) totaling $59,012.22 were created to resolve exceptions. Manual intervention required.",
+  "referenced_artifacts": {
+    "period_init_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T202928Z\\period_init_run_20250913T202928Z.json",
+    "fx_translation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T202928Z\\fx_translation_run_20250913T202928Z.json",
+    "accruals_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T202928Z\\accruals_run_20250913T202928Z.json",
+    "flux_analysis_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T202928Z\\flux_analysis_run_20250913T202928Z.json",
+    "auto_journals_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T202928Z\\auto_journals_run_20250913T202928Z.json"
+  }
+}

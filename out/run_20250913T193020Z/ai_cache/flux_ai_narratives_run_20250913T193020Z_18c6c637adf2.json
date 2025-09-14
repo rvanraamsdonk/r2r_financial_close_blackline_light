@@ -1,0 +1,68 @@
+{
+  "generated_at": "2025-09-13T19:30:26Z",
+  "period": "2024-08",
+  "entity_scope": "ENT100",
+  "narratives": [
+    {
+      "entity": "ENT100",
+      "account": "4000",
+      "variance_usd": -2345678.9,
+      "variance_pct": 0,
+      "narrative": "Revenue fell short of budget by $2.35M due to delayed product launch in Q3. Launch delay impacted forecasted sales volume by 35% (7,800 units vs 12,000 units budgeted). Management inquiry MGT-INQ-2024-08-001 confirms delay caused by supply chain disruptions, as stated by COO Michael Johnson.",
+      "business_driver": "Supply chain disruptions delayed product launch, reducing sales volume by 35%.",
+      "management_response": "Michael Johnson (COO): Supply chain delays impacted product availability, reducing sales by $2.35M.",
+      "supporting_evidence": [
+        "SUP-2024-08-001: Supply chain report detailing delays in component delivery",
+        "OPS-2024-08-002: Sales system showing reduced unit sales (7,800 units vs 12,000 budgeted)",
+        "FIN-2024-08-003: Financial forecast adjustment memo"
+      ],
+      "analytical_procedures": "Sales volume variance: -35% vs historical average variance of -5% during similar periods.",
+      "risk_assessment": "Moderate risk - supply chain issues may persist into future periods.",
+      "confidence": "medium",
+      "root_cause": "supply_chain_disruption",
+      "follow_up_required": true
+    },
+    {
+      "entity": "ENT100",
+      "account": "1400",
+      "variance_usd": 1245678.9,
+      "variance_pct": 0,
+      "narrative": "Cost of goods sold (COGS) exceeded budget by $1.25M due to increased raw material prices. Commodity price index rose by 18% in Q3, impacting production costs. Management inquiry MGT-INQ-2024-08-002 confirms price increases, as stated by CFO Emily Davis.",
+      "business_driver": "Raw material price increase of 18% drove higher production costs.",
+      "management_response": "Emily Davis (CFO): Commodity price surge increased COGS by $1.25M.",
+      "supporting_evidence": [
+        "MKT-2024-08-004: Commodity price index report showing 18% increase",
+        "FIN-2024-08-005: COGS analysis report",
+        "OPS-2024-08-006: Procurement system data showing higher input costs"
+      ],
+      "analytical_procedures": "COGS variance: +18% vs historical average variance of +3% during similar periods.",
+      "risk_assessment": "Moderate risk - commodity price volatility may continue.",
+      "confidence": "medium",
+      "root_cause": "raw_material_price_increase",
+      "follow_up_required": true
+    },
+    {
+      "entity": "ENT100",
+      "account": "5000",
+      "variance_usd": 1234567.89,
+      "variance_pct": 0,
+      "narrative": "Operating expenses exceeded budget by $1.23M due to unplanned marketing spend for Q3 product launch. Additional spend of $1.1M was approved to mitigate delayed launch impact. Management inquiry MGT-INQ-2024-08-003 confirms approval by CEO John Smith.",
+      "business_driver": "Unplanned marketing spend of $1.1M to support delayed product launch.",
+      "management_response": "John Smith (CEO): Additional marketing spend was necessary to mitigate launch delay impact.",
+      "supporting_evidence": [
+        "MKT-2024-08-007: Marketing spend report showing $1.1M unplanned expenses",
+        "FIN-2024-08-008: Budget adjustment memo",
+        "OPS-2024-08-009: Campaign performance metrics showing ROI of 3.5x"
+      ],
+      "analytical_procedures": "Marketing spend variance: +22% vs historical average variance of +5%.",
+      "risk_assessment": "Low risk - additional spend yielded positive ROI.",
+      "confidence": "high",
+      "root_cause": "unplanned_marketing_spend",
+      "follow_up_required": false
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T193020Z\\flux_analysis_run_20250913T193020Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T193020Z\\period_init_run_20250913T193020Z.json"
+  ]
+}

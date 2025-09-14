@@ -1,0 +1,95 @@
+{
+  "generated_at": "2025-09-13T18:52:20Z",
+  "period": "2024-08",
+  "entity_scope": "ENT100",
+  "owner_summaries": [
+    {
+      "owner_name": "Entity Controller",
+      "control_count": 2,
+      "risk_areas": [
+        "Financial Reporting"
+      ],
+      "effectiveness_rating": "ineffective",
+      "key_concerns": "Entity-level TB balances are not zero, indicating potential reconciliation issues.",
+      "confidence": 0.7
+    },
+    {
+      "owner_name": "Treasury Manager",
+      "control_count": 1,
+      "risk_areas": [
+        "Cash Management"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "FX rates coverage does not meet policy, exposing the entity to currency risk.",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Accounting Manager",
+      "control_count": 1,
+      "risk_areas": [
+        "Financial Reporting"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "Flux analysis exceptions are high, indicating potential misstatements or unusual transactions.",
+      "confidence": 0.65
+    },
+    {
+      "owner_name": "Close Process Manager",
+      "control_count": 1,
+      "risk_areas": [
+        "Operational Efficiency"
+      ],
+      "effectiveness_rating": "effective",
+      "key_concerns": "Gatekeeping block close flag is operational, ensuring process integrity.",
+      "confidence": 0.9
+    },
+    {
+      "owner_name": "Case Manager",
+      "control_count": 1,
+      "risk_areas": [
+        "Operational Efficiency"
+      ],
+      "effectiveness_rating": "effective",
+      "key_concerns": "Minimal open HITL cases, indicating effective case management.",
+      "confidence": 0.85
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Unbalanced TB balances may lead to inaccurate financial statements.",
+      "severity": "high",
+      "affected_processes": [
+        "General Ledger Reconciliation",
+        "Financial Close"
+      ],
+      "mitigation_recommendations": "Implement automated reconciliation tools and review entity-level adjustments.",
+      "confidence": 0.75
+    },
+    {
+      "risk_category": "operational",
+      "description": "Non-compliance with FX rate coverage policy increases exposure to currency fluctuations.",
+      "severity": "medium",
+      "affected_processes": [
+        "Treasury Operations",
+        "Cash Flow Forecasting"
+      ],
+      "mitigation_recommendations": "Enhance FX rate monitoring and ensure policy adherence through periodic audits.",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "financial_reporting",
+      "description": "High flux analysis exceptions may indicate unrecorded transactions or errors.",
+      "severity": "medium",
+      "affected_processes": [
+        "Account Reconciliation",
+        "Variance Analysis"
+      ],
+      "mitigation_recommendations": "Investigate exceptions and improve flux analysis thresholds.",
+      "confidence": 0.7
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T185157Z\\controls_mapping_run_20250913T185157Z.json"
+  ]
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "id": "CASE-202408-FLUX_EXCEPTIONS-001",
+    "created_at": "2025-09-13T20:30:11.731161Z",
+    "period": "2024-08",
+    "entity": "ALL",
+    "source": "flux_exceptions",
+    "severity": "high",
+    "title": "Flux Exceptions: 51 items",
+    "description": "Automated detection opened this HITL case for category 'flux_exceptions' with 51 exception items in period 2024-08.",
+    "evidence_uris": [
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T203011Z\\flux_analysis_run_20250913T203011Z.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  }
+]

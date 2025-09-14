@@ -60,12 +60,20 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
 
     msgs: List[str] = []
 
+    # Enhanced console (ModernConsole)
+    console = getattr(state, 'console', None)
+    if console:
+        console.start_phase('bank_recon')
+
     if df.empty:
         msgs.append("[DET] Bank reconciliation: no transactions in scope; skipping")
         state.messages.extend(msgs)
+        if console:
+            console.progress("No transactions in scope - skipping", processed=0, total=0)
+            console.complete_phase(status="SUCCESS", summary="No bank transactions in scope", artifacts=[])
         state.tags.append(OutputTag(method_type=MethodType.DET, rationale="Bank reconciliation (skipped)"))
         return state
-
+    
     # Duplicate detection signature
     # Use amount_usd for consistent comparison across entities
     if "amount_usd" in df.columns:
@@ -399,8 +407,45 @@ def bank_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState:
         msgs.append(
             f"[DET] Bank recon: {len(exceptions)} items, total_abs={payload['summary']['total_abs_amount']:.2f}, auto_approved={auto_approved_count} -> {out_path}"
         )
+        if console:
+            console.progress(f"Analyzed {len(df)} bank transactions", processed=len(df), total=len(df), exceptions=len(exceptions))
+            # Risk assessment based on exception types and amounts
+            forensic_count = sum(1 for e in exceptions if e.get("classification") == "forensic_risk")
+            total_amount = payload['summary']['total_abs_amount']
+            if forensic_count > 0:
+                risk_level = "CRITICAL"
+                key_findings = [
+                    f"{forensic_count} forensic risk patterns detected",
+                    f"Total exception amount: ${total_amount:,.0f}"
+                ]
+                actions = [
+                    "Investigate suspicious counterparties and velocity patterns",
+                    "Review potential kiting schemes",
+                    "Validate transaction authenticity"
+                ]
+            elif total_amount > 100000:
+                risk_level = "HIGH"
+                key_findings = [f"Material bank exceptions totaling ${total_amount:,.0f}"]
+                actions = ["Review duplicate transactions", "Validate timing differences"]
+            else:
+                risk_level = "MEDIUM"
+                key_findings = [f"Bank exceptions within materiality: ${total_amount:,.0f}"]
+                actions = ["Monitor for patterns", "Sample test duplicates"]
+            # Risk assessment will be handled by post-run AI synthesis
+            if auto_approved_count > 0:
+                # AI insights will be handled by post-run AI synthesis
+                pass
+            # Evidence tracking handled by audit system
+            console.complete_phase(
+                status="WARNING" if risk_level in ("HIGH","CRITICAL") else "SUCCESS",
+                summary=f"Analyzed {len(df)} bank transactions; {len(exceptions)} exceptions",
+                artifacts=[str(out_path)]
+            )
     else:
         msgs.append("[DET] Bank recon: no duplicate candidates for period")
+        if console:
+            console.progress(f"Analyzed {len(df)} bank transactions - no exceptions detected", processed=len(df), total=len(df))
+            console.complete_phase(status="SUCCESS", summary="No bank exceptions detected", artifacts=[])
 
     state.messages.extend(msgs)
     state.tags.append(OutputTag(method_type=MethodType.DET, rationale="Bank reconciliation (duplicates)"))

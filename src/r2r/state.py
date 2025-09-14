@@ -2,22 +2,26 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field, ConfigDict
+from dataclasses import dataclass, field
 from .schemas import EvidenceRef, DeterministicRun, PromptRun, OutputTag, MethodType
 
 
-class R2RState(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    # Scope
+@dataclass
+class R2RState:
+    # Core identifiers
     period: str
-    prior: Optional[str] = None
-    entity: str = "ALL"
-
+    prior: str | None = None
+    entity: str | None = None
+    
     # Paths
-    repo_root: Path
-    data_path: Path
-    out_path: Path
-
+    repo_root: Path | None = None
+    data_path: Path | None = None
+    out_path: str | None = None
+    
+    # Runtime context
+    run_id: str | None = None
+    console: Any | None = None  # ConsoleAdapter instance
+    
     # Datasets
     entities_df: Optional[Any] = None
     coa_df: Optional[Any] = None
@@ -26,19 +30,21 @@ class R2RState(BaseModel):
     fx_df: Optional[Any] = None
 
     # Provenance
-    evidence: List[EvidenceRef] = Field(default_factory=list)
-    det_runs: List[DeterministicRun] = Field(default_factory=list)
-    prompt_runs: List[PromptRun] = Field(default_factory=list)
-    lineage: List[Dict[str, Any]] = Field(default_factory=list)
+    evidence: List[EvidenceRef] = field(default_factory=list)
+    det_runs: List[DeterministicRun] = field(default_factory=list)
+    prompt_runs: List[PromptRun] = field(default_factory=list)
+    lineage: List[Dict[str, Any]] = field(default_factory=list)
 
     # Outputs / tags
-    tags: List[OutputTag] = Field(default_factory=list)
-    metrics: Dict[str, Any] = Field(default_factory=dict)
-    messages: List[str] = Field(default_factory=list)  # labeled lines for CLI
+    tags: List[OutputTag] = field(default_factory=list)
+    metrics: Dict[str, Any] = field(default_factory=dict)
+    messages: List[str] = field(default_factory=list)  # labeled lines for CLI
 
     # Policy
-    ai_mode: str = "assist"
-    show_prompts: bool = False
+    ai_mode: str = "assist"  # Always enabled
     save_evidence: bool = True
+    
+    # Enhanced state for new console system
+    gatekeeping_rationale: str | None = None
 
     

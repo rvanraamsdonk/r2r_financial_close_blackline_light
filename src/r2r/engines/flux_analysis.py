@@ -79,8 +79,13 @@ def flux_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
     df = tb_grp.merge(bud_grp, on=["entity", "account"], how="left").merge(
         prior_grp, on=["entity", "account"], how="left"
     )
-    df["budget_amount"] = df["budget_amount"].fillna(0.0)
-    df["prior_usd"] = df["prior_usd"].fillna(0.0)
+    # Ensure columns exist even if upstream frames were empty
+    if "budget_amount" not in df.columns:
+        df["budget_amount"] = 0.0
+    if "prior_usd" not in df.columns:
+        df["prior_usd"] = 0.0
+    df["budget_amount"] = df["budget_amount"].fillna(0.0).infer_objects(copy=False)
+    df["prior_usd"] = df["prior_usd"].fillna(0.0).infer_objects(copy=False)
 
     # Materiality
     materiality_map: Dict[str, float] = {}
@@ -279,13 +284,56 @@ def flux_analysis(state: R2RState, audit: AuditLogger) -> R2RState:
         }
     )
 
-    # Messages, tags, metrics
-    if exceptions:
-        state.messages.append(
-            f"[DET] Flux analysis: {len(exceptions)} exceptions across {len(rows)} accounts -> {out_path}"
-        )
-    else:
-        state.messages.append("[DET] Flux analysis: no exceptions above materiality")
+    # Enhanced console (ModernConsole)
+    console = getattr(state, 'console', None)
+    if console and hasattr(console, 'start_phase'):
+        console.start_phase('flux_analysis')
+    
+    if console and hasattr(console, 'progress') and exceptions:
+        console.progress(f"Analyzed {len(rows)} accounts", processed=len(rows), total=len(rows), exceptions=len(exceptions))
+        
+        # Calculate total variance impact
+        total_variance = sum(abs(e.get('amount', 0)) for e in exceptions)
+        budget_exceptions = len([e for e in exceptions if e.get('reason') == 'flux_budget_above_threshold'])
+        prior_exceptions = len([e for e in exceptions if e.get('reason') == 'flux_prior_above_threshold'])
+        
+        # Risk assessment based on variance magnitude and distribution
+        if total_variance > 500000:
+            risk_level = "CRITICAL"
+            key_findings = [
+                f"Material flux variances totaling ${total_variance:,.0f}",
+                f"{budget_exceptions} budget variances, {prior_exceptions} prior period variances"
+            ]
+            actions = [
+                "Investigate significant account movements",
+                "Validate budget assumptions and prior period adjustments",
+                "Review for potential misstatements"
+            ]
+        elif total_variance > 100000:
+            risk_level = "HIGH"
+            key_findings = [f"Flux variances totaling ${total_variance:,.0f} require review"]
+            actions = ["Analyze top variance drivers", "Validate account classifications"]
+        else:
+            risk_level = "MEDIUM"
+            key_findings = [f"Flux variances within acceptable range: ${total_variance:,.0f}"]
+            actions = ["Monitor variance trends", "Document explanations"]
+        
+        # Risk assessment will be handled by post-run AI synthesis
+        
+        # AI narrative for top variances
+        # AI insights will be handled by post-run AI synthesis
+        
+        # Evidence tracking handled by audit system
+        if hasattr(console, 'complete_phase'):
+            console.complete_phase(
+                status="WARNING" if risk_level in ("HIGH","CRITICAL") else "SUCCESS",
+                summary=f"{len(exceptions)} exceptions above materiality across {len(rows)} accounts",
+                artifacts=[str(out_path)]
+            )
+    elif console and hasattr(console, 'progress'):
+        console.progress(f"Analyzed {len(rows)} accounts - no exceptions above materiality", processed=len(rows), total=len(rows))
+        if hasattr(console, 'complete_phase'):
+            console.complete_phase(status="SUCCESS", summary="No flux exceptions above materiality", artifacts=[str(out_path)])
     state.tags.append(OutputTag(method_type=MethodType.DET, rationale="Flux analysis (Budget & Prior)"))
 
     state.metrics.update(

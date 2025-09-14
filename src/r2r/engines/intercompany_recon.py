@@ -320,7 +320,61 @@ def intercompany_reconciliation(state: R2RState, audit: AuditLogger) -> R2RState
     else:
         msgs.append("[DET] Intercompany: no mismatches above materiality")
 
-    state.messages.extend(msgs)
+    # Enhanced console (ModernConsole)
+    console = getattr(state, 'console', None)
+    if console:
+        console.start_phase('ic_recon')
+    
+    if console and exceptions:
+        console.progress(f"Analyzed {len(df)} intercompany transactions", processed=len(df), total=len(df), exceptions=len(exceptions))
+        
+        # Risk assessment based on exception types and amounts
+        forensic_count = sum(1 for e in exceptions if e.get("reason") in ["ic_round_dollar_anomaly", "ic_transfer_pricing_risk", "ic_structuring_pattern"])
+        material_count = len([e for e in exceptions if abs(e.get('diff_abs', 0)) >= 50000])
+        total_diff = payload['summary']['total_diff_abs']
+        
+        if forensic_count > 0:
+            risk_level = "CRITICAL"
+            key_findings = [
+                f"{forensic_count} forensic risk patterns detected",
+                f"Total mismatch amount: ${total_diff:,.0f}"
+            ]
+            actions = [
+                "Investigate transfer pricing schemes",
+                "Review round dollar transactions for manipulation",
+                "Analyze structuring patterns for control avoidance"
+            ]
+        elif material_count > 0:
+            risk_level = "HIGH"
+            key_findings = [
+                f"{material_count} material mismatches requiring investigation",
+                f"Total mismatch amount: ${total_diff:,.0f}"
+            ]
+            actions = [
+                "Reconcile intercompany balances",
+                "Validate transaction completeness",
+                "Review elimination entries"
+            ]
+        else:
+            risk_level = "MEDIUM"
+            key_findings = [f"Intercompany mismatches within materiality: ${total_diff:,.0f}"]
+            actions = ["Monitor intercompany processes", "Sample test transactions"]
+        
+        # Risk assessment will be handled by post-run AI synthesis
+        
+        # AI narrative for proposals
+        if proposals:
+            # AI insights will be handled by post-run AI synthesis
+            pass
+        
+        # Evidence tracking handled by audit system
+        console.complete_phase(
+            status="WARNING" if risk_level in ("HIGH","CRITICAL") else "SUCCESS",
+            summary=f"Analyzed {len(df)} IC transactions; {len(exceptions)} mismatches",
+        )
+    elif console:
+        console.progress(f"Analyzed {len(df)} intercompany transactions - all balanced", processed=len(df), total=len(df))
+        console.complete_phase(status="SUCCESS", summary="All pairs within materiality", artifacts=[str(out_path)])
     state.tags.append(OutputTag(method_type=MethodType.DET, rationale="Intercompany reconciliation (mismatches)"))
 
     state.metrics.update(

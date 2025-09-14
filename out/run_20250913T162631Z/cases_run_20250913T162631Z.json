@@ -1,0 +1,124 @@
+[
+  {
+    "id": "CASE-202508-BANK_DUPLICATES-001",
+    "created_at": "2025-09-13T16:28:23.756916Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "bank_duplicates",
+    "severity": "high",
+    "title": "Bank Duplicates: 13 items",
+    "description": "Automated detection opened this HITL case for category 'bank_duplicates' with 13 exception items in period 2025-08.",
+    "evidence_uris": [
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\bank_reconciliation_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\bank_ai_rationales_run_20250913T162631Z_d7538230e16b.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-AP_EXCEPTIONS-002",
+    "created_at": "2025-09-13T16:28:23.756916Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "ap_exceptions",
+    "severity": "high",
+    "title": "Ap Exceptions: 19 items",
+    "description": "Automated detection opened this HITL case for category 'ap_exceptions' with 19 exception items in period 2025-08.",
+    "evidence_uris": [
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ap_reconciliation_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\ap_ar_ai_suggestions_run_20250913T162631Z_0dde63a7a60d.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-AR_EXCEPTIONS-003",
+    "created_at": "2025-09-13T16:28:23.756916Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "ar_exceptions",
+    "severity": "high",
+    "title": "Ar Exceptions: 15 items",
+    "description": "Automated detection opened this HITL case for category 'ar_exceptions' with 15 exception items in period 2025-08.",
+    "evidence_uris": [
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\period_init_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\fx_translation_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\bank_reconciliation_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\bank_ai_rationales_run_20250913T162631Z_d7538230e16b.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ap_reconciliation_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ar_reconciliation_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\ap_ar_ai_suggestions_run_20250913T162631Z_0dde63a7a60d.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\intercompany_reconciliation_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\ic_ai_match_proposals_run_20250913T162631Z_640a5e5161f4.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\accruals_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\accruals_ai_narratives_run_20250913T162631Z_3628381b1cc1.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\flux_analysis_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\flux_ai_narratives_run_20250913T162631Z_47adff4acaa1.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\auto_journals_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\gatekeeping_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\gatekeeping_ai_rationales_run_20250913T162631Z_d336d482b3fd.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\validation_ai_run_20250913T162631Z_0cddaf8a1a98.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-IC_MISMATCHES-004",
+    "created_at": "2025-09-13T16:28:23.756916Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "ic_mismatches",
+    "severity": "high",
+    "title": "Ic Mismatches: 6 items",
+    "description": "Automated detection opened this HITL case for category 'ic_mismatches' with 6 exception items in period 2025-08.",
+    "evidence_uris": [
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\ic_ai_match_proposals_run_20250913T162631Z_640a5e5161f4.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-ACCRUALS_EXCEPTIONS-005",
+    "created_at": "2025-09-13T16:28:23.756916Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "accruals_exceptions",
+    "severity": "high",
+    "title": "Accruals Exceptions: 9 items",
+    "description": "Automated detection opened this HITL case for category 'accruals_exceptions' with 9 exception items in period 2025-08.",
+    "evidence_uris": [
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\accruals_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\accruals_ai_narratives_run_20250913T162631Z_3628381b1cc1.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  },
+  {
+    "id": "CASE-202508-FLUX_EXCEPTIONS-006",
+    "created_at": "2025-09-13T16:28:23.756916Z",
+    "period": "2025-08",
+    "entity": "ALL",
+    "source": "flux_exceptions",
+    "severity": "high",
+    "title": "Flux Exceptions: 47 items",
+    "description": "Automated detection opened this HITL case for category 'flux_exceptions' with 47 exception items in period 2025-08.",
+    "evidence_uris": [
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\flux_analysis_run_20250913T162631Z.json",
+      "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ai_cache\\flux_ai_narratives_run_20250913T162631Z_47adff4acaa1.json"
+    ],
+    "status": "open",
+    "assignee": null,
+    "resolution_notes": null,
+    "resolved_at": null
+  }
+]

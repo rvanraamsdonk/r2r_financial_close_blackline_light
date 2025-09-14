@@ -1,0 +1,13 @@
+{
+  "generated_at": "2025-09-13T18:29:16Z",
+  "period": "2024-08",
+  "entity_scope": "ENT100",
+  "executive_summary": "The 2024-08 financial close identified 47 flux exceptions totaling $X across 3 entities. Key findings include significant variances in revenue recognition and expense accruals. Material exceptions have been flagged, with potential business impacts including delayed reporting and compliance risks. Risk assessment indicates a high risk level, requiring close to be blocked pending resolution of critical issues. Recommendations include immediate investigation of flagged exceptions, enhanced controls for flux monitoring, and escalation to senior management for resolution. Next steps involve prioritizing exception resolution and re-evaluating the close process for finalization.",
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T182843Z\\close_report_run_20250913T182843Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T182843Z\\gatekeeping_run_20250913T182843Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T182843Z\\flux_analysis_run_20250913T182843Z.json",
+    null,
+    null
+  ]
+}

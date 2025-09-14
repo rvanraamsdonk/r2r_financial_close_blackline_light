@@ -1,0 +1,43 @@
+{
+  "generated_at": "2025-09-13T20:16:45Z",
+  "period": "2024-08",
+  "entity_scope": "ALL",
+  "summary": {
+    "schema_issues": 0,
+    "duplicate_rows": 0,
+    "fx_coverage_ok": false
+  },
+  "root_causes": [
+    {
+      "issue_type": "process_control",
+      "description": "Flux exceptions indicate significant variances in financial data, likely due to inadequate review processes or missing supporting documentation.",
+      "severity": "high",
+      "affected_categories": [
+        "flux_exceptions"
+      ],
+      "financial_impact": "$59,012.22 in auto-journals created, suggesting potential misclassification or manual adjustments.",
+      "confidence": 0.85
+    }
+  ],
+  "remediations": [
+    {
+      "issue_type": "process_control",
+      "action": "Implement enhanced variance analysis procedures and require supporting documentation for all flux exceptions exceeding materiality thresholds.",
+      "priority": "high",
+      "estimated_effort": "2 weeks for process redesign and training; 1 week for implementation.",
+      "success_criteria": "Reduction in flux exceptions by 50% in the next financial close cycle."
+    },
+    {
+      "issue_type": "system_integration",
+      "action": "Automate journal entry validation to reduce reliance on manual adjustments and ensure proper classification.",
+      "priority": "medium",
+      "estimated_effort": "4 weeks for system updates and testing.",
+      "success_criteria": "Elimination of auto-journals exceeding $50K in the next two financial close cycles."
+    }
+  ],
+  "citations": [
+    null,
+    null,
+    null
+  ]
+}

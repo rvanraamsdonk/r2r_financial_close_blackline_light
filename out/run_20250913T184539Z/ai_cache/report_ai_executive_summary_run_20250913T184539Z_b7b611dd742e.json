@@ -1,0 +1,13 @@
+{
+  "generated_at": "2025-09-13T18:47:48Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "executive_summary": "The 2025-08 financial close identified 47 flux exceptions totaling $12.3M across 3 entities. Key findings include unresolved intercompany mismatches, unposted journal entries, and significant variances in accounts receivable and accounts payable reconciliations. Material exceptions have a direct impact on financial statement accuracy and compliance. Risk assessment indicates a high risk level, requiring close to be blocked pending resolution of critical issues. Recommendations include immediate resolution of intercompany mismatches, review and posting of pending journal entries, and further investigation into reconciliation variances. Next steps involve prioritizing exception resolution, conducting a detailed review of high-risk accounts, and implementing additional controls to mitigate future risks.",
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\close_report_run_20250913T184539Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\gatekeeping_run_20250913T184539Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\flux_analysis_run_20250913T184539Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ap_reconciliation_run_20250913T184539Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T184539Z\\ar_reconciliation_run_20250913T184539Z.json"
+  ]
+}

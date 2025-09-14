@@ -1,0 +1,70 @@
+{
+  "generated_at": "2025-09-13T16:28:19Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "summary": {
+    "schema_issues": 0,
+    "duplicate_rows": 0,
+    "fx_coverage_ok": null
+  },
+  "root_causes": [
+    {
+      "issue_type": "data_quality",
+      "description": "AR exceptions totaling $2.6M are driven by incomplete or inaccurate invoice data and reconciliation errors.",
+      "severity": "critical",
+      "affected_categories": [
+        "ar_exceptions"
+      ],
+      "financial_impact": "$2.6M AR exceptions exceed materiality thresholds",
+      "confidence": 0.9
+    },
+    {
+      "issue_type": "process_control",
+      "description": "Bank duplicates caused by insufficient validation checks during data import processes.",
+      "severity": "high",
+      "affected_categories": [
+        "bank_duplicates"
+      ],
+      "financial_impact": "Potential misrepresentation of $13 duplicate transactions",
+      "confidence": 0.85
+    },
+    {
+      "issue_type": "system_integration",
+      "description": "AP exceptions linked to system integration issues causing mismatches in vendor payment data.",
+      "severity": "high",
+      "affected_categories": [
+        "ap_exceptions"
+      ],
+      "financial_impact": "$653K AP exceptions impacting vendor payments",
+      "confidence": 0.8
+    }
+  ],
+  "remediations": [
+    {
+      "issue_type": "data_quality",
+      "action": "Implement enhanced reconciliation processes for AR to ensure invoice accuracy and completeness.",
+      "priority": "critical",
+      "estimated_effort": "4 weeks with 2 FTEs",
+      "success_criteria": "Reduction in AR exceptions below materiality thresholds (<$50K)."
+    },
+    {
+      "issue_type": "process_control",
+      "action": "Introduce duplicate detection algorithms during bank data import processes.",
+      "priority": "high",
+      "estimated_effort": "2 weeks with 1 FTE",
+      "success_criteria": "Elimination of duplicate transactions in bank reconciliation reports."
+    },
+    {
+      "issue_type": "system_integration",
+      "action": "Conduct system integration testing and resolve vendor payment data mismatches in AP workflows.",
+      "priority": "high",
+      "estimated_effort": "3 weeks with 2 FTEs",
+      "success_criteria": "Reduction in AP exceptions to <$50K and improved vendor payment accuracy."
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\bank_reconciliation_run_20250913T162631Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ap_reconciliation_run_20250913T162631Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\ar_reconciliation_run_20250913T162631Z.json"
+  ]
+}

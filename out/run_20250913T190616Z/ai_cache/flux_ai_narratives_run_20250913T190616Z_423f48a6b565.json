@@ -1,0 +1,68 @@
+{
+  "generated_at": "2025-09-13T19:06:21Z",
+  "period": "2024-08",
+  "entity_scope": "ENT100",
+  "narratives": [
+    {
+      "entity": "ENT100",
+      "account": "4000",
+      "variance_usd": -2345678.9,
+      "variance_pct": 0,
+      "narrative": "Revenue fell short of budget by $2.35M due to delayed product launch in Q3. Launch postponement impacted forecasted sales by 18%. Management inquiry MGT-INQ-2024-08-001 confirms delay due to supply chain disruptions, as stated by COO John Smith.",
+      "business_driver": "Product launch delay reduced forecasted sales by 18% (impact: $2.35M)",
+      "management_response": "John Smith (COO): Supply chain disruptions delayed product launch, impacting Q3 revenue",
+      "supporting_evidence": [
+        "PROD-2024-08-001: Product launch timeline showing 6-week delay",
+        "FIN-2024-08-002: Revenue forecast adjustment report",
+        "OPS-2024-08-003: Supply chain disruption logs"
+      ],
+      "analytical_procedures": "Revenue shortfall aligns with historical impact of similar delays (15%-20% reduction)",
+      "risk_assessment": "Moderate risk - dependent on resolution of supply chain issues",
+      "confidence": "medium",
+      "root_cause": "supply_chain_disruption",
+      "follow_up_required": true
+    },
+    {
+      "entity": "ENT100",
+      "account": "1400",
+      "variance_usd": 1245678.9,
+      "variance_pct": 0,
+      "narrative": "Cost of goods sold exceeded budget by $1.25M due to increased raw material costs. Market intelligence report MKT-2024-08-002 confirms 22% price increase in key materials. Management inquiry MGT-INQ-2024-08-002 corroborates with CFO Jane Doe citing supplier price hikes.",
+      "business_driver": "Raw material price increase of 22% (impact: $1.25M)",
+      "management_response": "Jane Doe (CFO): Supplier price hikes drove higher COGS",
+      "supporting_evidence": [
+        "MKT-2024-08-002: Market intelligence report on raw material prices",
+        "FIN-2024-08-004: COGS variance analysis report",
+        "SUP-2024-08-005: Supplier invoices showing price increases"
+      ],
+      "analytical_procedures": "COGS increase consistent with market trends (20%-25% rise in raw material costs)",
+      "risk_assessment": "Low risk - variance attributable to external market conditions",
+      "confidence": "high",
+      "root_cause": "raw_material_cost_increase",
+      "follow_up_required": false
+    },
+    {
+      "entity": "ENT100",
+      "account": "5000",
+      "variance_usd": 1234567.89,
+      "variance_pct": 0,
+      "narrative": "Operating expenses exceeded budget by $1.23M due to unplanned marketing spend. Email evidence EMAIL-2024-08-003 confirms executive decision to increase Q3 marketing budget by $1.5M to support product launch.",
+      "business_driver": "Unplanned marketing spend of $1.5M (impact: $1.23M)",
+      "management_response": "Sarah Chen (VP Sales): Additional marketing spend approved to support product launch",
+      "supporting_evidence": [
+        "EMAIL-2024-08-003: Executive approval for increased marketing spend",
+        "MKT-2024-08-006: Marketing budget adjustment report",
+        "FIN-2024-08-007: Expense reconciliation report"
+      ],
+      "analytical_procedures": "Marketing spend increase aligns with historical launch support budgets (10%-15% over baseline)",
+      "risk_assessment": "Low risk - variance supported by executive decision and documented approval",
+      "confidence": "high",
+      "root_cause": "unplanned_marketing_spend",
+      "follow_up_required": false
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T190616Z\\flux_analysis_run_20250913T190616Z.json",
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T190616Z\\period_init_run_20250913T190616Z.json"
+  ]
+}

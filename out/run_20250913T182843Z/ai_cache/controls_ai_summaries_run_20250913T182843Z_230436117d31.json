@@ -1,0 +1,66 @@
+{
+  "generated_at": "2025-09-13T18:29:12Z",
+  "period": "2024-08",
+  "entity_scope": "ENT100",
+  "owner_summaries": [
+    {
+      "owner_name": "John Doe",
+      "control_count": 5,
+      "risk_areas": [
+        "Financial Reporting",
+        "Currency Management"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "Entity-level TB balances not zero and FX rates coverage gaps.",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Jane Smith",
+      "control_count": 3,
+      "risk_areas": [
+        "Operational Efficiency"
+      ],
+      "effectiveness_rating": "effective",
+      "key_concerns": "High flux analysis exceptions and open HITL cases.",
+      "confidence": 0.85
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Entity-level TB balances not zero, leading to potential misstatements.",
+      "severity": "high",
+      "affected_processes": [
+        "Trial Balance Review",
+        "Consolidation"
+      ],
+      "mitigation_recommendations": "Ensure TB balances are reconciled to zero and implement automated checks.",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "compliance",
+      "description": "FX rates coverage does not meet policy requirements, increasing exposure to currency risk.",
+      "severity": "medium",
+      "affected_processes": [
+        "Currency Hedging",
+        "Policy Adherence"
+      ],
+      "mitigation_recommendations": "Review FX policy compliance and enhance monitoring mechanisms.",
+      "confidence": 0.78
+    },
+    {
+      "risk_category": "operational",
+      "description": "High flux analysis exceptions indicate potential operational inefficiencies.",
+      "severity": "medium",
+      "affected_processes": [
+        "Variance Analysis",
+        "Account Reconciliation"
+      ],
+      "mitigation_recommendations": "Investigate root causes of exceptions and improve flux analysis processes.",
+      "confidence": 0.82
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T182843Z\\controls_mapping_run_20250913T182843Z.json"
+  ]
+}

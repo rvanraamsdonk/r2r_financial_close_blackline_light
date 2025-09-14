@@ -1,0 +1,56 @@
+{
+  "generated_at": "2025-09-13T19:05:02Z",
+  "period": "2024-08",
+  "entity_scope": "ENT100",
+  "owner_summaries": [
+    {
+      "owner_name": "John Doe",
+      "control_count": 5,
+      "risk_areas": [
+        "Financial Reporting",
+        "Currency Risk Management"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "Entity-level TB balances are not reconciled; FX rates coverage does not meet policy requirements.",
+      "confidence": 0.75
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Entity-level TB balances not reconciled to zero, leading to potential misstatements in financial reports.",
+      "severity": "high",
+      "affected_processes": [
+        "Trial Balance Reconciliation",
+        "Financial Reporting"
+      ],
+      "mitigation_recommendations": "Implement automated reconciliation tools and enforce stricter review processes.",
+      "confidence": 0.85
+    },
+    {
+      "risk_category": "operational",
+      "description": "FX rates coverage gaps may lead to inaccurate currency conversions and operational inefficiencies.",
+      "severity": "medium",
+      "affected_processes": [
+        "Currency Conversion",
+        "Treasury Operations"
+      ],
+      "mitigation_recommendations": "Enhance FX rate validation controls and ensure policy adherence through regular audits.",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "compliance",
+      "description": "High flux analysis exception count indicates potential non-compliance with variance thresholds.",
+      "severity": "medium",
+      "affected_processes": [
+        "Variance Analysis",
+        "Compliance Monitoring"
+      ],
+      "mitigation_recommendations": "Review exception thresholds and train staff on compliance requirements.",
+      "confidence": 0.78
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T190433Z\\controls_mapping_run_20250913T190433Z.json"
+  ]
+}

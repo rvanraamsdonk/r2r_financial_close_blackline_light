@@ -1,0 +1,102 @@
+{
+  "generated_at": "2025-09-13T20:30:42Z",
+  "period": "2024-08",
+  "entity_scope": "ALL",
+  "owner_summaries": [
+    {
+      "owner_name": "Entity Controller",
+      "control_count": 1,
+      "risk_areas": [
+        "Financial Reporting"
+      ],
+      "effectiveness_rating": "ineffective",
+      "key_concerns": "TB balances not reconciled to 0 in USD at the entity level.",
+      "confidence": 0.7
+    },
+    {
+      "owner_name": "Treasury Manager",
+      "control_count": 1,
+      "risk_areas": [
+        "Cash Management"
+      ],
+      "effectiveness_rating": "ineffective",
+      "key_concerns": "FX rates coverage does not meet policy requirements.",
+      "confidence": 0.65
+    },
+    {
+      "owner_name": "Accounting Manager",
+      "control_count": 1,
+      "risk_areas": [
+        "Financial Reporting"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "High number of flux analysis exceptions (51) across accounts.",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Close Coordinator",
+      "control_count": 1,
+      "risk_areas": [
+        "Operational Efficiency"
+      ],
+      "effectiveness_rating": "effective",
+      "key_concerns": "Gatekeeping block close flag is operational.",
+      "confidence": 0.9
+    },
+    {
+      "owner_name": "Case Manager",
+      "control_count": 1,
+      "risk_areas": [
+        "Operational Efficiency"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "One open HITL case remains unresolved.",
+      "confidence": 0.8
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Unreconciled TB balances may lead to inaccurate financial statements.",
+      "severity": "high",
+      "affected_processes": [
+        "Trial Balance Reconciliation"
+      ],
+      "mitigation_recommendations": "Implement automated reconciliation tools and enforce stricter review processes.",
+      "confidence": 0.7
+    },
+    {
+      "risk_category": "compliance",
+      "description": "Non-compliance with FX rate coverage policy could result in regulatory penalties.",
+      "severity": "medium",
+      "affected_processes": [
+        "Foreign Exchange Management"
+      ],
+      "mitigation_recommendations": "Enhance FX rate monitoring and align processes with policy standards.",
+      "confidence": 0.65
+    },
+    {
+      "risk_category": "financial_reporting",
+      "description": "High flux analysis exceptions may indicate potential misstatements in accounts.",
+      "severity": "medium",
+      "affected_processes": [
+        "Flux Analysis"
+      ],
+      "mitigation_recommendations": "Investigate and resolve exceptions promptly, and improve variance analysis procedures.",
+      "confidence": 0.75
+    },
+    {
+      "risk_category": "operational",
+      "description": "Open HITL cases may delay critical operational decisions.",
+      "severity": "low",
+      "affected_processes": [
+        "Case Management"
+      ],
+      "mitigation_recommendations": "Expedite resolution of HITL cases and monitor case backlog regularly.",
+      "confidence": 0.8
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T203011Z\\controls_mapping_run_20250913T203011Z.json"
+  ]
+}

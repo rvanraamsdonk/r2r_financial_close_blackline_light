@@ -1,0 +1,52 @@
+{
+  "generated_at": "2025-09-13T16:26:45Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "candidate_pairs": [
+    {
+      "source_doc_id": "IC-001",
+      "target_doc_id": "IC-002",
+      "entity_src": "ENT100",
+      "entity_dst": "ENT101",
+      "match_confidence": 0.92,
+      "match_rationale": "Similar transaction amounts with same counterparties and matching transaction dates",
+      "amount_difference": 0.0,
+      "recommended_action": "Automatic elimination entry"
+    },
+    {
+      "source_doc_id": "IC-003",
+      "target_doc_id": "IC-004",
+      "entity_src": "ENT102",
+      "entity_dst": "ENT103",
+      "match_confidence": 0.88,
+      "match_rationale": "Partial amount match with same counterparties and date proximity",
+      "amount_difference": 500.0,
+      "recommended_action": "Manual review and adjustment"
+    }
+  ],
+  "je_proposals": [
+    {
+      "proposal_id": "JE-IC-001",
+      "entity": "ENT100",
+      "description": "Eliminate intercompany receivable/payable mismatch",
+      "debit_account": "2100 - Intercompany Payable",
+      "credit_account": "1200 - Intercompany Receivable",
+      "amount": 75000.0,
+      "rationale": "Eliminate confirmed intercompany balance per reconciliation",
+      "confidence": 0.9
+    },
+    {
+      "proposal_id": "JE-IC-002",
+      "entity": "ENT102",
+      "description": "Adjust intercompany receivable/payable for partial mismatch",
+      "debit_account": "2100 - Intercompany Payable",
+      "credit_account": "1200 - Intercompany Receivable",
+      "amount": 500.0,
+      "rationale": "Adjust for partial mismatch identified in reconciliation",
+      "confidence": 0.85
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250913T162631Z\\intercompany_reconciliation_run_20250913T162631Z.json"
+  ]
+}

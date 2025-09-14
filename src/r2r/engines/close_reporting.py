@@ -81,7 +81,16 @@ def close_reporting(state: R2RState, audit: AuditLogger) -> R2RState:
         "artifact": str(out_path),
     })
 
-    state.messages.append(f"[DET] Close reporting: evidence pack manifest -> {out_path}")
+    # Simple console progress tracking
+    console = getattr(state, 'console', None)
+    if console:
+        console.start_phase('Close Reporting')
+        console.progress(f"Generated evidence pack manifest with {len(payload['artifacts'])} artifacts", processed=len(payload['artifacts']), total=len(payload['artifacts']))
+        console.complete_phase(
+            status="SUCCESS",
+            summary=f"Generated evidence pack with {len(payload['artifacts'])} artifacts",
+            artifacts=[str(out_path)]
+        )
     state.tags.append(OutputTag(method_type=MethodType.DET, rationale="Close reporting & evidence pack"))
 
     state.metrics.update({
