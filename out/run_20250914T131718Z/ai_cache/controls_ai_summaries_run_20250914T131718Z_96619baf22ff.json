@@ -1,0 +1,163 @@
+{
+  "generated_at": "2025-09-14T13:19:15Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "owner_summaries": [
+    {
+      "owner_name": "Entity Controller",
+      "control_count": 1,
+      "risk_areas": [
+        "Financial Reporting"
+      ],
+      "effectiveness_rating": "ineffective",
+      "key_concerns": "TB balances not zeroed by entity, indicating potential financial reporting inaccuracies.",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Treasury Manager",
+      "control_count": 2,
+      "risk_areas": [
+        "Cash Management",
+        "Foreign Exchange"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "Bank duplicate detection exceptions are high; FX rates coverage meets policy but lacks additional validation.",
+      "confidence": 0.8
+    },
+    {
+      "owner_name": "Accounts Payable Manager",
+      "control_count": 1,
+      "risk_areas": [
+        "AP Reconciliation"
+      ],
+      "effectiveness_rating": "ineffective",
+      "key_concerns": "High count of AP reconciliation exceptions, indicating process inefficiencies.",
+      "confidence": 0.7
+    },
+    {
+      "owner_name": "Accounts Receivable Manager",
+      "control_count": 1,
+      "risk_areas": [
+        "AR Reconciliation"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "AR reconciliation exceptions require attention to improve operational effectiveness.",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Intercompany Accountant",
+      "control_count": 1,
+      "risk_areas": [
+        "Intercompany Transactions"
+      ],
+      "effectiveness_rating": "effective",
+      "key_concerns": "Intercompany mismatches are within acceptable thresholds but require ongoing monitoring.",
+      "confidence": 0.85
+    },
+    {
+      "owner_name": "Accruals Manager",
+      "control_count": 1,
+      "risk_areas": [
+        "Accruals Management"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "Accruals exceptions, including reversals, indicate potential process gaps.",
+      "confidence": 0.75
+    },
+    {
+      "owner_name": "Financial Analyst",
+      "control_count": 1,
+      "risk_areas": [
+        "Flux Analysis"
+      ],
+      "effectiveness_rating": "ineffective",
+      "key_concerns": "High flux analysis exceptions across accounts highlight significant financial reporting risks.",
+      "confidence": 0.65
+    },
+    {
+      "owner_name": "Close Coordinator",
+      "control_count": 1,
+      "risk_areas": [
+        "Close Process"
+      ],
+      "effectiveness_rating": "effective",
+      "key_concerns": "Gatekeeping block close flag is functioning as intended.",
+      "confidence": 0.9
+    },
+    {
+      "owner_name": "HITL Case Manager",
+      "control_count": 1,
+      "risk_areas": [
+        "Case Management"
+      ],
+      "effectiveness_rating": "needs_improvement",
+      "key_concerns": "Open HITL cases require resolution to mitigate operational delays.",
+      "confidence": 0.8
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk_category": "financial_reporting",
+      "description": "Unbalanced TBs at the entity level may lead to inaccurate financial statements.",
+      "severity": "high",
+      "affected_processes": [
+        "Trial Balance"
+      ],
+      "mitigation_recommendations": "Implement automated TB validation checks and escalate unresolved variances.",
+      "confidence": 0.75
+    },
+    {
+      "risk_category": "operational",
+      "description": "High bank duplicate detection exceptions increase the risk of cash mismanagement.",
+      "severity": "medium",
+      "affected_processes": [
+        "Bank Reconciliation"
+      ],
+      "mitigation_recommendations": "Enhance duplicate detection algorithms and review exception handling procedures.",
+      "confidence": 0.8
+    },
+    {
+      "risk_category": "operational",
+      "description": "AP reconciliation exceptions indicate potential inefficiencies in vendor payment processes.",
+      "severity": "medium",
+      "affected_processes": [
+        "AP Reconciliation"
+      ],
+      "mitigation_recommendations": "Streamline AP reconciliation workflows and provide additional training to staff.",
+      "confidence": 0.7
+    },
+    {
+      "risk_category": "operational",
+      "description": "AR reconciliation exceptions may delay cash application and reporting.",
+      "severity": "medium",
+      "affected_processes": [
+        "AR Reconciliation"
+      ],
+      "mitigation_recommendations": "Automate AR exception resolution and monitor aging reports closely.",
+      "confidence": 0.75
+    },
+    {
+      "risk_category": "financial_reporting",
+      "description": "High flux analysis exceptions suggest potential misstatements in account balances.",
+      "severity": "high",
+      "affected_processes": [
+        "Flux Analysis"
+      ],
+      "mitigation_recommendations": "Investigate root causes of flux exceptions and implement tighter variance thresholds.",
+      "confidence": 0.65
+    },
+    {
+      "risk_category": "operational",
+      "description": "Open HITL cases may delay critical workflows and impact operational efficiency.",
+      "severity": "medium",
+      "affected_processes": [
+        "Case Management"
+      ],
+      "mitigation_recommendations": "Prioritize and resolve open HITL cases to ensure timely process execution.",
+      "confidence": 0.8
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\controls_mapping_run_20250914T131718Z.json"
+  ]
+}

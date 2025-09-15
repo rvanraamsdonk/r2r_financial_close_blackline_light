@@ -1,0 +1,49 @@
+{
+  "generated_at": "2025-09-14T13:18:24Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "inputs": {
+    "fx_coverage_ok": null,
+    "tb_balanced_by_entity": false,
+    "tb_entity_sums_usd": null
+  },
+  "categories": {
+    "bank_duplicates": 13,
+    "ap_exceptions": 19,
+    "ar_exceptions": 15,
+    "ic_mismatches": 6,
+    "accruals_exceptions": 9,
+    "je_exceptions": 0,
+    "flux_exceptions": 47,
+    "auto_journals_created": 41
+  },
+  "totals": {
+    "ap_exceptions_total_abs": 653977.7,
+    "ar_exceptions_total_abs": 2586167.48,
+    "ic_mismatch_total_diff_abs": 0.0,
+    "accruals_exception_total_usd": 711808.57,
+    "je_exceptions_total_abs": null,
+    "auto_journals_total_amount": 95264.05
+  },
+  "risk_level": "high",
+  "preliminary_decision": "BLOCKED",
+  "final_decision_pending": false,
+  "block_close": true,
+  "auto_close_eligible": false,
+  "gross_exception_amount": 3951953.7499999995,
+  "auto_journal_amount": 95264.05,
+  "net_exception_amount": 3856689.6999999997,
+  "materiality_threshold": 50000,
+  "critical_threshold": 1000000,
+  "deterministic_rationale": "BLOCKED: Critical control failure detected (FX: None, TB: False). 41 automated journal(s) totaling $95,264.05 were created to resolve exceptions. Manual intervention required.",
+  "referenced_artifacts": {
+    "period_init_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\period_init_run_20250914T131718Z.json",
+    "fx_translation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\fx_translation_run_20250914T131718Z.json",
+    "bank_reconciliation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\bank_reconciliation_run_20250914T131718Z.json",
+    "ar_reconciliation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\ar_reconciliation_run_20250914T131718Z.json",
+    "intercompany_reconciliation_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\intercompany_reconciliation_run_20250914T131718Z.json",
+    "accruals_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\accruals_run_20250914T131718Z.json",
+    "flux_analysis_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\flux_analysis_run_20250914T131718Z.json",
+    "auto_journals_artifact": "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\auto_journals_run_20250914T131718Z.json"
+  }
+}

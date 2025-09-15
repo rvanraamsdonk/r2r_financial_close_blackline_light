@@ -1,0 +1,66 @@
+{
+  "generated_at": "2025-09-14T13:18:56Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "rationales": [
+    {
+      "bank_txn_id": "2025-08-31_ENT100_Internal Account 2_85528.31",
+      "ai_explanation": "The velocity anomaly indicates unusually high transaction activity within a short period. This could suggest potential layering in money laundering or internal fraud.",
+      "confidence": 0.9,
+      "risk_level": "high",
+      "recommended_action": "Investigate the source of funds and review recent transaction history for similar patterns."
+    },
+    {
+      "bank_txn_id": "2025-08-30_ENT100_Internal Account 2_-69196.2",
+      "ai_explanation": "The kiting pattern suggests possible manipulation of account balances to artificially inflate available funds. This is a red flag for fraudulent activity.",
+      "confidence": 0.95,
+      "risk_level": "high",
+      "recommended_action": "Perform a detailed review of account balances and cross-check with counterparty transactions."
+    },
+    {
+      "bank_txn_id": "2025-08-30_ENT100_Internal Account 3_69000.0",
+      "ai_explanation": "This transaction aligns with a kiting pattern, potentially indicating coordinated activity between internal accounts to obscure fund movements.",
+      "confidence": 0.92,
+      "risk_level": "high",
+      "recommended_action": "Trace the flow of funds between Internal Account 3 and other related accounts to identify any anomalies."
+    },
+    {
+      "bank_txn_id": "2025-08-29_ENT101_Internal Account 4_59876.54",
+      "ai_explanation": "The kiting pattern involving EUR currency raises concerns about cross-border fund manipulation, which could complicate regulatory compliance.",
+      "confidence": 0.88,
+      "risk_level": "high",
+      "recommended_action": "Coordinate with compliance teams to review cross-border transaction logs and ensure adherence to anti-money laundering regulations."
+    },
+    {
+      "bank_txn_id": "2025-08-28_ENT102_Internal Account 5_57654.32",
+      "ai_explanation": "The kiting pattern involving GBP suggests potential exploitation of currency exchange mechanisms to obscure fund origins.",
+      "confidence": 0.87,
+      "risk_level": "medium",
+      "recommended_action": "Analyze currency exchange transactions for irregularities and assess counterparty risk."
+    },
+    {
+      "bank_txn_id": "2025-08-31_ENT100_Internal Account 2_-55582.04",
+      "ai_explanation": "The velocity anomaly in conjunction with a negative transfer suggests potential fund mismanagement or unauthorized withdrawals.",
+      "confidence": 0.89,
+      "risk_level": "medium",
+      "recommended_action": "Verify the authorization of this transaction and assess the impact on account liquidity."
+    },
+    {
+      "bank_txn_id": "2025-08-25_ENT101_Payday Financial_45678.9",
+      "ai_explanation": "The unusual counterparty 'Payday Financial' raises concerns about the legitimacy of this wire transfer, as payday lenders are often associated with high-risk transactions.",
+      "confidence": 0.85,
+      "risk_level": "medium",
+      "recommended_action": "Validate the business relationship with Payday Financial and review the purpose of this transfer."
+    },
+    {
+      "bank_txn_id": "2025-08-15_ENT100_Quick Loan Solutions_35000.0",
+      "ai_explanation": "The unusual counterparty 'Quick Loan Solutions' suggests potential involvement in high-risk lending activities, which may expose the entity to reputational and financial risks.",
+      "confidence": 0.83,
+      "risk_level": "medium",
+      "recommended_action": "Investigate the nature of the relationship with Quick Loan Solutions and assess the transaction's alignment with business objectives."
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\bank_reconciliation_run_20250914T131718Z.json"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "generated_at": "2025-09-14T15:19:27.469070",
+  "period": "2025-08",
+  "entity": "ALL",
+  "risk_findings": [
+    {
+      "area": "Exception Concentration",
+      "severity": "CRITICAL",
+      "description": "High exception concentration detected: 100 exceptions across 4 high-risk modules",
+      "financial_impact": 25870558.390000004,
+      "evidence_files": [
+        "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\ap_reconciliation_run_20250914T131718Z.json",
+        "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\ar_reconciliation_run_20250914T131718Z.json",
+        "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\auto_journals_run_20250914T131718Z.json",
+        "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\bank_reconciliation_run_20250914T131718Z.json",
+        "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\flux_analysis_run_20250914T131718Z.json",
+        "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\gatekeeping_run_20250914T131718Z.json",
+        "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\intercompany_reconciliation_run_20250914T131718Z.json"
+      ],
+      "recommended_actions": [
+        "Prioritize investigation of high-impact modules",
+        "Implement enhanced controls for exception-prone areas",
+        "Consider management escalation for material items"
+      ]
+    }
+  ],
+  "cross_functional_patterns": [
+    {
+      "pattern_type": "Revenue Manipulation",
+      "areas_involved": [
+        "AR",
+        "Period-End Controls"
+      ],
+      "description": "Revenue timing manipulation detected: 5 channel stuffing + 6 weekend entries",
+      "risk_level": "CRITICAL",
+      "evidence": {
+        "channel_stuffing": 5,
+        "weekend_revenue": 6
+      }
+    }
+  ],
+  "automation_metrics": {
+    "total_items_processed": 53,
+    "auto_approved_count": 7,
+    "automation_rate_pct": "13.2%",
+    "total_financial_exposure": 3796060.58,
+    "auto_approved_value": 139286.89,
+    "value_automation_pct": "3.7%"
+  },
+  "executive_summary": "=== AI CLOSE ANALYSIS SUMMARY - 2025-08 ===\nEntity: ALL | Overall Risk: CRITICAL\n\nAUTOMATION EFFECTIVENESS:\n  \u2022 Processed 53 items across all modules\n  \u2022 Automation rate: 13.2%% (7 auto-approved)\n  \u2022 Financial automation: 3.7%% ($139,287 of $3,796,061)\n\nKEY RISK FINDINGS:\n  \u2022 Exception Concentration: CRITICAL - $25,870,558\n    High exception concentration detected: 100 exceptions across 4 high-risk modules\n\nCROSS-FUNCTIONAL PATTERNS:\n  \u2022 Revenue Manipulation: CRITICAL\n    Revenue timing manipulation detected: 5 channel stuffing + 6 weekend entries\n\nRECOMMENDED ACTIONS:\n  \u2022 Consider delaying close until critical issues resolved\n  \u2022 Consider management escalation for material items\n  \u2022 Immediate management escalation required\n  \u2022 Implement enhanced controls for exception-prone areas\n  \u2022 Prioritize investigation of high-impact modules"
+}

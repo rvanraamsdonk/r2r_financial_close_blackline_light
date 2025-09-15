@@ -1,0 +1,53 @@
+{
+  "generated_at": "2025-09-14T13:18:24Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "summary": {
+    "schema_issues": 0,
+    "duplicate_rows": 0,
+    "fx_coverage_ok": true
+  },
+  "root_causes": [
+    {
+      "issue_type": "data_quality",
+      "description": "High volume of AR exceptions ($2.6M) due to incomplete or inaccurate data entry in accounts receivable processes.",
+      "severity": "critical",
+      "affected_categories": [
+        "ar_exceptions"
+      ],
+      "financial_impact": "$2.6M AR exceptions exceed materiality thresholds",
+      "confidence": 0.9
+    },
+    {
+      "issue_type": "process_control",
+      "description": "Bank duplicate records (13 instances) caused by insufficient validation checks during reconciliation.",
+      "severity": "high",
+      "affected_categories": [
+        "bank_duplicates"
+      ],
+      "financial_impact": "Potential misstatement risk in cash balances.",
+      "confidence": 0.85
+    }
+  ],
+  "remediations": [
+    {
+      "issue_type": "data_quality",
+      "action": "Implement stricter validation rules and automated checks for AR data entry to ensure completeness and accuracy.",
+      "priority": "critical",
+      "estimated_effort": "4-6 weeks with 2 FTEs",
+      "success_criteria": "Reduction in AR exceptions by 90% in the next financial close cycle."
+    },
+    {
+      "issue_type": "process_control",
+      "action": "Enhance bank reconciliation workflows with duplicate detection algorithms and manual review checkpoints.",
+      "priority": "high",
+      "estimated_effort": "2-3 weeks with 1 FTE",
+      "success_criteria": "Elimination of duplicate bank records in the next financial close cycle."
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\bank_reconciliation_run_20250914T131718Z.json",
+    null,
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\ar_reconciliation_run_20250914T131718Z.json"
+  ]
+}

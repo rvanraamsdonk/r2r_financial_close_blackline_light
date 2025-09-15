@@ -26,9 +26,6 @@ from .engines import (
 )
 from .engines.auto_journal_engine import auto_journal_creation
 from .metrics import compute_metrics
-from .ai import (
-    ai_narrative_for_fx,
-)
 from .ai.comprehensive_analysis import ai_comprehensive_analysis
 
 
@@ -53,19 +50,8 @@ def _node_fx(state: GraphState) -> GraphState:
 
 
 def _node_ai_fx(state: GraphState) -> GraphState:
-    s = state["obj"]
-    if s.ai_mode != "off":
-        facts = {
-            "currencies": sorted(s.fx_df["currency"].unique().tolist()) if s.fx_df is not None else [],
-            "coverage_ok": s.metrics.get("fx_coverage_ok"),
-        }
-        payload = ai_narrative_for_fx(
-            policy={"period": s.period}, facts=facts, allow=False if s.ai_mode == "strict" and not s.show_prompts else True
-        )
-        s.prompt_runs.append(payload["prompt_run"])  # visible provenance
-        s.tags.append(payload["tag"])  # [AI]
-        s.messages.append(f"[AI] {payload['text']}")
-    return {**state, "obj": s}
+    # Deprecated: Inline AI removed from execution graph. Kept as no-op for backward compatibility.
+    return state
 
 
 def _node_ai_validation(state: GraphState) -> GraphState:
@@ -202,7 +188,6 @@ def build_graph() -> StateGraph:
     g.add_node("period_init", _node_period_init)
     g.add_node("validate", _node_validate)
     g.add_node("fx", _node_fx)
-    g.add_node("ai_fx", _node_ai_fx)
     g.add_node("fx_translation", _node_fx_translation)
     g.add_node("tb", _node_tb)
     g.add_node("bank_recon", _node_bank_recon)
@@ -224,8 +209,7 @@ def build_graph() -> StateGraph:
     g.set_entry_point("period_init")
     g.add_edge("period_init", "validate")
     g.add_edge("validate", "fx")
-    g.add_edge("fx", "ai_fx")
-    g.add_edge("ai_fx", "fx_translation")
+    g.add_edge("fx", "fx_translation")
     g.add_edge("fx_translation", "tb")
     g.add_edge("tb", "bank_recon")
     g.add_edge("bank_recon", "ap_recon")

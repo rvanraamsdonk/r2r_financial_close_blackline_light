@@ -290,32 +290,79 @@ def ai_comprehensive_forensic_analysis(state: R2RState, audit: AuditLogger) -> R
 
 
 def _calculate_comprehensive_automation_metrics(state: R2RState, ai_artifacts: Dict[str, Any]) -> Dict[str, Any]:
-    """Calculate detailed automation metrics across all modules."""
-    total_entries = 0
-    auto_approved = 0
-    total_exposure = 0.0
+    """Calculate detailed automation metrics across all modules using real artifacts/metrics."""
+    total_items = 0
+    auto_items = 0
+    total_value = 0.0
     auto_value = 0.0
-    
-    # Aggregate from deterministic artifacts
+
+    # Prefer module artifacts written by deterministic engines
     m = state.metrics or {}
-    for module in ["ap", "ar", "bank", "ic", "flux", "je"]:
-        count_key = f"{module}_exceptions_count"
-        total_entries += m.get(count_key, 0)
-        
-        # Estimate auto-approval rates (placeholder logic)
-        auto_approved += int(m.get(count_key, 0) * 0.75)  # Assume 75% auto-approval
-    
-    automation_rate = (auto_approved / total_entries * 100) if total_entries > 0 else 0.0
-    
+
+    def _load_json(path: str) -> Dict[str, Any]:
+        try:
+            p = Path(path)
+            if p.exists():
+                return json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+        return {}
+
+    # Map of metrics keys to module summary fields
+    artifact_keys = {
+        "ap": m.get("ap_reconciliation_artifact"),
+        "ar": m.get("ar_reconciliation_artifact"),
+        "bank": m.get("bank_reconciliation_artifact"),
+        "ic": m.get("intercompany_reconciliation_artifact"),
+    }
+
+    # Aggregate from artifacts when available
+    for mod, art_path in artifact_keys.items():
+        data = _load_json(art_path) if art_path else {}
+        if data:
+            exceptions = data.get("exceptions", [])
+            total_items += len(exceptions)
+            summary = data.get("summary", {})
+            auto_items += int(summary.get("auto_approved_count", 0) or 0)
+            if mod == "ic":
+                total_value += float(summary.get("total_diff_abs", 0.0) or 0.0)
+            else:
+                total_value += float(summary.get("total_abs_amount", 0.0) or 0.0)
+            auto_value += float(summary.get("auto_approved_total_abs", 0.0) or 0.0)
+
+    # Include auto journal engine as part of automation value
+    auto_art = m.get("auto_journals_artifact")
+    if auto_art:
+        aj = _load_json(auto_art).get("summary", {})
+        auto_value += float(aj.get("total_amount_usd", 0.0) or 0.0)
+
+    # Fallback to metrics if artifacts not present (e.g., partial runs)
+    if total_items == 0 and total_value == 0.0:
+        for mod in ("ap", "ar", "bank"):
+            total_items += int(m.get(f"{mod}_exceptions_count", 0) or 0)
+            total_value += float(m.get(f"{mod}_exceptions_total_abs", 0.0) or 0.0)
+            auto_items += int(m.get(f"{mod}_auto_approved_count", 0) or 0)
+            auto_value += float(m.get(f"{mod}_auto_approved_total_abs", 0.0) or 0.0)
+        # Intercompany
+        total_items += int(m.get("ic_mismatch_count", 0) or 0)
+        total_value += float(m.get("ic_mismatch_total_diff_abs", 0.0) or 0.0)
+        auto_items += int(m.get("ic_auto_approved_count", 0) or 0)
+        auto_value += float(m.get("ic_auto_approved_total_abs", 0.0) or 0.0)
+        # Auto journals
+        auto_value += float(m.get("auto_journals_total_usd", 0.0) or 0.0)
+
+    automation_rate = (auto_items / total_items * 100.0) if total_items > 0 else 0.0
+    value_automation = (auto_value / total_value * 100.0) if total_value > 0 else 0.0
+
     return {
-        "total_entries": total_entries,
-        "auto_approved_entries": auto_approved,
+        "total_entries": total_items,
+        "auto_approved_entries": auto_items,
         "auto_approval_rate": f"{automation_rate:.1f}%",
-        "automation_effectiveness": f"{automation_rate:.1f}%",
-        "total_exposure": total_exposure,
-        "auto_approved_value": auto_value,
-        "manual_review_count": total_entries - auto_approved,
-        "close_confidence": f"{min(95.0, automation_rate + 10):.0f}%"
+        "automation_effectiveness": f"{value_automation:.1f}%",
+        "total_exposure": round(total_value, 2),
+        "auto_approved_value": round(auto_value, 2),
+        "manual_review_count": max(0, total_items - auto_items),
+        "close_confidence": f"{min(95.0, automation_rate + 10):.0f}%",
     }
 
 

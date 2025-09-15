@@ -1,0 +1,14 @@
+{
+  "generated_at": "2025-09-14T13:18:29Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "matches": [],
+  "unresolved_summary": {
+    "ap_exceptions": 19,
+    "ar_exceptions": 15
+  },
+  "citations": [
+    null,
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\ar_reconciliation_run_20250914T131718Z.json"
+  ]
+}

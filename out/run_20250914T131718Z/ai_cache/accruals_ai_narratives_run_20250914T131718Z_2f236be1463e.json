@@ -1,0 +1,79 @@
+{
+  "generated_at": "2025-09-14T13:19:05Z",
+  "period": "2025-08",
+  "entity_scope": "ALL",
+  "narratives": [
+    {
+      "accrual_id": "ACR-2025-08-ENT102-004",
+      "narrative": "The accrual for entity ENT102 amounting to $156,250 was flagged for reversal but has not been processed. This could indicate a breakdown in the automated reversal process or a manual oversight. The delay in reversal could lead to overstated liabilities and misrepresentation of financial statements for the period ending 2025-09.",
+      "confidence": 0.92,
+      "risk_level": "high",
+      "business_impact": "Potential misstatement of liabilities and increased audit scrutiny."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT101-008",
+      "narrative": "The accrual for entity ENT101 amounting to $136,250 remains unreversed. This exception suggests a potential issue in the accrual reversal workflow, which may result in inaccurate financial reporting for Q3 2025.",
+      "confidence": 0.88,
+      "risk_level": "medium",
+      "business_impact": "Increased risk of financial misstatements and potential compliance issues."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT100-004",
+      "narrative": "Entity ENT100's accrual of $125,000 is pending reversal. This could be due to a timing mismatch or system error, potentially impacting the accuracy of the financial close process.",
+      "confidence": 0.85,
+      "risk_level": "medium",
+      "business_impact": "Delayed financial close and potential audit adjustments."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT101-006",
+      "narrative": "The accrual of $70,850 for entity ENT101 has not been reversed as expected. This exception may indicate a recurring issue with smaller accruals being deprioritized in the reversal process.",
+      "confidence": 0.8,
+      "risk_level": "low",
+      "business_impact": "Minor impact on financial reporting but could signal process inefficiencies."
+    },
+    {
+      "accrual_id": "ACR-2025-08-ENT100-008",
+      "narrative": "Entity ENT100's accrual of $65,000 was not reversed as scheduled. This could be due to a manual error or a system configuration issue, requiring further investigation.",
+      "confidence": 0.78,
+      "risk_level": "low",
+      "business_impact": "Minimal financial impact but may indicate process gaps."
+    }
+  ],
+  "je_rationales": [
+    {
+      "proposal_id": "ACR-2025-08-ENT102-004",
+      "rationale": "Reverse the accrual of $156,250 for entity ENT102 to align with the accrual reversal policy and ensure accurate liability reporting for September 2025.",
+      "accounting_treatment": "Debit Accrued Liabilities and Credit Expense to reverse the accrual.",
+      "confidence": 0.95
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT101-008",
+      "rationale": "Reverse the accrual of $136,250 for entity ENT101 to prevent overstated liabilities and ensure compliance with financial reporting standards.",
+      "accounting_treatment": "Debit Accrued Liabilities and Credit Expense to reverse the accrual.",
+      "confidence": 0.9
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT100-004",
+      "rationale": "Reverse the accrual of $125,000 for entity ENT100 to maintain accurate financial records and avoid audit adjustments.",
+      "accounting_treatment": "Debit Accrued Liabilities and Credit Expense to reverse the accrual.",
+      "confidence": 0.88
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT101-006",
+      "rationale": "Reverse the accrual of $70,850 for entity ENT101 to ensure compliance with the accrual reversal timeline and accurate reporting.",
+      "accounting_treatment": "Debit Accrued Liabilities and Credit Expense to reverse the accrual.",
+      "confidence": 0.85
+    },
+    {
+      "proposal_id": "ACR-2025-08-ENT100-008",
+      "rationale": "Reverse the accrual of $65,000 for entity ENT100 to address potential process gaps and ensure accurate liability reporting.",
+      "accounting_treatment": "Debit Accrued Liabilities and Credit Expense to reverse the accrual.",
+      "confidence": 0.83
+    }
+  ],
+  "citations": [
+    "C:\\Users\\CD719VE\\OneDrive - EY\\Documents\\Code\\r2r_financial_close_blackline_light\\out\\run_20250914T131718Z\\accruals_run_20250914T131718Z.json",
+    null,
+    null
+  ]
+}
